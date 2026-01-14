@@ -1,0 +1,22 @@
+# Build artifacts
+libswephe.wasm
+
+# Toolchain
+toolchain/
+
+# OS Specific
+.DS_Store
+Thumbs.db
+
+# Editor Specific
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Deno
+.deno/
+deno.lock.back
