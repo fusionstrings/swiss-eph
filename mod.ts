@@ -86,6 +86,36 @@ export class SwissEph {
   }
 
   /**
+   * swe_houses: Compute house cusps and ascmc values
+   */
+  swe_houses(
+    tjd_ut: number,
+    geolat: number,
+    geolon: number,
+    hsys: number,
+  ): { cusps: Float64Array; ascmc: Float64Array; returnCode: number } {
+    const cusps_ptr = this.heap.alloc(13 * 8);
+    const ascmc_ptr = this.heap.alloc(10 * 8);
+
+    const ret = this.exports.swe_houses(
+      tjd_ut,
+      geolat,
+      geolon,
+      hsys,
+      cusps_ptr,
+      ascmc_ptr,
+    );
+
+    const cusps = this.heap.getF64(cusps_ptr, 13).slice();
+    const ascmc = this.heap.getF64(ascmc_ptr, 10).slice();
+
+    this.heap.free(cusps_ptr);
+    this.heap.free(ascmc_ptr);
+
+    return { cusps, ascmc, returnCode: ret };
+  }
+
+  /**
    * swe_julday: Compute Julian Day
    */
   swe_julday(
