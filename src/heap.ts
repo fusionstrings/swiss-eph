@@ -38,6 +38,10 @@ export class WasmHeap {
     return new TextDecoder().decode(buffer.subarray(ptr, end));
   }
 
+  getI32(ptr: number): number {
+    return new DataView(this.memory.buffer).getInt32(ptr, true);
+  }
+
   putString(str: string): number {
     const bytes = new TextEncoder().encode(str + "\0");
     const ptr = this.alloc(bytes.length);
