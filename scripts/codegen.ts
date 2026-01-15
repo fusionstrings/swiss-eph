@@ -1,5 +1,6 @@
 import { dirname, join } from "@std/path";
 import { ensureDir } from "@std/fs/ensure-dir";
+import { parseMetadata } from "./metadata.ts";
 
 const SRC_PATH = "src/swisseph/swephexp.h";
 const DEF_PATH = "src/swisseph/sweodef.h";
@@ -8,75 +9,7 @@ const EXPORTS_PATH = "bindings/exported_functions.json";
 const WRAPPERS_PATH = "bindings/generated_wrappers.ts";
 
 async function generate() {
-  const content = await Deno.readTextFile(SRC_PATH);
-  const defContent = await Deno.readTextFile(DEF_PATH);
-  const fullContent = content + "\n" + defContent;
-
-  const defineRegex = /#\s*define\s+(\w+)\s+(.+)/g;
-  const extDefRegex = /ext_def\s*\(\s*([^)]+)\s*\)\s*(\w+)\s*\(([^;]+)\)\s*;/g;
-
-  const constants: Record<string, string> = {};
-  const functions: Array<{
-    returnType: string;
-    name: string;
-    args: Array<{ type: string; name: string }>;
-  }> = [];
-
-  // Parse Constants
-  let match;
-  while ((match = defineRegex.exec(fullContent)) !== null) {
-    const key = match[1];
-    let value = match[2].trim();
-
-    const commentStart = value.indexOf("/*");
-    if (commentStart !== -1) {
-      const quoteCount =
-        (value.substring(0, commentStart).match(/"/g) || []).length;
-      if (quoteCount % 2 === 0) {
-        value = value.substring(0, commentStart).trim();
-      }
-    }
-    const lineComment = value.indexOf("//");
-    if (lineComment !== -1) {
-      const quoteCount =
-        (value.substring(0, lineComment).match(/"/g) || []).length;
-      if (quoteCount % 2 === 0) {
-        value = value.substring(0, lineComment).trim();
-      }
-    }
-
-    // Remove wrapping parentheses if present, e.g. (-1) or (0)
-    if (value.startsWith("(") && value.endsWith(")")) {
-      value = value.substring(1, value.length - 1).trim();
-    }
-
-    constants[key] = value;
-  }
-
-  // Parse Functions
-  while ((match = extDefRegex.exec(content)) !== null) {
-    const returnType = match[1].trim();
-    const name = match[2].trim();
-    const argsRaw = match[3].trim();
-
-    const args = argsRaw.split(",").map((arg) => {
-      arg = arg.trim();
-      const lastSpace = arg.lastIndexOf(" ");
-      if (lastSpace === -1) return { type: arg, name: "" };
-      let type = arg.substring(0, lastSpace).replace(/\*/g, "").trim();
-      if (arg.includes("*")) type += "*";
-
-      let paramName = arg.substring(lastSpace + 1).replace(/\*/g, "").trim();
-
-      if (paramName.includes("[")) {
-        paramName = paramName.split("[")[0];
-        type += "[]";
-      }
-      return { type, name: paramName };
-    });
-
-    functions.push({ returnType, name, args });
-  }
+  const { constants, functions } = await parseMetadata(SRC_PATH, DEF_PATH);
 
   // Generate TypeScript
   const lines: string[] = [];

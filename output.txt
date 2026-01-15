@@ -1,0 +1,35 @@
+[0m[32mCheck[0m tests/golden.test.ts
+[0m[38;5;245mrunning 2 tests from ./tests/golden.test.ts[0m
+Gate B: Numerical Integrity (Golden Values) ...
+[0m[38;5;245m------- output -------[0m
+[WASI] path_open: sepl_18.se1
+[WASI] path_open: semo_18.se1
+[WASI] path_open: swe_deltat.txt
+[WASI] path_open: sedeltat.txt
+Sun ReturnCode: 1618 (Expected has flag 2 for SWIEPH)
+Sun: Expected 294.6982832, Got 294.69828315730314
+Moon: Expected 250.4744341, Got 250.4744341427689
+Ascendant: Expected 168.0574294, Got 168.05742938283635
+[0m[38;5;245m----- output end -----[0m
+Gate B: Numerical Integrity (Golden Values) ... [0m[32mok[0m [0m[38;5;245m(286ms)[0m
+Gate C: I/O Stress (Fallback to Moshier) ...
+[0m[38;5;245m------- output -------[0m
+[WASI] path_open: sepl_18.se1
+[WASI] path_open: users/ephe2/sepl_18.se1
+[WASI] path_open: users/ephe/sepl_18.se1
+[WASI] path_open: sepl_18.se1
+[WASI] path_open: users/ephe2/sepl_18.se1
+[WASI] path_open: users/ephe/sepl_18.se1
+Moshier Fallback Result Code: 4
+Error String: SwissEph file 'sepl_18.se1' not found in PATH '.:/users/ephe2/:/users/ephe/' 
+using Moshier eph.; 
+[WASI] path_open: sepl_18.se1
+[WASI] path_open: users/ephe2/sepl_18.se1
+[WASI] path_open: users/ephe/sepl_18.se1
+Moshier Result: 294.69342930127647
+Difference from High Precision: 0.004853898723524708
+[0m[38;5;245m----- output end -----[0m
+Gate C: I/O Stress (Fallback to Moshier) ... [0m[32mok[0m [0m[38;5;245m(2ms)[0m
+
+[0m[32mok[0m | 2 passed | 0 failed [0m[38;5;245m(298ms)[0m
+
