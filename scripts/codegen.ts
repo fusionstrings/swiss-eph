@@ -2,11 +2,15 @@ import { dirname, join } from "@std/path";
 import { ensureDir } from "@std/fs/ensure-dir";
 
 const SRC_PATH = "src/swisseph/swephexp.h";
+const DEF_PATH = "src/swisseph/sweodef.h";
 const OUT_PATH = "src/swisseph_api.generated.ts";
 const EXPORTS_PATH = "bindings/exported_functions.json";
+const WRAPPERS_PATH = "bindings/generated_wrappers.ts";
 
 async function generate() {
   const content = await Deno.readTextFile(SRC_PATH);
+  const defContent = await Deno.readTextFile(DEF_PATH);
+  const fullContent = content + "\n" + defContent;
 
   const defineRegex = /#\s*define\s+(\w+)\s+(.+)/g;
   const extDefRegex = /ext_def\s*\(\s*([^)]+)\s*\)\s*(\w+)\s*\(([^;]+)\)\s*;/g;
@@ -20,7 +24,7 @@ async function generate() {
 
   // Parse Constants
   let match;
-  while ((match = defineRegex.exec(content)) !== null) {
+  while ((match = defineRegex.exec(fullContent)) !== null) {
     const key = match[1];
     let value = match[2].trim();
 
@@ -39,6 +43,11 @@ async function generate() {
       if (quoteCount % 2 === 0) {
         value = value.substring(0, lineComment).trim();
       }
+    }
+
+    // Remove wrapping parentheses if present, e.g. (-1) or (0)
+    if (value.startsWith("(") && value.endsWith(")")) {
+      value = value.substring(1, value.length - 1).trim();
     }
 
     constants[key] = value;
@@ -77,11 +86,37 @@ async function generate() {
   lines.push(`export const Constants = {`);
   for (const [k, v] of Object.entries(constants)) {
     if (k.includes("(")) continue;
-    if (!isNaN(parseFloat(v)) || v.startsWith("0x")) {
-      lines.push(`  ${k}: ${v},`);
-    } else if (v.startsWith('"')) {
-      lines.push(`  ${k}: ${v},`);
+
+    // Skip if value contains identifier characters (letters) that aren't hex
+    // Check for letters a-z, A-Z.
+    // Allow 'x' if preceded by '0' (hex coverage is approximate but practically works for 0x...)
+    // Actually, safer: allow only digits, whitespace, operators, parents, and 0x hex.
+
+    // Check if it looks like a hex number
+    const isHex = /^0x[0-9a-fA-F]+$/.test(v);
+
+    // Check if it contains letters (and is not hex)
+    if (!isHex && /[a-zA-Z]/.test(v)) {
+      // Allow scientific notation e.g. 1E-10
+      if (!/^-?[\d.]+[eE][+-]?\d+$/.test(v)) {
+        continue; // Skip values with identifiers like DEG, SEFLG_..., etc.
+      }
     }
+
+    let cleanValue = v;
+    // Fix octal: if it starts with 0 and has digits, and isn't 0x or just 0/0.
+    if (
+      /^0\d+/.test(cleanValue) && !cleanValue.startsWith("0x") &&
+      !cleanValue.includes(".")
+    ) {
+      cleanValue = cleanValue.replace(/^0/, "0o");
+    }
+
+    if (!cleanValue) continue;
+
+    // Attempt to validate if it's a valid expression we can output
+    // We strictly output if it parses visually as number or math
+    lines.push(`  ${k}: ${cleanValue},`);
   }
   lines.push(`} as const;\n`);
 
@@ -116,6 +151,180 @@ async function generate() {
   await ensureDir(dirname(EXPORTS_PATH));
   await Deno.writeTextFile(EXPORTS_PATH, JSON.stringify(exportNames, null, 2));
   console.log(`Generated ${EXPORTS_PATH}`);
+
+  // Generate Wrapper Implementations
+  const wrapperLines: string[] = [];
+  wrapperLines.push(`// Auto-generated wrappers by scripts/codegen.ts`);
+  wrapperLines.push(`// Copy these methods into mod.ts SwissEph class`);
+  wrapperLines.push(``);
+
+  for (const func of functions) {
+    // Skip internal/utility functions if needed, or just generate all
+    // We filter out some that have manual overrides if we want, but for now generate all
+
+    // Determine input vs output arguments
+    // Heuristic: double*, char*, int32* are usually outputs or arrays.
+    // char* can be input string.
+
+    // Analyze arguments
+    const inputs: string[] = [];
+    const setups: string[] = [];
+    const calls: string[] = [];
+    const teardowns: string[] = [];
+    const returns: string[] = [];
+    const returnObj: string[] = [];
+
+    // Return code handling
+    let hasReturnCode = func.returnType !== "void";
+
+    // Process arguments
+    let argIdx = 0;
+    for (const arg of func.args) {
+      const argName = arg.name || `arg${argIdx}`;
+
+      // Heuristic for type detection
+      if (arg.type === "char*") {
+        // Is it input or output?
+        // Most swe functions: char* is input star name, or output error/string.
+        // Common output param names: serr, starname (sometimes), name, etc.
+        if (
+          argName.includes("err") || argName === "sname" ||
+          argName === "hname" || argName === "name"
+        ) {
+          // Output String
+          setups.push(`    const ${argName}_ptr = this.heap.alloc(256);`);
+          calls.push(`${argName}_ptr`);
+          teardowns.push(`    this.heap.free(${argName}_ptr);`);
+          returns.push(
+            `const ${argName} = this.heap.getString(${argName}_ptr);`,
+          );
+          returnObj.push(argName);
+        } else {
+          // Input String
+          inputs.push(`${argName}: string`);
+          setups.push(
+            `    const ${argName}_ptr = this.heap.putString(${argName});`,
+          );
+          calls.push(`${argName}_ptr`);
+          teardowns.push(`    this.heap.free(${argName}_ptr);`);
+        }
+      } else if (
+        arg.type.includes("double*") || arg.type.includes("double[]")
+      ) {
+        // Output array or input array?
+        // Defaults: xx (6), cusps (13), ascmc (10), tret (varies), attr (varies)
+        let size = 6;
+        if (argName.includes("cusp")) size = 13;
+        if (argName.includes("ascmc")) size = 10;
+        if (argName.includes("attr")) size = 20;
+        if (argName.includes("tret")) size = 10; // eclipses often 10
+
+        // Input arrays heuristics
+        if (
+          argName.includes("geopos") || argName === "xpin" ||
+          argName === "xin" || argName === "xpo" || argName === "datm" ||
+          argName === "dobs"
+        ) {
+          // Input array
+          // Determine size
+          let inputSize = 3;
+          if (argName === "xpin" || argName === "xin") inputSize = 2;
+          if (argName === "datm" || argName === "dobs") inputSize = 6;
+
+          inputs.push(`${argName}: number[]`);
+          setups.push(
+            `    const ${argName}_ptr = this.heap.alloc(${inputSize} * 8);`,
+          );
+          setups.push(
+            `    this.heap.setU8(${argName}_ptr, new Uint8Array(new Float64Array(${argName}).buffer));`,
+          );
+          calls.push(`${argName}_ptr`);
+          teardowns.push(`    this.heap.free(${argName}_ptr);`);
+          // Not returned
+        } else if (argName.startsWith("x")) {
+          // xx, xnasc, etc - usually output
+          setups.push(
+            `    const ${argName}_ptr = this.heap.alloc(${size} * 8);`,
+          );
+          calls.push(`${argName}_ptr`);
+          teardowns.push(`    this.heap.free(${argName}_ptr);`);
+          returns.push(
+            `const ${argName} = this.heap.getF64(${argName}_ptr, ${size}).slice();`,
+          );
+          returnObj.push(argName);
+        } else {
+          // Assume output double array
+          setups.push(
+            `    const ${argName}_ptr = this.heap.alloc(${size} * 8);`,
+          );
+          calls.push(`${argName}_ptr`);
+          teardowns.push(`    this.heap.free(${argName}_ptr);`);
+          returns.push(
+            `const ${argName} = this.heap.getF64(${argName}_ptr, ${size}).slice();`,
+          );
+          returnObj.push(argName);
+        }
+      } else if (arg.type === "int32*" || arg.type === "int*") {
+        // Output int
+        setups.push(`    const ${argName}_ptr = this.heap.alloc(4);`);
+        calls.push(`${argName}_ptr`);
+        teardowns.push(`    this.heap.free(${argName}_ptr);`);
+        returns.push(`const ${argName} = this.heap.getI32(${argName}_ptr);`);
+        returnObj.push(argName);
+      } else {
+        // Simple input
+        inputs.push(`${argName}: number`);
+        calls.push(argName);
+      }
+      argIdx++;
+    }
+
+    // Retval
+    if (hasReturnCode) {
+      returns.unshift(`const returnCode = ret;`);
+      returnObj.unshift(`returnCode`);
+    }
+
+    // Build function body
+    wrapperLines.push(`  /**`);
+    wrapperLines.push(`   * ${func.name}`);
+    wrapperLines.push(`   */`);
+
+    if (returnObj.length === 0) {
+      wrapperLines.push(`  ${func.name}(${inputs.join(", ")}): void {`);
+    } else {
+      wrapperLines.push(
+        `  ${func.name}(${inputs.join(", ")}): { ${
+          returnObj.map((k) =>
+            k === "returnCode" ? "returnCode: number" : k + ": any"
+          ).join("; ")
+        } } {`,
+      );
+    }
+
+    wrapperLines.push(...setups);
+
+    if (hasReturnCode) {
+      wrapperLines.push(
+        `    const ret = this.exports.${func.name}(${calls.join(", ")});`,
+      );
+    } else {
+      wrapperLines.push(`    this.exports.${func.name}(${calls.join(", ")});`);
+    }
+
+    wrapperLines.push(...returns);
+    wrapperLines.push(...teardowns);
+
+    if (returnObj.length > 0) {
+      wrapperLines.push(`    return { ${returnObj.join(", ")} };`);
+    }
+
+    wrapperLines.push(`  }`);
+    wrapperLines.push(``);
+  }
+
+  await Deno.writeTextFile(WRAPPERS_PATH, wrapperLines.join("\n"));
+  console.log(`Generated ${WRAPPERS_PATH}`);
 }
 
 if (import.meta.main) {
