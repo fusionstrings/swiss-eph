@@ -20,3 +20,8 @@ Thumbs.db
 # Deno
 .deno/
 deno.lock.back
+
+# Submodule artifacts
+src/swisseph/*.o
+src/swisseph/libswe.a
+src/swisseph/swetest
