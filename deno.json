@@ -44,7 +44,7 @@
     "test:swetest": "deno test -A tests/swetest_comparison.test.ts",
     "bench": "deno bench -A tests/swetest_comparison.test.ts",
     "build:npm": "deno run -A scripts/build_npm.ts",
-    "test:node": "deno task build:npm && node --experimental-strip-types tests/e2e/node/test.ts",
+    "test:node": "deno task build:npm && node tests/e2e/node/test.ts",
     "test:browser": "deno run -A tests/e2e/browser/build.ts && deno run -A --unstable-net tests/e2e/browser/runner.ts",
     "test:cloudflare": "echo 'Run: cd tests/e2e/cloudflare && npx wrangler dev'",
     "test:all": "deno task test && deno task test:node && deno task test:browser",

@@ -23,6 +23,11 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
       - name: Setup WASI SDK
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-24/wasi-sdk-24.0-x86_64-linux.tar.gz
