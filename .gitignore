@@ -38,3 +38,6 @@ npm
 src/swisseph/*.o
 src/swisseph/libswe.a
 src/swisseph/swetest
+
+#Env
+.env*

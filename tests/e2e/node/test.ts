@@ -4,8 +4,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const wasmPath = join(__dirname, "../../../npm/esm/libswephe.wasm");
-const epheDir = join(__dirname, "../../../src/swisseph/ephe");
+const wasmPath = join(__dirname, "../../../npm/wasm/libswephe.wasm");
+const epheDir = join(__dirname, "../../../vendor/swisseph/ephe");
 
 // Golden Values from tests/fixtures/golden_values.ts
 const TEST_JD = 2461054.5;
@@ -138,6 +138,38 @@ async function run() {
       "COMPREHENSIVENESS CHECK PASSED: All tests match golden values at 1e-11 precision.",
     );
   }
+
+  console.log("\nTest 4: Explicit Moshier Mode (SEFLG_MOSEPH)");
+  const iflagMoshier = Constants.SEFLG_MOSEPH | Constants.SEFLG_TRUEPOS |
+    Constants.SEFLG_NOABERR | Constants.SEFLG_NONUT;
+
+  // Test Sun in Moshier mode
+  const { xx: moshierXx } = eph.swe_calc(
+    TEST_JD,
+    Constants.SE_SUN,
+    iflagMoshier,
+  );
+  const moshierDiff = Math.abs(moshierXx[0] - PLANET_POSITIONS.SE_SUN.lon);
+
+  // Moshier should be within ~0.0001 degrees of the high-precision value for Sun
+  if (moshierDiff < 1e-4) {
+    console.log(
+      `  ✓ Moshier Sun: ${moshierXx[0].toFixed(6)}° (diff: ${
+        moshierDiff.toExponential(2)
+      })`,
+    );
+    passed++;
+  } else {
+    console.error(
+      `  ✗ Moshier Sun failed tolerance: ${
+        moshierXx[0]
+      } (diff: ${moshierDiff})`,
+    );
+    failed++;
+  }
+
+  // Check failed again after Test 4
+  if (failed > 0) process.exit(1);
 }
 
 run().catch((err) => {

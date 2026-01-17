@@ -1,9 +1,9 @@
 import { assertAlmostEquals, assertEquals } from "@std/assert";
-import { load } from "./mod.ts";
-import { Constants } from "./src/swisseph_api.generated.ts";
+import { load } from "../mod.ts";
+import { Constants } from "../generated/swisseph_api.generated.ts";
 
-const EPHE_PATH = "./src/swisseph/ephe";
-const SWETEST_PATH = "./src/swisseph/swetest";
+const EPHE_PATH = "./vendor/swisseph/ephe";
+const SWETEST_PATH = "./vendor/swisseph/swetest";
 
 async function runNativeSwetest(args: string[]): Promise<string> {
   const command = new Deno.Command(SWETEST_PATH, {

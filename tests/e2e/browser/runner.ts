@@ -27,7 +27,9 @@ console.log(`Server running on http://localhost:${port}`);
     (msg: { text: () => string }) => console.log("BROWSER:", msg.text()),
   );
 
-  await page.goto(`http://localhost:${port}/tests/e2e/browser/index.html`);
+  await page.goto(
+    `http://localhost:${port}/tests/e2e/browser/index_artifact.html`,
+  );
 
   // Wait for result
   try {

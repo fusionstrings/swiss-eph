@@ -2,8 +2,28 @@ import { build, emptyDir } from "https://deno.land/x/dnt@0.40.0/mod.ts";
 
 await emptyDir("./npm");
 
+// Ensure browser wrapper exists before building
+try {
+  await Deno.stat("./browser/wrapper.ts");
+} catch {
+  console.log("Browser wrapper not found. Running build:browser...");
+  const cmd = new Deno.Command("deno", {
+    args: ["task", "build:browser"],
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+  const { success } = await cmd.output();
+  if (!success) {
+    console.error("Failed to build browser artifact.");
+    Deno.exit(1);
+  }
+}
+
 await build({
-  entryPoints: ["./mod.ts"],
+  entryPoints: [
+    { name: ".", path: "./mod.ts" },
+    { name: "./browser", path: "./browser/wrapper.ts" },
+  ],
   outDir: "./npm",
   typeCheck: false,
   test: false,
@@ -33,14 +53,19 @@ await build({
     bugs: {
       url: "https://github.com/fusionstrings/swisseph-wasi/issues",
     },
+    exports: {
+      "./wasm": "./wasm/libswephe.wasm",
+    },
   },
   compilerOptions: {
     lib: ["ES2021", "DOM"],
   },
   postBuild() {
     try {
-      Deno.copyFileSync("libswephe.wasm", "npm/esm/libswephe.wasm");
-      Deno.copyFileSync("libswephe.wasm", "npm/script/libswephe.wasm");
+      // WASM
+      Deno.mkdirSync("npm/wasm", { recursive: true });
+      Deno.copyFileSync("generated/libswephe.wasm", "npm/wasm/libswephe.wasm");
+
       Deno.copyFileSync("README.md", "npm/README.md");
       Deno.copyFileSync("LICENSE", "npm/LICENSE");
       console.log("WASM file and documentation copied successfully.");

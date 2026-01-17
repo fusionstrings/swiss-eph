@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
     double deltat, sidtime, ayanamsa;
     
     /* Set ephemeris path */
-    swe_set_ephe_path("../src/swisseph/ephe");
+    swe_set_ephe_path("../vendor/swisseph/ephe");
     
     /* Standard flags */
     iflag = SEFLG_SWIEPH | SEFLG_TRUEPOS | SEFLG_NOABERR | SEFLG_NONUT;

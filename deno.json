@@ -7,9 +7,20 @@
     ".": "./mod.ts",
     "./bridge": "./src/bridge.ts",
     "./wasi": "./src/wasi.ts",
-    "./constants": "./src/swisseph_api.generated.ts"
+    "./constants": "./generated/swisseph_api.generated.ts",
+    "./browser": "./browser/wrapper.ts",
+    "./wasm": "./generated/libswephe.wasm"
   },
   "publish": {
+    "include": [
+      "mod.ts",
+      "README.md",
+      "LICENSE",
+      "LICENSE",
+      "src/**/*.ts",
+      "browser/wrapper.ts",
+      "libswephe.wasm"
+    ],
     "exclude": [
       ".github",
       ".vscode",
@@ -17,33 +28,36 @@
       "bindings",
       "npm",
       "scripts",
-      "src/swisseph",
       "tests",
       "toolchain",
       "Makefile",
       "*.c",
-      "generated_wrappers.ts",
-      "test_suite.ts"
+      "generated_wrappers.ts"
     ]
   },
   "tasks": {
     "setup": "deno run -A scripts/setup_toolchain.ts",
     "build:wasm": "make -j4",
     "check:header": "deno run -A scripts/codegen.ts",
-    "test": "deno test -A test_suite.ts tests/swetest_comparison.test.ts",
-    "test:deno": "deno test -A test_suite.ts tests/swetest_comparison.test.ts",
+    "test": "deno test -A tests/test_suite.ts tests/swetest_comparison.test.ts",
+    "test:deno": "deno test -A tests/test_suite.ts tests/swetest_comparison.test.ts",
     "test:swetest": "deno test -A tests/swetest_comparison.test.ts",
     "bench": "deno bench -A tests/swetest_comparison.test.ts",
     "build:npm": "deno run -A scripts/build_npm.ts",
     "test:node": "deno task build:npm && node --experimental-strip-types tests/e2e/node/test.ts",
-    "test:browser": "deno run -A --unstable-net tests/e2e/browser/runner.ts",
+    "test:browser": "deno run -A tests/e2e/browser/build.ts && deno run -A --unstable-net tests/e2e/browser/runner.ts",
     "test:cloudflare": "echo 'Run: cd tests/e2e/cloudflare && npx wrangler dev'",
-    "test:all": "deno task test && deno task test:node && deno task test:browser"
+    "test:all": "deno task test && deno task test:node && deno task test:browser",
+    "check-version": "deno run -A scripts/check_version.ts",
+    "bump-version": "deno run -A scripts/version_bump.ts",
+    "build:browser": "deno run -A scripts/build_browser.ts"
   },
   "imports": {
     "@std/fs": "jsr:@std/fs@^0.211.0",
     "@std/path": "jsr:@std/path@^0.211.0",
     "@std/io": "jsr:@std/io@^0.211.0",
-    "@std/assert": "jsr:@std/assert@^0.211.0"
+    "@std/assert": "jsr:@std/assert@^0.211.0",
+    "@std/encoding": "jsr:@std/encoding@^0.211.0",
+    "esbuild": "npm:esbuild@0.20.0"
   }
 }

@@ -1,8 +1,8 @@
 import { assert, assertAlmostEquals } from "@std/assert";
 import { load } from "../mod.ts";
-import { Constants } from "../src/swisseph_api.generated.ts";
+import { Constants } from "../generated/swisseph_api.generated.ts";
 
-const EPHE_PATH = "./src/swisseph/ephe";
+const EPHE_PATH = "./vendor/swisseph/ephe";
 
 // Golden Values for 2026-01-14 20:44 UT
 // Generated via native swetest with -true -noaberr -nonut flags

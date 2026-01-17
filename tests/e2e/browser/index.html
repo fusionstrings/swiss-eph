@@ -78,7 +78,7 @@
         try {
           // 1. Load WASM
           statusEl.textContent = "Loading WASM...";
-          const wasmUrl = "../../../libswephe.wasm";
+          const wasmUrl = "../../../generated/libswephe.wasm";
           const wasmResp = await fetch(wasmUrl);
           const wasmBytes = await wasmResp.arrayBuffer();
           const module = await WebAssembly.compile(wasmBytes);
@@ -96,7 +96,7 @@
             try {
               log(`Fetching ${file}...`);
               const resp = await fetch(
-                `../../../src/swisseph/ephe/${file}`,
+                `../../../vendor/swisseph/ephe/${file}`,
               );
               if (!resp.ok) {
                 throw new Error("Fetch failed: " + resp.status);

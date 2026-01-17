@@ -1,4 +1,4 @@
-import type { SwissEphExports } from "./swisseph_api.generated.ts";
+import type { SwissEphExports } from "../generated/swisseph_api.generated.ts";
 
 export interface WasmExports extends SwissEphExports {
   malloc(size: number): number;

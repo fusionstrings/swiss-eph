@@ -32,7 +32,7 @@ export default {
       // we'll check against a 1e-6 (Moshier) tolerance.
       const TOLERANCE_MOSHIER = 1e-5;
 
-      const iflag = Constants.SEFLG_SWIEPH | Constants.SEFLG_TRUEPOS |
+      const iflag = Constants.SEFLG_MOSEPH | Constants.SEFLG_TRUEPOS |
         Constants.SEFLG_NOABERR | Constants.SEFLG_NONUT;
 
       for (const [key, golden] of Object.entries(PLANET_POSITIONS)) {

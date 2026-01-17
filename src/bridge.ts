@@ -1,8 +1,8 @@
 import { WASI } from "./wasi.ts";
 import type { WasmExports } from "./heap.ts";
 import { WasmHeap } from "./heap.ts";
-import { Constants } from "./swisseph_api.generated.ts";
-import type { SwissEphExports } from "./swisseph_api.generated.ts";
+import { Constants } from "../generated/swisseph_api.generated.ts";
+import type { SwissEphExports } from "../generated/swisseph_api.generated.ts";
 
 export { Constants };
 
@@ -2696,7 +2696,8 @@ export async function load(
   if (wasmSource instanceof Uint8Array) {
     bytes = wasmSource;
   } else {
-    const url = wasmSource || new URL("../libswephe.wasm", import.meta.url);
+    const url = wasmSource ||
+      new URL("../generated/libswephe.wasm", import.meta.url);
     if (typeof Deno !== "undefined") {
       bytes = await Deno.readFile(
         url instanceof URL ? url : new URL(url, import.meta.url),

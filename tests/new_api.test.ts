@@ -1,8 +1,8 @@
 import { assert, assertEquals } from "@std/assert";
 import { load } from "../mod.ts";
-import { Constants } from "../src/swisseph_api.generated.ts";
+import { Constants } from "../generated/swisseph_api.generated.ts";
 
-const EPHE_PATH = "./src/swisseph/ephe";
+const EPHE_PATH = "./vendor/swisseph/ephe";
 
 Deno.test("New API: Solar Eclipse Global", async () => {
   const eph = await load({ ephePath: EPHE_PATH });

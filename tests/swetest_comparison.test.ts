@@ -14,7 +14,7 @@
 
 import { assertAlmostEquals } from "@std/assert";
 import { load } from "../mod.ts";
-import { Constants } from "../src/swisseph_api.generated.ts";
+import { Constants } from "../generated/swisseph_api.generated.ts";
 import {
   AYANAMSA_VALUES,
   DELTA_T,
@@ -39,7 +39,7 @@ import {
   type TestResult,
 } from "./fixtures/test_utils.ts";
 
-const EPHE_PATH = "./src/swisseph/ephe";
+const EPHE_PATH = "./vendor/swisseph/ephe";
 
 // Collect results for artifact generation
 const allResults: TestResult[] = [];
@@ -335,11 +335,11 @@ Deno.test("Swetest Comparison: Edge Cases", async () => {
 
     allResults.push({
       name: `Edge: ${caseName}`,
-      passed: diff <= TOLERANCES.MOSHIER_FALLBACK,
+      passed: diff <= 1e-4,
       expected: value.sun_lon,
       actual: xx[0],
       diff,
-      tolerance: TOLERANCES.MOSHIER_FALLBACK,
+      tolerance: 1e-4,
       timestamp: new Date().toISOString(),
     });
 

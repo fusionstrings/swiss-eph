@@ -6,6 +6,7 @@
     "jsr:@std/assert@0.211": "0.211.0",
     "jsr:@std/assert@~0.213.1": "0.213.1",
     "jsr:@std/cli@^1.0.25": "1.0.25",
+    "jsr:@std/encoding@0.211": "0.211.0",
     "jsr:@std/encoding@0.213": "0.213.1",
     "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/fmt@0.211": "0.211.0",
@@ -19,6 +20,7 @@
     "jsr:@std/jsonc@0.213": "0.213.1",
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.6": "1.0.6",
+    "jsr:@std/path@*": "1.1.4",
     "jsr:@std/path@0.211": "0.211.0",
     "jsr:@std/path@0.213": "0.213.1",
     "jsr:@std/path@^1.1.4": "1.1.4",
@@ -48,6 +50,9 @@
     },
     "@std/cli@1.0.25": {
       "integrity": "1f85051b370c97a7a9dfc6ba626e7ed57a91bea8c081597276d1e78d929d8c91"
+    },
+    "@std/encoding@0.211.0": {
+      "integrity": "70a67d694838f81fb6afee736b138490a9ac28552ea8202481a1434b367fa8ab"
     },
     "@std/encoding@0.213.1": {
       "integrity": "fcbb6928713dde941a18ca5db88ca1544d0755ec8fb20fe61e2dc8144b390c62"
@@ -1066,9 +1071,11 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@0.211",
+      "jsr:@std/encoding@0.211",
       "jsr:@std/fs@0.211",
       "jsr:@std/io@0.211",
-      "jsr:@std/path@0.211"
+      "jsr:@std/path@0.211",
+      "npm:esbuild@0.20.0"
     ]
   }
 }
