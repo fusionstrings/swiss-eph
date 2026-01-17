@@ -39,8 +39,14 @@ export class WASI {
             const buf_len = view.getUint32(ptr + 4, true);
             if (fd === 1 || fd === 2) {
               const buf = new Uint8Array(this.memory.buffer, buf_ptr, buf_len);
-              if (fd === 1) Deno.stdout.writeSync(buf);
-              else Deno.stderr.writeSync(buf);
+              if (typeof Deno !== "undefined") {
+                if (fd === 1) Deno.stdout.writeSync(buf);
+                else Deno.stderr.writeSync(buf);
+              } else {
+                const text = new TextDecoder().decode(buf);
+                if (fd === 1) console.log(text);
+                else console.error(text);
+              }
             }
             total += buf_len;
           }

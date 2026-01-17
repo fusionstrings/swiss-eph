@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>SwissEph WASI Browser Test</title>
+    <link rel="icon" href="data:,">
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        color: #333;
+      }
+      pre {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 15px;
+        border-radius: 6px;
+        overflow-x: auto;
+      }
+      .pass {
+        color: #4ec9b0;
+        font-weight: bold;
+      }
+      .fail {
+        color: #f44747;
+        font-weight: bold;
+      }
+      .header {
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>SwissEph WASI Comprehensive Browser Test</h1>
+      <div id="status">Initializing...</div>
+    </div>
+    <div id="output" style="display: none"></div>
+    <pre id="log"></pre>
+
+    <script type="module">
+      import {
+        Constants,
+        SwissEph,
+      } from "../../../dist/swisseph.bundle.js";
+
+      // Golden Values (Embedded for portability)
+      const TEST_JD = 2461054.5;
+      const PLANET_POSITIONS = {
+        SE_SUN: { lon: 293.81730274152, name: "Sun" },
+        SE_MOON: { lon: 240.20452450742, name: "Moon" },
+        SE_MERCURY: { lon: 289.02458791570, name: "Mercury" },
+        SE_VENUS: { lon: 295.57017792959, name: "Venus" },
+        SE_MARS: { lon: 292.71374057712, name: "Mars" },
+        SE_JUPITER: { lon: 109.61279509653, name: "Jupiter" },
+        SE_SATURN: { lon: 357.05296949413, name: "Saturn" },
+        SE_URANUS: { lon: 57.64833150106, name: "Uranus" },
+        SE_NEPTUNE: { lon: 359.71560716394, name: "Neptune" },
+        SE_PLUTO: { lon: 303.12665611932, name: "Pluto" },
+      };
+      const TOLERANCE = 1e-11;
+
+      const logEl = document.getElementById("log");
+      function log(msg, cls) {
+        const div = document.createElement("div");
+        if (cls) div.className = cls;
+        div.textContent = msg;
+        logEl.appendChild(div);
+        console.log("BROWSER:", msg);
+      }
+
+      async function run() {
+        const statusEl = document.getElementById("status");
+        const outputEl = document.getElementById("output");
+
+        try {
+          // 1. Load WASM
+          statusEl.textContent = "Loading WASM...";
+          const wasmUrl = "../../../libswephe.wasm";
+          const wasmResp = await fetch(wasmUrl);
+          const wasmBytes = await wasmResp.arrayBuffer();
+          const module = await WebAssembly.compile(wasmBytes);
+          const eph = new SwissEph(module);
+
+          log(
+            "✓ SwissEph WASM Loaded (Version: " + eph.swe_version() +
+              ")",
+          );
+
+          // 2. Mount Ephemeris
+          statusEl.textContent = "Mounting Ephemeris...";
+          const epheFiles = ["sepl_18.se1", "semo_18.se1"];
+          for (const file of epheFiles) {
+            try {
+              log(`Fetching ${file}...`);
+              const resp = await fetch(
+                `../../../src/swisseph/ephe/${file}`,
+              );
+              if (!resp.ok) {
+                throw new Error("Fetch failed: " + resp.status);
+              }
+              const bytes = await resp.arrayBuffer();
+              eph.mount(file, new Uint8Array(bytes));
+              log(`  ✓ Mounted ${file}`);
+            } catch (e) {
+              log(`  ! Error mounting ${file}: ${e.message}`, "fail");
+            }
+          }
+
+          // 3. Tests
+          statusEl.textContent = "Running Tests...";
+          let passed = 0;
+          let failed = 0;
+
+          const iflag = Constants.SEFLG_SWIEPH |
+            Constants.SEFLG_TRUEPOS |
+            Constants.SEFLG_NOABERR | Constants.SEFLG_NONUT;
+
+          log(
+            "\nTest 1: Planet Positions vs Golden Values (1e-11 Precision)",
+          );
+          for (
+            const [key, golden] of Object.entries(PLANET_POSITIONS)
+          ) {
+            const ipl = Constants[key];
+            const { xx } = eph.swe_calc(TEST_JD, ipl, iflag);
+            const diff = Math.abs(xx[0] - golden.lon);
+
+            if (diff <= TOLERANCE) {
+              log(
+                `  ✓ ${golden.name.padEnd(8)}: ${
+                  xx[0].toFixed(11)
+                }° (PASS)`,
+                "pass",
+              );
+              passed++;
+            } else {
+              log(
+                `  ✗ ${golden.name.padEnd(8)}: ${
+                  xx[0].toFixed(11)
+                }° (DIFF: ${diff.toExponential(2)})`,
+                "fail",
+              );
+              failed++;
+            }
+          }
+
+          log("\nTest 2: House Systems (Zurich)");
+          const { ascmc } = eph.swe_houses(
+            TEST_JD,
+            47.37,
+            8.54,
+            "P".charCodeAt(0),
+          );
+          if (ascmc[0] > 0) {
+            log(`  ✓ Placidus ASC: ${ascmc[0].toFixed(4)}°`, "pass");
+            passed++;
+          } else {
+            log(`  ✗ House calculation failed`, "fail");
+            failed++;
+          }
+
+          if (failed === 0) {
+            statusEl.textContent = "✓ ALL TESTS PASSED (" + passed +
+              ")";
+            statusEl.className = "pass";
+            outputEl.textContent = "PASS";
+          } else {
+            statusEl.textContent = "✗ FAILED (" + failed + " failures)";
+            statusEl.className = "fail";
+            outputEl.textContent = "FAIL";
+          }
+        } catch (err) {
+          log("CRITICAL ERROR: " + err.message, "fail");
+          statusEl.textContent = "CRITICAL ERROR";
+          outputEl.textContent = "ERROR: " + err.message;
+        }
+      }
+
+      run();
+    </script>
+  </body>
+</html>

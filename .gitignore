@@ -1,5 +1,17 @@
 # Build artifacts
 libswephe.wasm
+dist/
+
+# Generated files (codegen.ts)
+bindings/
+src/swisseph_api.generated.ts
+
+# Test artifacts
+artifacts/
+output.txt
+
+# Compiled binaries
+scripts/swetest_enhanced
 
 # Toolchain
 toolchain/
@@ -20,6 +32,7 @@ Thumbs.db
 # Deno
 .deno/
 deno.lock.back
+npm
 
 # Submodule artifacts
 src/swisseph/*.o

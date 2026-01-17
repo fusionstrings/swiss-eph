@@ -6,7 +6,15 @@
     "setup": "deno run -A scripts/setup_toolchain.ts",
     "build:wasm": "make -j4",
     "check:header": "deno run -A scripts/codegen.ts",
-    "test": "deno test -A test_suite.ts"
+    "test": "deno test -A test_suite.ts tests/swetest_comparison.test.ts",
+    "test:deno": "deno test -A test_suite.ts tests/swetest_comparison.test.ts",
+    "test:swetest": "deno test -A tests/swetest_comparison.test.ts",
+    "bench": "deno bench -A tests/swetest_comparison.test.ts",
+    "build:npm": "deno run -A scripts/build_npm.ts",
+    "test:node": "deno task build:npm && node --experimental-strip-types tests/e2e/node/test.ts",
+    "test:browser": "deno run -A --unstable-net tests/e2e/browser/runner.ts",
+    "test:cloudflare": "echo 'Run: cd tests/e2e/cloudflare && npx wrangler dev'",
+    "test:all": "deno task test && deno task test:node && deno task test:browser"
   },
   "imports": {
     "@std/fs": "jsr:@std/fs@^0.211.0",
