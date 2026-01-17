@@ -4,6 +4,177 @@ import { WasmHeap } from "./heap.ts";
 import { Constants } from "../generated/swisseph_api.generated.ts";
 import type { SwissEphExports } from "../generated/swisseph_api.generated.ts";
 
+// Interface definitions for function return values
+export interface AzAlt {
+  returnCode: number;
+  dmax: number[];
+  dmin: number[];
+  dtrue: number[];
+  serr: string;
+}
+
+export interface TimeEqu {
+  returnCode: number;
+  te: number;
+  serr: string;
+}
+
+export interface LmtLat {
+  returnCode: number;
+  tjd_lat: number;
+  serr: string;
+}
+
+export interface Lmt {
+  returnCode: number;
+  tjd_lmt: number;
+  serr: string;
+}
+
+export interface CotransSp {
+  xpn: number[];
+}
+
+export interface SplitDeg {
+  ideg: number;
+  imin: number;
+  isec: number;
+  dsecfr: number;
+  isgn: number;
+}
+
+export interface NodAps {
+  returnCode: number;
+  xnasc: number[];
+  xndsc: number[];
+  xperi: number[];
+  xaphe: number[];
+  serr: string;
+}
+
+export interface DretSerr {
+  returnCode: number;
+  dret: number[];
+  serr: string;
+}
+
+export interface DarrSerr {
+  returnCode: number;
+  darr: number[];
+  serr: string;
+}
+
+export interface TretAttrSerr {
+  returnCode: number;
+  tret: number[];
+  attr: number[];
+  serr: string;
+}
+
+export interface TretSerr {
+  returnCode: number;
+  tret: number[];
+  serr: string;
+}
+
+export interface AttrSerr {
+  returnCode: number;
+  attr: number[];
+  serr: string;
+}
+
+export interface DgeoDretSerr {
+  returnCode: number;
+  dgeo: number[];
+  dret: number[];
+  serr: string;
+}
+
+export interface XxretSerr {
+  returnCode: number;
+  xxret: number[];
+  serr: string;
+}
+
+export interface SerrOnly {
+  returnCode: number;
+  serr: string;
+}
+
+export interface Dret {
+  returnCode: number;
+  dret: number[];
+}
+
+export interface XlonXlatSerr {
+  returnCode: number;
+  xlon: number[];
+  xlat: number[];
+  serr: string;
+}
+
+export interface JdCrossSerr {
+  returnCode: number;
+  jd_cross: number[];
+  serr: string;
+}
+
+export interface HousesEx2 {
+  returnCode: number;
+  cusps: number[];
+  ascmc: number[];
+  cusp_speed: number[];
+  ascmc_speed: number[];
+  serr: string;
+}
+
+export interface DgsectSerr {
+  returnCode: number;
+  dgsect: number[];
+  serr: string;
+}
+
+export interface DGreg {
+  returnCode: number;
+  iyear_out: number[];
+  imonth_out: number[];
+  iday_out: number[];
+  ihour_out: number[];
+  imin_out: number[];
+  dsec_out: number[];
+}
+
+export interface MagSerr {
+  returnCode: number;
+  mag: number[];
+  serr: string;
+}
+
+export interface OrbitalSerr {
+  returnCode: number;
+  dret: number[];
+  serr: string;
+}
+
+export interface UtimeTjd {
+  returnCode: number;
+  utime: number[];
+  tjd: number[];
+}
+
+export interface FileDat {
+  returnCode: number;
+  tfstart: number[];
+  tfend: number[];
+  denum: number;
+}
+
+export interface XxSerr {
+  returnCode: number;
+  xx: number[];
+  serr: string;
+}
+
 export { Constants };
 
 /**
@@ -1150,7 +1321,7 @@ export class SwissEph {
     ObjectName: string,
     TypeEvent: number,
     iflag: number,
-  ): { returnCode: number; dret: any; serr: any } {
+  ): DretSerr {
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
       geopos_ptr,
@@ -1175,7 +1346,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const dret = this.heap.getF64(dret_ptr, 6).slice();
+    const dret = Array.from(this.heap.getF64(dret_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(geopos_ptr);
     this.heap.free(datm_ptr);
@@ -1197,7 +1368,7 @@ export class SwissEph {
     ObjectName: string,
     TypeEvent: number,
     helflag: number,
-  ): { returnCode: number; darr: any; serr: any } {
+  ): DarrSerr {
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
       geopos_ptr,
@@ -1222,7 +1393,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const darr = this.heap.getF64(darr_ptr, 6).slice();
+    const darr = Array.from(this.heap.getF64(darr_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(geopos_ptr);
     this.heap.free(datm_ptr);
@@ -1243,7 +1414,7 @@ export class SwissEph {
     dobs: number[],
     ObjectName: string,
     helflag: number,
-  ): { returnCode: number; dret: any; serr: any } {
+  ): DretSerr {
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
       geopos_ptr,
@@ -1267,7 +1438,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const dret = this.heap.getF64(dret_ptr, 6).slice();
+    const dret = Array.from(this.heap.getF64(dret_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(geopos_ptr);
     this.heap.free(datm_ptr);
@@ -1291,7 +1462,7 @@ export class SwissEph {
     azi_sun: number,
     azi_moon: number,
     alt_moon: number,
-  ): { returnCode: number; dgeo: any; dret: any; serr: any } {
+  ): DgeoDretSerr {
     const dgeo_ptr = this.heap.alloc(6 * 8);
     const datm_ptr = this.heap.alloc(6 * 8);
     this.heap.setU8(datm_ptr, new Uint8Array(new Float64Array(datm).buffer));
@@ -1314,8 +1485,8 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const dgeo = this.heap.getF64(dgeo_ptr, 6).slice();
-    const dret = this.heap.getF64(dret_ptr, 6).slice();
+    const dgeo = Array.from(this.heap.getF64(dgeo_ptr, 6).slice());
+    const dret = Array.from(this.heap.getF64(dret_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(dgeo_ptr);
     this.heap.free(datm_ptr);
@@ -1339,7 +1510,7 @@ export class SwissEph {
     azi_sun: number,
     azi_moon: number,
     alt_moon: number,
-  ): { returnCode: number; dgeo: any; dret: any; serr: any } {
+  ): DgeoDretSerr {
     const dgeo_ptr = this.heap.alloc(6 * 8);
     const datm_ptr = this.heap.alloc(6 * 8);
     this.heap.setU8(datm_ptr, new Uint8Array(new Float64Array(datm).buffer));
@@ -1363,8 +1534,8 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const dgeo = this.heap.getF64(dgeo_ptr, 6).slice();
-    const dret = this.heap.getF64(dret_ptr, 6).slice();
+    const dgeo = Array.from(this.heap.getF64(dgeo_ptr, 6).slice());
+    const dret = Array.from(this.heap.getF64(dret_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(dgeo_ptr);
     this.heap.free(datm_ptr);
@@ -1413,7 +1584,7 @@ export class SwissEph {
     ipl: number,
     iplctr: number,
     iflag: number,
-  ): { returnCode: number; xxret: any; serr: any } {
+  ): XxretSerr {
     const xxret_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_calc_pctr(
@@ -1425,7 +1596,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const xxret = this.heap.getF64(xxret_ptr, 6).slice();
+    const xxret = Array.from(this.heap.getF64(xxret_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(xxret_ptr);
     this.heap.free(serr_ptr);
@@ -1439,7 +1610,7 @@ export class SwissEph {
     x2cross: number,
     jd_et: number,
     flag: number,
-  ): { returnCode: number; serr: any } {
+  ): SerrOnly {
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_solcross(x2cross, jd_et, flag, serr_ptr);
     const returnCode = ret;
@@ -1455,7 +1626,7 @@ export class SwissEph {
     x2cross: number,
     jd_ut: number,
     flag: number,
-  ): { returnCode: number; serr: any } {
+  ): SerrOnly {
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_solcross_ut(x2cross, jd_ut, flag, serr_ptr);
     const returnCode = ret;
@@ -1471,7 +1642,7 @@ export class SwissEph {
     x2cross: number,
     jd_et: number,
     flag: number,
-  ): { returnCode: number; serr: any } {
+  ): SerrOnly {
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_mooncross(x2cross, jd_et, flag, serr_ptr);
     const returnCode = ret;
@@ -1487,7 +1658,7 @@ export class SwissEph {
     x2cross: number,
     jd_ut: number,
     flag: number,
-  ): { returnCode: number; serr: any } {
+  ): SerrOnly {
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_mooncross_ut(x2cross, jd_ut, flag, serr_ptr);
     const returnCode = ret;
@@ -1502,7 +1673,7 @@ export class SwissEph {
   swe_mooncross_node(
     jd_et: number,
     flag: number,
-  ): { returnCode: number; xlon: any; xlat: any; serr: any } {
+  ): XlonXlatSerr {
     const xlon_ptr = this.heap.alloc(6 * 8);
     const xlat_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
@@ -1514,8 +1685,8 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const xlon = this.heap.getF64(xlon_ptr, 6).slice();
-    const xlat = this.heap.getF64(xlat_ptr, 6).slice();
+    const xlon = Array.from(this.heap.getF64(xlon_ptr, 6).slice());
+    const xlat = Array.from(this.heap.getF64(xlat_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(xlon_ptr);
     this.heap.free(xlat_ptr);
@@ -1529,7 +1700,7 @@ export class SwissEph {
   swe_mooncross_node_ut(
     jd_ut: number,
     flag: number,
-  ): { returnCode: number; xlon: any; xlat: any; serr: any } {
+  ): XlonXlatSerr {
     const xlon_ptr = this.heap.alloc(6 * 8);
     const xlat_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
@@ -1541,8 +1712,8 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const xlon = this.heap.getF64(xlon_ptr, 6).slice();
-    const xlat = this.heap.getF64(xlat_ptr, 6).slice();
+    const xlon = Array.from(this.heap.getF64(xlon_ptr, 6).slice());
+    const xlat = Array.from(this.heap.getF64(xlat_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(xlon_ptr);
     this.heap.free(xlat_ptr);
@@ -1559,7 +1730,7 @@ export class SwissEph {
     jd_et: number,
     iflag: number,
     dir: number,
-  ): { returnCode: number; jd_cross: any; serr: any } {
+  ): JdCrossSerr {
     const jd_cross_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_helio_cross(
@@ -1572,7 +1743,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const jd_cross = this.heap.getF64(jd_cross_ptr, 6).slice();
+    const jd_cross = Array.from(this.heap.getF64(jd_cross_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(jd_cross_ptr);
     this.heap.free(serr_ptr);
@@ -1588,7 +1759,7 @@ export class SwissEph {
     jd_ut: number,
     iflag: number,
     dir: number,
-  ): { returnCode: number; jd_cross: any; serr: any } {
+  ): JdCrossSerr {
     const jd_cross_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_helio_cross_ut(
@@ -1601,7 +1772,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const jd_cross = this.heap.getF64(jd_cross_ptr, 6).slice();
+    const jd_cross = Array.from(this.heap.getF64(jd_cross_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(jd_cross_ptr);
     this.heap.free(serr_ptr);
@@ -1615,7 +1786,7 @@ export class SwissEph {
     star: string,
     tjd: number,
     iflag: number,
-  ): { returnCode: number; xx: any; serr: any } {
+  ): XxSerr {
     const star_ptr = this.heap.putString(star);
     const xx_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
@@ -1627,7 +1798,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const xx = this.heap.getF64(xx_ptr, 6).slice();
+    const xx = Array.from(this.heap.getF64(xx_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(star_ptr);
     this.heap.free(xx_ptr);
@@ -1642,7 +1813,7 @@ export class SwissEph {
     star: string,
     tjd_ut: number,
     iflag: number,
-  ): { returnCode: number; xx: any; serr: any } {
+  ): XxSerr {
     const star_ptr = this.heap.putString(star);
     const xx_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
@@ -1654,7 +1825,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const xx = this.heap.getF64(xx_ptr, 6).slice();
+    const xx = Array.from(this.heap.getF64(xx_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(star_ptr);
     this.heap.free(xx_ptr);
@@ -1665,13 +1836,13 @@ export class SwissEph {
   /**
    * swe_fixstar_mag
    */
-  swe_fixstar_mag(star: string): { returnCode: number; mag: any; serr: any } {
+  swe_fixstar_mag(star: string): MagSerr {
     const star_ptr = this.heap.putString(star);
     const mag_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_fixstar_mag(star_ptr, mag_ptr, serr_ptr);
     const returnCode = ret;
-    const mag = this.heap.getF64(mag_ptr, 6).slice();
+    const mag = Array.from(this.heap.getF64(mag_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(star_ptr);
     this.heap.free(mag_ptr);
@@ -1682,13 +1853,13 @@ export class SwissEph {
   /**
    * swe_fixstar2_mag
    */
-  swe_fixstar2_mag(star: string): { returnCode: number; mag: any; serr: any } {
+  swe_fixstar2_mag(star: string): MagSerr {
     const star_ptr = this.heap.putString(star);
     const mag_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_fixstar2_mag(star_ptr, mag_ptr, serr_ptr);
     const returnCode = ret;
-    const mag = this.heap.getF64(mag_ptr, 6).slice();
+    const mag = Array.from(this.heap.getF64(mag_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(star_ptr);
     this.heap.free(mag_ptr);
@@ -1722,8 +1893,8 @@ export class SwissEph {
    */
   swe_get_current_file_data(
     ifno: number,
-  ): { returnCode: number; tfstart: any; tfend: any; denum: any } {
-    const tfstart_ptr = this.heap.alloc(6 * 8);
+  ): FileDat {
+    const tfstart_ptr = this.heap.alloc(6 * 8); // Assuming 6 doubles? Original 6*8
     const tfend_ptr = this.heap.alloc(6 * 8);
     const denum_ptr = this.heap.alloc(4);
     const ret = this.exports.swe_get_current_file_data(
@@ -1733,8 +1904,8 @@ export class SwissEph {
       denum_ptr,
     );
     const returnCode = ret;
-    const tfstart = this.heap.getF64(tfstart_ptr, 6).slice();
-    const tfend = this.heap.getF64(tfend_ptr, 6).slice();
+    const tfstart = Array.from(this.heap.getF64(tfstart_ptr, 6).slice());
+    const tfend = Array.from(this.heap.getF64(tfend_ptr, 6).slice());
     const denum = this.heap.getI32(denum_ptr);
     this.heap.free(tfstart_ptr);
     this.heap.free(tfend_ptr);
@@ -1759,7 +1930,7 @@ export class SwissEph {
     year: number,
     arg4: number,
     c: number,
-  ): { returnCode: number; utime: any; tjd: any } {
+  ): UtimeTjd {
     const utime_ptr = this.heap.alloc(6 * 8);
     const tjd_ptr = this.heap.alloc(6 * 8);
     const ret = this.exports.swe_date_conversion(
@@ -1773,8 +1944,8 @@ export class SwissEph {
       tjd_ptr,
     );
     const returnCode = ret;
-    const utime = this.heap.getF64(utime_ptr, 6).slice();
-    const tjd = this.heap.getF64(tjd_ptr, 6).slice();
+    const utime = Array.from(this.heap.getF64(utime_ptr, 6).slice());
+    const tjd = Array.from(this.heap.getF64(tjd_ptr, 6).slice());
     this.heap.free(utime_ptr);
     this.heap.free(tjd_ptr);
     return { returnCode, utime, tjd };
@@ -1791,14 +1962,7 @@ export class SwissEph {
     imin: number,
     dsec: number,
     d_timezone: number,
-  ): {
-    iyear_out: any;
-    imonth_out: any;
-    iday_out: any;
-    ihour_out: any;
-    imin_out: any;
-    dsec_out: any;
-  } {
+  ): DGreg {
     const iyear_out_ptr = this.heap.alloc(4);
     const imonth_out_ptr = this.heap.alloc(4);
     const iday_out_ptr = this.heap.alloc(4);
@@ -1820,19 +1984,27 @@ export class SwissEph {
       imin_out_ptr,
       dsec_out_ptr,
     );
-    const iyear_out = this.heap.getI32(iyear_out_ptr);
-    const imonth_out = this.heap.getI32(imonth_out_ptr);
-    const iday_out = this.heap.getI32(iday_out_ptr);
-    const ihour_out = this.heap.getI32(ihour_out_ptr);
-    const imin_out = this.heap.getI32(imin_out_ptr);
-    const dsec_out = this.heap.getF64(dsec_out_ptr, 6).slice();
+    const iyear_out = Array.from([this.heap.getI32(iyear_out_ptr)]);
+    const imonth_out = Array.from([this.heap.getI32(imonth_out_ptr)]);
+    const iday_out = Array.from([this.heap.getI32(iday_out_ptr)]);
+    const ihour_out = Array.from([this.heap.getI32(ihour_out_ptr)]);
+    const imin_out = Array.from([this.heap.getI32(imin_out_ptr)]);
+    const dsec_out = Array.from(this.heap.getF64(dsec_out_ptr, 6).slice());
     this.heap.free(iyear_out_ptr);
     this.heap.free(imonth_out_ptr);
     this.heap.free(iday_out_ptr);
     this.heap.free(ihour_out_ptr);
     this.heap.free(imin_out_ptr);
     this.heap.free(dsec_out_ptr);
-    return { iyear_out, imonth_out, iday_out, ihour_out, imin_out, dsec_out };
+    return {
+      returnCode: 0,
+      iyear_out,
+      imonth_out,
+      iday_out,
+      ihour_out,
+      imin_out,
+      dsec_out,
+    };
   }
 
   /**
@@ -1844,14 +2016,7 @@ export class SwissEph {
     geolat: number,
     geolon: number,
     hsys: number,
-  ): {
-    returnCode: number;
-    cusps: any;
-    ascmc: any;
-    cusp_speed: any;
-    ascmc_speed: any;
-    serr: any;
-  } {
+  ): HousesEx2 {
     const cusps_ptr = this.heap.alloc(13 * 8);
     const ascmc_ptr = this.heap.alloc(10 * 8);
     const cusp_speed_ptr = this.heap.alloc(13 * 8);
@@ -1870,10 +2035,12 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const cusps = this.heap.getF64(cusps_ptr, 13).slice();
-    const ascmc = this.heap.getF64(ascmc_ptr, 10).slice();
-    const cusp_speed = this.heap.getF64(cusp_speed_ptr, 13).slice();
-    const ascmc_speed = this.heap.getF64(ascmc_speed_ptr, 10).slice();
+    const cusps = Array.from(this.heap.getF64(cusps_ptr, 13).slice());
+    const ascmc = Array.from(this.heap.getF64(ascmc_ptr, 10).slice());
+    const cusp_speed = Array.from(this.heap.getF64(cusp_speed_ptr, 13).slice());
+    const ascmc_speed = Array.from(
+      this.heap.getF64(ascmc_speed_ptr, 10).slice(),
+    );
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(cusps_ptr);
     this.heap.free(ascmc_ptr);
@@ -1891,14 +2058,7 @@ export class SwissEph {
     geolat: number,
     eps: number,
     hsys: number,
-  ): {
-    returnCode: number;
-    cusps: any;
-    ascmc: any;
-    cusp_speed: any;
-    ascmc_speed: any;
-    serr: any;
-  } {
+  ): HousesEx2 {
     const cusps_ptr = this.heap.alloc(13 * 8);
     const ascmc_ptr = this.heap.alloc(10 * 8);
     const cusp_speed_ptr = this.heap.alloc(13 * 8);
@@ -1916,10 +2076,12 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const cusps = this.heap.getF64(cusps_ptr, 13).slice();
-    const ascmc = this.heap.getF64(ascmc_ptr, 10).slice();
-    const cusp_speed = this.heap.getF64(cusp_speed_ptr, 13).slice();
-    const ascmc_speed = this.heap.getF64(ascmc_speed_ptr, 10).slice();
+    const cusps = Array.from(this.heap.getF64(cusps_ptr, 13).slice());
+    const ascmc = Array.from(this.heap.getF64(ascmc_ptr, 10).slice());
+    const cusp_speed = Array.from(this.heap.getF64(cusp_speed_ptr, 13).slice());
+    const ascmc_speed = Array.from(
+      this.heap.getF64(ascmc_speed_ptr, 10).slice(),
+    );
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(cusps_ptr);
     this.heap.free(ascmc_ptr);
@@ -1941,7 +2103,7 @@ export class SwissEph {
     geopos: number[],
     atpress: number,
     attemp: number,
-  ): { returnCode: number; dgsect: any; serr: any } {
+  ): DgsectSerr {
     const starname_ptr = this.heap.putString(starname);
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
@@ -1963,7 +2125,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const dgsect = this.heap.getF64(dgsect_ptr, 6).slice();
+    const dgsect = Array.from(this.heap.getF64(dgsect_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(starname_ptr);
     this.heap.free(geopos_ptr);
@@ -1979,7 +2141,7 @@ export class SwissEph {
     tjd: number,
     ifl: number,
     geopos: number[],
-  ): { returnCode: number; attr: any; serr: any } {
+  ): AttrSerr {
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
       geopos_ptr,
@@ -1995,7 +2157,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const attr = this.heap.getF64(attr_ptr, 20).slice();
+    const attr = Array.from(this.heap.getF64(attr_ptr, 20).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(geopos_ptr);
     this.heap.free(attr_ptr);
@@ -2012,7 +2174,7 @@ export class SwissEph {
     starname: string,
     ifl: number,
     geopos: number[],
-  ): { returnCode: number; attr: any; serr: any } {
+  ): AttrSerr {
     const starname_ptr = this.heap.putString(starname);
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
@@ -2031,7 +2193,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const attr = this.heap.getF64(attr_ptr, 20).slice();
+    const attr = Array.from(this.heap.getF64(attr_ptr, 20).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(starname_ptr);
     this.heap.free(geopos_ptr);
@@ -2047,7 +2209,7 @@ export class SwissEph {
     tjd: number,
     ifl: number,
     geopos: number[],
-  ): { returnCode: number; attr: any; serr: any } {
+  ): AttrSerr {
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
       geopos_ptr,
@@ -2063,7 +2225,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const attr = this.heap.getF64(attr_ptr, 20).slice();
+    const attr = Array.from(this.heap.getF64(attr_ptr, 20).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(geopos_ptr);
     this.heap.free(attr_ptr);
@@ -2079,7 +2241,7 @@ export class SwissEph {
     ifl: number,
     geopos: number[],
     backward: number,
-  ): { returnCode: number; tret: any; attr: any; serr: any } {
+  ): TretAttrSerr {
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
       geopos_ptr,
@@ -2098,8 +2260,8 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const tret = this.heap.getF64(tret_ptr, 10).slice();
-    const attr = this.heap.getF64(attr_ptr, 20).slice();
+    const tret = Array.from(this.heap.getF64(tret_ptr, 10).slice());
+    const attr = Array.from(this.heap.getF64(attr_ptr, 20).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(geopos_ptr);
     this.heap.free(tret_ptr);
@@ -2118,7 +2280,7 @@ export class SwissEph {
     ifl: number,
     geopos: number[],
     backward: number,
-  ): { returnCode: number; tret: any; attr: any; serr: any } {
+  ): TretAttrSerr {
     const starname_ptr = this.heap.putString(starname);
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
@@ -2140,8 +2302,8 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const tret = this.heap.getF64(tret_ptr, 10).slice();
-    const attr = this.heap.getF64(attr_ptr, 20).slice();
+    const tret = Array.from(this.heap.getF64(tret_ptr, 10).slice());
+    const attr = Array.from(this.heap.getF64(attr_ptr, 20).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(starname_ptr);
     this.heap.free(geopos_ptr);
@@ -2161,7 +2323,7 @@ export class SwissEph {
     ifl: number,
     ifltype: number,
     backward: number,
-  ): { returnCode: number; tret: any; serr: any } {
+  ): TretSerr {
     const starname_ptr = this.heap.putString(starname);
     const tret_ptr = this.heap.alloc(10 * 8);
     const serr_ptr = this.heap.alloc(256);
@@ -2176,7 +2338,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const tret = this.heap.getF64(tret_ptr, 10).slice();
+    const tret = Array.from(this.heap.getF64(tret_ptr, 10).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(starname_ptr);
     this.heap.free(tret_ptr);
@@ -2191,7 +2353,7 @@ export class SwissEph {
     tjd_ut: number,
     ifl: number,
     geopos: number[],
-  ): { returnCode: number; attr: any; serr: any } {
+  ): AttrSerr {
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
       geopos_ptr,
@@ -2207,7 +2369,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const attr = this.heap.getF64(attr_ptr, 20).slice();
+    const attr = Array.from(this.heap.getF64(attr_ptr, 20).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(geopos_ptr);
     this.heap.free(attr_ptr);
@@ -2223,7 +2385,7 @@ export class SwissEph {
     ifl: number,
     geopos: number[],
     backward: number,
-  ): { returnCode: number; tret: any; attr: any; serr: any } {
+  ): TretAttrSerr {
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
       geopos_ptr,
@@ -2242,8 +2404,8 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const tret = this.heap.getF64(tret_ptr, 10).slice();
-    const attr = this.heap.getF64(attr_ptr, 20).slice();
+    const tret = Array.from(this.heap.getF64(tret_ptr, 10).slice());
+    const attr = Array.from(this.heap.getF64(attr_ptr, 20).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(geopos_ptr);
     this.heap.free(tret_ptr);
@@ -2259,12 +2421,12 @@ export class SwissEph {
     tjd: number,
     ipl: number,
     iflag: number,
-  ): { returnCode: number; attr: any; serr: any } {
+  ): AttrSerr {
     const attr_ptr = this.heap.alloc(20 * 8);
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_pheno(tjd, ipl, iflag, attr_ptr, serr_ptr);
     const returnCode = ret;
-    const attr = this.heap.getF64(attr_ptr, 20).slice();
+    const attr = Array.from(this.heap.getF64(attr_ptr, 20).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(attr_ptr);
     this.heap.free(serr_ptr);
@@ -2281,7 +2443,7 @@ export class SwissEph {
     attemp: number,
     lapse_rate: number,
     calc_flag: number,
-  ): { returnCode: number; dret: any } {
+  ): Dret {
     const dret_ptr = this.heap.alloc(6 * 8);
     const ret = this.exports.swe_refrac_extended(
       inalt,
@@ -2293,7 +2455,7 @@ export class SwissEph {
       dret_ptr,
     );
     const returnCode = ret;
-    const dret = this.heap.getF64(dret_ptr, 6).slice();
+    const dret = Array.from(this.heap.getF64(dret_ptr, 6).slice());
     this.heap.free(dret_ptr);
     return { returnCode, dret };
   }
@@ -2318,7 +2480,7 @@ export class SwissEph {
     atpress: number,
     attemp: number,
     horhgt: number,
-  ): { returnCode: number; tret: any; serr: any } {
+  ): TretSerr {
     const starname_ptr = this.heap.putString(starname);
     const geopos_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(
@@ -2341,7 +2503,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const tret = this.heap.getF64(tret_ptr, 10).slice();
+    const tret = Array.from(this.heap.getF64(tret_ptr, 10).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(starname_ptr);
     this.heap.free(geopos_ptr);
@@ -2358,14 +2520,7 @@ export class SwissEph {
     ipl: number,
     iflag: number,
     method: number,
-  ): {
-    returnCode: number;
-    xnasc: any;
-    xndsc: any;
-    xperi: any;
-    xaphe: any;
-    serr: any;
-  } {
+  ): NodAps {
     const xnasc_ptr = this.heap.alloc(6 * 8);
     const xndsc_ptr = this.heap.alloc(6 * 8);
     const xperi_ptr = this.heap.alloc(6 * 8);
@@ -2383,10 +2538,10 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const xnasc = this.heap.getF64(xnasc_ptr, 6).slice();
-    const xndsc = this.heap.getF64(xndsc_ptr, 6).slice();
-    const xperi = this.heap.getF64(xperi_ptr, 6).slice();
-    const xaphe = this.heap.getF64(xaphe_ptr, 6).slice();
+    const xnasc = Array.from(this.heap.getF64(xnasc_ptr, 6).slice());
+    const xndsc = Array.from(this.heap.getF64(xndsc_ptr, 6).slice());
+    const xperi = Array.from(this.heap.getF64(xperi_ptr, 6).slice());
+    const xaphe = Array.from(this.heap.getF64(xaphe_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(xnasc_ptr);
     this.heap.free(xndsc_ptr);
@@ -2403,7 +2558,7 @@ export class SwissEph {
     tjd_et: number,
     ipl: number,
     iflag: number,
-  ): { returnCode: number; dmax: any; dmin: any; dtrue: any; serr: any } {
+  ): AzAlt {
     const dmax_ptr = this.heap.alloc(6 * 8);
     const dmin_ptr = this.heap.alloc(6 * 8);
     const dtrue_ptr = this.heap.alloc(6 * 8);
@@ -2418,9 +2573,9 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const dmax = this.heap.getF64(dmax_ptr, 6).slice();
-    const dmin = this.heap.getF64(dmin_ptr, 6).slice();
-    const dtrue = this.heap.getF64(dtrue_ptr, 6).slice();
+    const dmax = Array.from(this.heap.getF64(dmax_ptr, 6).slice());
+    const dmin = Array.from(this.heap.getF64(dmin_ptr, 6).slice());
+    const dtrue = Array.from(this.heap.getF64(dtrue_ptr, 6).slice());
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(dmax_ptr);
     this.heap.free(dmin_ptr);
@@ -2432,12 +2587,12 @@ export class SwissEph {
   /**
    * swe_time_equ
    */
-  swe_time_equ(tjd: number): { returnCode: number; te: any; serr: any } {
+  swe_time_equ(tjd: number): TimeEqu {
     const te_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_time_equ(tjd, te_ptr, serr_ptr);
     const returnCode = ret;
-    const te = this.heap.getF64(te_ptr, 6).slice();
+    const te = this.heap.getF64(te_ptr, 6)[0]; // Assuming te is single value despite alloc size
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(te_ptr);
     this.heap.free(serr_ptr);
@@ -2450,7 +2605,7 @@ export class SwissEph {
   swe_lmt_to_lat(
     tjd_lmt: number,
     geolon: number,
-  ): { returnCode: number; tjd_lat: any; serr: any } {
+  ): LmtLat {
     const tjd_lat_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_lmt_to_lat(
@@ -2460,7 +2615,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const tjd_lat = this.heap.getF64(tjd_lat_ptr, 6).slice();
+    const tjd_lat = this.heap.getF64(tjd_lat_ptr, 6)[0];
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(tjd_lat_ptr);
     this.heap.free(serr_ptr);
@@ -2473,7 +2628,7 @@ export class SwissEph {
   swe_lat_to_lmt(
     tjd_lat: number,
     geolon: number,
-  ): { returnCode: number; tjd_lmt: any; serr: any } {
+  ): Lmt {
     const tjd_lmt_ptr = this.heap.alloc(6 * 8);
     const serr_ptr = this.heap.alloc(256);
     const ret = this.exports.swe_lat_to_lmt(
@@ -2483,7 +2638,7 @@ export class SwissEph {
       serr_ptr,
     );
     const returnCode = ret;
-    const tjd_lmt = this.heap.getF64(tjd_lmt_ptr, 6).slice();
+    const tjd_lmt = this.heap.getF64(tjd_lmt_ptr, 6)[0];
     const serr = this.heap.getString(serr_ptr);
     this.heap.free(tjd_lmt_ptr);
     this.heap.free(serr_ptr);
@@ -2500,12 +2655,13 @@ export class SwissEph {
   /**
    * swe_cotrans_sp
    */
-  swe_cotrans_sp(xpo: number[], eps: number): { xpn: any } {
+  swe_cotrans_sp(xpo: number[], eps: number): CotransSp {
     const xpo_ptr = this.heap.alloc(3 * 8);
     this.heap.setU8(xpo_ptr, new Uint8Array(new Float64Array(xpo).buffer));
     const xpn_ptr = this.heap.alloc(6 * 8);
     this.exports.swe_cotrans_sp(xpo_ptr, xpn_ptr, eps);
-    const xpn = this.heap.getF64(xpn_ptr, 6).slice();
+    const xpn_f64 = this.heap.getF64(xpn_ptr, 6);
+    const xpn = [xpn_f64[0], xpn_f64[1], xpn_f64[2]]; // Convert Float64Array to number[]
     this.heap.free(xpo_ptr);
     this.heap.free(xpn_ptr);
     return { xpn };
@@ -2533,7 +2689,7 @@ export class SwissEph {
   swe_split_deg(
     ddeg: number,
     roundflag: number,
-  ): { ideg: any; imin: any; isec: any; dsecfr: any; isgn: any } {
+  ): SplitDeg {
     const ideg_ptr = this.heap.alloc(4);
     const imin_ptr = this.heap.alloc(4);
     const isec_ptr = this.heap.alloc(4);
@@ -2551,7 +2707,7 @@ export class SwissEph {
     const ideg = this.heap.getI32(ideg_ptr);
     const imin = this.heap.getI32(imin_ptr);
     const isec = this.heap.getI32(isec_ptr);
-    const dsecfr = this.heap.getF64(dsecfr_ptr, 6).slice();
+    const dsecfr = this.heap.getF64(dsecfr_ptr, 6)[0];
     const isgn = this.heap.getI32(isgn_ptr);
     this.heap.free(ideg_ptr);
     this.heap.free(imin_ptr);

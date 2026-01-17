@@ -104,7 +104,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: wasm-binary
-          path: . 
+          path: .
 
       - name: Check Version Consistency
         run: deno task check-version

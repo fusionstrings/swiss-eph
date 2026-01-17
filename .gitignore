@@ -1,10 +1,10 @@
 # Build artifacts
-libswephe.wasm
+generated/libswephe.wasm
 dist/
 
-# Generated files (codegen.ts)
-bindings/
-src/swisseph_api.generated.ts
+# Generated files
+generated/swisseph_api.generated.ts
+generated/exported_functions.json
 
 # Test artifacts
 artifacts/
