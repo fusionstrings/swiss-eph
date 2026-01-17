@@ -20,6 +20,9 @@ $(TARGET): $(SOURCES)
 swetest_enhanced: scripts/swetest_enhanced.c $(SOURCES)
 	$(CC_NATIVE) -O3 -o $@ $^ -I$(SRCDIR) -lm -DNO_SWE_GLP
 
+swetest_enhanced.wasm: scripts/swetest_enhanced.c $(SOURCES)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -I$(SRCDIR) -lm -DNO_SWE_GLP
+
 
 strip: $(TARGET)
 	$(WASI_SDK_PATH)/bin/llvm-strip $(TARGET)

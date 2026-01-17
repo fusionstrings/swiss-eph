@@ -4,21 +4,26 @@ async function verify() {
   const goldenPath = "tests/fixtures/golden_values.ts";
   const tempPath = "tests/fixtures/golden_values.tmp.ts";
 
-  // 1. Build swetest_enhanced
-  console.log("Building swetest_enhanced...");
-  const buildCmd = new Deno.Command("make", { args: ["swetest_enhanced"] });
+  // 1. Build swetest_enhanced.wasm
+  console.log("Building swetest_enhanced.wasm...");
+  const buildCmd = new Deno.Command("make", {
+    args: ["swetest_enhanced.wasm"],
+  });
   const buildStatus = await buildCmd.output();
   if (!buildStatus.success) {
-    console.error("Failed to build swetest_enhanced");
+    console.error("Failed to build swetest_enhanced.wasm");
     Deno.exit(1);
   }
 
-  // 2. Generate new values
-  console.log("Generating current values...");
-  const genCmd = new Deno.Command("./swetest_enhanced");
+  // 2. Generate new values using WASM (for cross-platform stability)
+  console.log("Generating current values via WASM...");
+  const genCmd = new Deno.Command("deno", {
+    args: ["run", "-A", "scripts/run_swetest_wasm.ts"],
+  });
   const genOutput = await genCmd.output();
   if (!genOutput.success) {
-    console.error("Failed to run swetest_enhanced");
+    console.error("Failed to run swetest_enhanced.wasm");
+    console.error(new TextDecoder().decode(genOutput.stderr));
     Deno.exit(1);
   }
   await Deno.writeFile(tempPath, genOutput.stdout);
@@ -54,7 +59,7 @@ async function verify() {
 
   console.log("✅ Golden values are consistent.");
   await Deno.remove(tempPath);
-  await Deno.remove("./swetest_enhanced");
+  await Deno.remove("./swetest_enhanced.wasm");
 }
 
 if (import.meta.main) {

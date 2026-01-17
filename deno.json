@@ -52,7 +52,7 @@
     "bump-version": "deno run -A scripts/version_bump.ts",
     "build:browser": "deno run -A scripts/build_browser.ts",
     "verify:golden": "deno run -A scripts/verify_golden.ts",
-    "gen:golden": "make swetest_enhanced && ./swetest_enhanced > tests/fixtures/golden_values.ts && rm swetest_enhanced"
+    "gen:golden": "make swetest_enhanced.wasm && deno run -A scripts/run_swetest_wasm.ts > tests/fixtures/golden_values.ts && deno fmt tests/fixtures/golden_values.ts && rm swetest_enhanced.wasm"
   },
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.42.3",
