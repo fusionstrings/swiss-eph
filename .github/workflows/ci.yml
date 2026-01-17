@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wasm-binary
-          path: libswephe.wasm
+          path: generated/libswephe.wasm
 
   publish:
     name: Publish
@@ -118,7 +118,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: wasm-binary
-          path: .
+          path: generated/
 
       - name: Check Version Consistency
         run: deno task check-version
