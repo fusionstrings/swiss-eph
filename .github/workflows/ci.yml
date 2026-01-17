@@ -27,6 +27,7 @@ jobs:
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-24/wasi-sdk-24.0-x86_64-linux.tar.gz
           tar xvf wasi-sdk-24.0-x86_64-linux.tar.gz
+          mkdir -p toolchain
           mv wasi-sdk-24.0-x86_64-linux toolchain/wasi-sdk-24.0
 
       - name: Build WASM
