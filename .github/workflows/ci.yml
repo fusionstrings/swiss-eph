@@ -43,6 +43,9 @@ jobs:
           cd vendor/swisseph
           make swetest
 
+      - name: Verify Golden Values
+        run: deno task verify:golden
+
       - name: Run Tests
         run: deno task test
 

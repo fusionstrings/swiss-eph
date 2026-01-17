@@ -13,8 +13,12 @@ TARGET = generated/libswephe.wasm
 
 all: $(TARGET)
 
+CC_NATIVE ?= cc
 $(TARGET): $(SOURCES)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+swetest_enhanced: scripts/swetest_enhanced.c $(SOURCES)
+	$(CC_NATIVE) -O3 -o $@ $^ -I$(SRCDIR) -lm -DNO_SWE_GLP
 
 
 strip: $(TARGET)

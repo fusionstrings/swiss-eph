@@ -6,8 +6,8 @@
  * 
  * It does NOT modify the submodule but uses it as a library dependency.
  * 
- * Compile: clang -o swetest_enhanced swetest_enhanced.c -I../src/swisseph -L../src/swisseph -lswe -lm
- * Run: DYLD_LIBRARY_PATH=../src/swisseph ./swetest_enhanced > ../tests/fixtures/golden_values_generated.ts
+ * Compile: clang -o swetest_enhanced swetest_enhanced.c ../vendor/swisseph/*.c -I../vendor/swisseph -lm -DNO_SWE_GLP
+ * Run: ./swetest_enhanced > ../tests/fixtures/golden_values.ts
  */
 
 #include <stdio.h>
@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
     double deltat, sidtime, ayanamsa;
     
     /* Set ephemeris path */
-    swe_set_ephe_path("../vendor/swisseph/ephe");
+    swe_set_ephe_path("./vendor/swisseph/ephe");
     
     /* Standard flags */
     iflag = SEFLG_SWIEPH | SEFLG_TRUEPOS | SEFLG_NOABERR | SEFLG_NONUT;

@@ -50,7 +50,9 @@
     "test:all": "deno task test && deno task test:node && deno task test:browser",
     "check-version": "deno run -A scripts/check_version.ts",
     "bump-version": "deno run -A scripts/version_bump.ts",
-    "build:browser": "deno run -A scripts/build_browser.ts"
+    "build:browser": "deno run -A scripts/build_browser.ts",
+    "verify:golden": "deno run -A scripts/verify_golden.ts",
+    "gen:golden": "make swetest_enhanced && ./swetest_enhanced > tests/fixtures/golden_values.ts && rm swetest_enhanced"
   },
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.42.3",
