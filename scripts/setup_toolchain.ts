@@ -59,6 +59,10 @@ async function installWasiSdk() {
     Deno.exit(1);
   }
 
+  // Rename extracted directory to the generic name expected by Makefile
+  const extractedDir = join(toolchainDir, sdkName);
+  await Deno.rename(extractedDir, sdkPath);
+
   await Deno.remove(tarPath);
   console.log("wasi-sdk installed successfully.");
 }

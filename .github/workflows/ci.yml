@@ -25,9 +25,9 @@ jobs:
 
       - name: Setup WASI SDK
         run: |
-          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-24/wasi-sdk-24.0-linux.tar.gz
-          tar xvf wasi-sdk-24.0-linux.tar.gz
-          mv wasi-sdk-24.0 toolchain/wasi-sdk-24.0
+          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-24/wasi-sdk-24.0-x86_64-linux.tar.gz
+          tar xvf wasi-sdk-24.0-x86_64-linux.tar.gz
+          mv wasi-sdk-24.0-x86_64-linux toolchain/wasi-sdk-24.0
 
       - name: Build WASM
         run: deno task build:wasm
