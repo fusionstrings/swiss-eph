@@ -6,6 +6,13 @@ import type { SwissEphExports } from "./swisseph_api.generated.ts";
 
 export { Constants };
 
+/**
+ * Main class for Swiss Ephemeris functionality.
+ *
+ * This class wraps the WebAssembly module and provides a high-level API
+ * for astronomical calculations. It manages the WASM memory/heap and
+ * provides methods that mirror the C API of the Swiss Ephemeris library.
+ */
 export class SwissEph {
   private instance: WebAssembly.Instance;
   private heap: WasmHeap;
@@ -25,14 +32,22 @@ export class SwissEph {
   }
 
   /**
-   * Mount a file into the virtual filesystem
+   * Mount a file into the virtual filesystem.
+   *
+   * This is necessary for loading ephemeris files (e.g., .se1 files)
+   * into the WASM environment so that the library can access them.
+   *
+   * @param path The virtual path where the file should be mounted (e.g., "sepl_18.se1")
+   * @param content The binary content of the file
    */
   mount(path: string, content: Uint8Array) {
     this.wasi.mount(path, content);
   }
 
   /**
-   * Set ephemeris path inside the library
+   * Set the directory path where ephemeris files are located.
+   *
+   * @param path The directory path (usually matches where files were mounted)
    */
   set_ephe_path(path: string) {
     const ptr = this.heap.alloc(path.length + 1);
@@ -42,7 +57,14 @@ export class SwissEph {
   }
 
   /**
-   * swe_calc: Compute planetary position for a given TT date
+   * Compute planetary position for a given Terrestrial Time (TT) date.
+   *
+   * @param tjd_et Julian Day in Terrestrial Time (ET/TT)
+   * @param ipl Body number (e.g., `Constants.SE_SUN`)
+   * @param iflag Calculation flags (e.g., `Constants.SEFLG_SPEED`)
+   * @param xx_ptr Optional pointer to pre-allocated output buffer (optimization)
+   * @param serr_ptr Optional pointer to pre-allocated error buffer (optimization)
+   * @returns Object containing status code, position array `xx`, and error string
    */
   swe_calc(
     tjd_et: number,
@@ -53,17 +75,14 @@ export class SwissEph {
   ): { returnCode: number; xx: Float64Array; error: string } {
     let internal_xx = false;
     let internal_serr = false;
-
     if (xx_ptr === undefined) {
       xx_ptr = this.heap.alloc(6 * 8);
       internal_xx = true;
     }
-
     if (serr_ptr === undefined) {
       serr_ptr = this.heap.alloc(256);
       internal_serr = true;
     }
-
     const ret = this.exports.swe_calc(tjd_et, ipl, iflag, xx_ptr, serr_ptr);
 
     const xx = internal_xx
@@ -100,7 +119,13 @@ export class SwissEph {
   }
 
   /**
-   * swe_houses: Compute house cusps and ascmc values
+   * Compute house cusps and Ascendant/MC.
+   *
+   * @param tjd_ut Julian Day in Universal Time (UT)
+   * @param geolat Geographic latitude (positive for north)
+   * @param geolon Geographic longitude (positive for east)
+   * @param hsys House system character code (e.g., 'P'.charCodeAt(0) for Placidus)
+   * @returns Object containing `cusps` (array of 13 doubles, index 1-12 used) and `ascmc` (array of 10 doubles)
    */
   swe_houses(
     tjd_ut: number,
@@ -130,7 +155,14 @@ export class SwissEph {
   }
 
   /**
-   * swe_julday: Compute Julian Day
+   * Compute Julian Day number from calendar date.
+   *
+   * @param year Year (e.g., 2024)
+   * @param month Month (1-12)
+   * @param day Day of month
+   * @param hour Hour (decimal, e.g., 13.5 for 13:30)
+   * @param gregflag Calendar flag (`Constants.SE_GREG_CAL` or `Constants.SE_JUL_CAL`)
+   * @returns Julian Day number
    */
   swe_julday(
     year: number,
@@ -143,7 +175,9 @@ export class SwissEph {
   }
 
   /**
-   * swe_version: Get library version
+   * Get the version of the underlying Swiss Ephemeris library.
+   *
+   * @returns Version string (e.g., "2.10.03")
    */
   swe_version(): string {
     const ptr = this.heap.alloc(256);
@@ -158,7 +192,11 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_revjul: Convert Julian Day to calendar date
+   * Convert Julian Day number to calendar date.
+   *
+   * @param jd Julian Day number
+   * @param gregflag Calendar flag (`Constants.SE_GREG_CAL` or `Constants.SE_JUL_CAL`)
+   * @returns Object containing year, month, day, and fractional hour
    */
   swe_revjul(
     jd: number,
@@ -193,7 +231,16 @@ export class SwissEph {
   }
 
   /**
-   * swe_utc_to_jd: Convert UTC to Julian Day (both ET and UT)
+   * Convert UTC date to Julian Day (both ET and UT).
+   *
+   * @param year Year
+   * @param month Month
+   * @param day Day
+   * @param hour Hour
+   * @param min Minute
+   * @param sec Second
+   * @param gregflag Calendar flag
+   * @returns Object containing `et` (Ephemeris Time JD), `ut` (Universal Time JD), status code, and error string
    */
   swe_utc_to_jd(
     year: number,
@@ -336,7 +383,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_deltat_ex: Delta T with extended error handling and ephemeris flag
+   * Compute Delta T (TT - UT) for a given Julian Day.
+   *
+   * @param tjd Julian Day
+   * @param iflag Ephemeris flag (ensure `SEFLG_SWIEPH` is set for best accuracy)
+   * @returns Object containing `dt` (Delta T in days) and error string
    */
   swe_deltat_ex(tjd: number, iflag: number): { dt: number; error: string } {
     const serr_ptr = this.heap.alloc(256);
@@ -742,7 +793,12 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_fixstar2: Fixed star position (faster version)
+   * Compute fixed star position.
+   *
+   * @param star Star name
+   * @param tjd Julian Day (TT)
+   * @param iflag Ephemeris flags
+   * @returns Object containing status code, position array `xx`, star name (resolved), and error string
    */
   swe_fixstar2(
     star: string,
@@ -777,7 +833,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_fixstar2_ut: Fixed star position for UT (faster version)
+   * Compute fixed star position (UT).
+   *
+   * @param star Star name
+   * @param tjd_ut Julian Day (UT)
+   * @param iflag Ephemeris flags
+   * @returns Object containing status code, position array `xx`, star name (resolved), and error string
    */
   swe_fixstar2_ut(
     star: string,
@@ -815,7 +876,13 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_sol_eclipse_when_glob: Find next solar eclipse globally
+   * Find the next solar eclipse globally.
+   *
+   * @param tjd_start Start Julian Day for search
+   * @param ifl Ephemeris flags
+   * @param ifltype Eclipse type to search for (0 for any)
+   * @param backward True to search backward in time
+   * @returns Object containing `tret` (results array), status code, and error string
    */
   swe_sol_eclipse_when_glob(
     tjd_start: number,
@@ -879,7 +946,17 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_rise_trans: Calculate rise, set, or transit of a body
+   * Calculate rise, set, or transit times for a body.
+   *
+   * @param tjd_ut Start Julian Day (UT)
+   * @param ipl Body number
+   * @param starname Star name (if ipl is 0)
+   * @param epheflag Ephemeris flags
+   * @param rsmi Event flag (e.g., `Constants.SE_CALC_RISE`)
+   * @param geopos Geographic position [lon, lat, alt]
+   * @param atpress Atmospheric pressure (mbar)
+   * @param attemp Atmospheric temperature (deg C)
+   * @returns Object containing `tret` (time of event), status code, and error string
    */
   swe_rise_trans(
     tjd_ut: number,
@@ -1049,9 +1126,21 @@ export class SwissEph {
     this.exports.swe_close(0);
   }
 
-  // --- Auto-generated Properties (Missing in Audit) ---
+  // ============================================================
+  // Heliacal Events
+  // ============================================================
+
   /**
-   * swe_heliacal_ut
+   * Calculate heliacal events (rise, set, etc.) for a body.
+   *
+   * @param tjdstart_ut Start Julian Day (UT)
+   * @param geopos Geographic position [lon, lat, alt]
+   * @param datm Atmospheric parameters [press, temp, humid, ...]
+   * @param dobs Observer parameters
+   * @param ObjectName Name of the object
+   * @param TypeEvent Type of event
+   * @param iflag Ephemeris flags
+   * @returns Object containing status code, result array `dret`, and error string
    */
   swe_heliacal_ut(
     tjdstart_ut: number,

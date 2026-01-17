@@ -1,3 +1,10 @@
+/**
+ * Minimal WASI (WebAssembly System Interface) implementation.
+ *
+ * Provides necessary system calls (filesystem, clock, random) to allow
+ * the C-compiled Swiss Ephemeris library to run in non-WASI environments
+ * like the browser.
+ */
 export class WASI {
   imports: WebAssembly.Imports;
   memory?: WebAssembly.Memory;

@@ -5,6 +5,13 @@ export interface WasmExports extends SwissEphExports {
   free(ptr: number): void;
 }
 
+/**
+ * WebAssembly Memory Heap Manager.
+ *
+ * Provides typed access to the WASM linear memory, handling
+ * allocation, deallocation, and data marshaling between JavaScript
+ * and WebAssembly.
+ */
 export class WasmHeap {
   constructor(
     private memory: WebAssembly.Memory,

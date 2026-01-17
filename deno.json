@@ -1,7 +1,31 @@
 {
   "name": "@fusionstrings/swisseph-wasi",
   "version": "0.1.0",
-  "exports": "./mod.ts",
+  "description": "Swiss Ephemeris WASM binding for Deno, Node.js and Browser",
+  "license": "AGPL-3.0",
+  "exports": {
+    ".": "./mod.ts",
+    "./bridge": "./src/bridge.ts",
+    "./wasi": "./src/wasi.ts",
+    "./constants": "./src/swisseph_api.generated.ts"
+  },
+  "publish": {
+    "exclude": [
+      ".github",
+      ".vscode",
+      "artifacts",
+      "bindings",
+      "npm",
+      "scripts",
+      "src/swisseph",
+      "tests",
+      "toolchain",
+      "Makefile",
+      "*.c",
+      "generated_wrappers.ts",
+      "test_suite.ts"
+    ]
+  },
   "tasks": {
     "setup": "deno run -A scripts/setup_toolchain.ts",
     "build:wasm": "make -j4",
