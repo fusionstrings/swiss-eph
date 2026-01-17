@@ -15,13 +15,21 @@ function decodeWasm(base64: string): Uint8Array {
 
 let cachedModule: WebAssembly.Module | null = null;
 
+/**
+ * Creates a new instance of the Swiss Ephemeris library.
+ *
+ * This function decodes the embedded WASM binary and initializes the
+ * SwissEph class with it.
+ *
+ * @returns A promise-like or direct instance of SwissEph (synchronous in this implementation).
+ */
 export function createSwissEph(): SwissEph {
   if (!cachedModule) {
     const bytes = decodeWasm(wasmBase64);
-    cachedModule = new WebAssembly.Module(bytes);
+    cachedModule = new WebAssembly.Module(bytes as unknown as BufferSource);
   }
   return new SwissEph(cachedModule);
 }
 
 // Default instance for quick usage
-export const swisseph = createSwissEph();
+export const swisseph: SwissEph = createSwissEph();

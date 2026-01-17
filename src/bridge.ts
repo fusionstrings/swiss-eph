@@ -5,6 +5,7 @@ import { Constants } from "../generated/swisseph_api.generated.ts";
 import type { SwissEphExports } from "../generated/swisseph_api.generated.ts";
 
 // Interface definitions for function return values
+/** Return value for swe_azalt. */
 export interface AzAlt {
   returnCode: number;
   dmax: number[];
@@ -13,28 +14,33 @@ export interface AzAlt {
   serr: string;
 }
 
+/** Return value for swe_time_equ. */
 export interface TimeEqu {
   returnCode: number;
   te: number;
   serr: string;
 }
 
+/** Return value for swe_lmt_to_lat. */
 export interface LmtLat {
   returnCode: number;
   tjd_lat: number;
   serr: string;
 }
 
+/** Return value for swe_lat_to_lmt. */
 export interface Lmt {
   returnCode: number;
   tjd_lmt: number;
   serr: string;
 }
 
+/** Return value for swe_cotrans_sp. */
 export interface CotransSp {
   xpn: number[];
 }
 
+/** Return value for swe_split_deg. */
 export interface SplitDeg {
   ideg: number;
   imin: number;
@@ -43,6 +49,7 @@ export interface SplitDeg {
   isgn: number;
 }
 
+/** Return value for swe_nod_aps. */
 export interface NodAps {
   returnCode: number;
   xnasc: number[];
@@ -52,18 +59,21 @@ export interface NodAps {
   serr: string;
 }
 
+/** Generic return value with double array and error string. */
 export interface DretSerr {
   returnCode: number;
   dret: number[];
   serr: string;
 }
 
+/** Generic return value with double array and error string. */
 export interface DarrSerr {
   returnCode: number;
   darr: number[];
   serr: string;
 }
 
+/** Return value with tret, attr arrays and error string. */
 export interface TretAttrSerr {
   returnCode: number;
   tret: number[];
@@ -71,18 +81,21 @@ export interface TretAttrSerr {
   serr: string;
 }
 
+/** Return value with tret array and error string. */
 export interface TretSerr {
   returnCode: number;
   tret: number[];
   serr: string;
 }
 
+/** Return value with attr array and error string. */
 export interface AttrSerr {
   returnCode: number;
   attr: number[];
   serr: string;
 }
 
+/** Return value with dgeo, dret arrays and error string. */
 export interface DgeoDretSerr {
   returnCode: number;
   dgeo: number[];
@@ -90,22 +103,26 @@ export interface DgeoDretSerr {
   serr: string;
 }
 
+/** Return value with xxret array and error string. */
 export interface XxretSerr {
   returnCode: number;
   xxret: number[];
   serr: string;
 }
 
+/** Return value with error string only. */
 export interface SerrOnly {
   returnCode: number;
   serr: string;
 }
 
+/** Return value for swe_refrac_extended with dret array. */
 export interface Dret {
   returnCode: number;
   dret: number[];
 }
 
+/** Return value with xlon, xlat arrays and error string. */
 export interface XlonXlatSerr {
   returnCode: number;
   xlon: number[];
@@ -113,12 +130,14 @@ export interface XlonXlatSerr {
   serr: string;
 }
 
+/** Return value with jd_cross array and error string. */
 export interface JdCrossSerr {
   returnCode: number;
   jd_cross: number[];
   serr: string;
 }
 
+/** Return value for swe_houses_ex2. */
 export interface HousesEx2 {
   returnCode: number;
   cusps: number[];
@@ -128,12 +147,14 @@ export interface HousesEx2 {
   serr: string;
 }
 
+/** Return value for swe_gauquelin_sector. */
 export interface DgsectSerr {
   returnCode: number;
   dgsect: number[];
   serr: string;
 }
 
+/** Return value for swe_utc_time_zone. */
 export interface DGreg {
   returnCode: number;
   iyear_out: number[];
@@ -144,24 +165,28 @@ export interface DGreg {
   dsec_out: number[];
 }
 
+/** Return value for swe_fixstar_mag. */
 export interface MagSerr {
   returnCode: number;
   mag: number[];
   serr: string;
 }
 
+/** Return value for swe_get_orbital_elements. */
 export interface OrbitalSerr {
   returnCode: number;
   dret: number[];
   serr: string;
 }
 
+/** Return value for swe_utc_to_jd. */
 export interface UtimeTjd {
   returnCode: number;
   utime: number[];
   tjd: number[];
 }
 
+/** Return value for swe_get_current_file_data. */
 export interface FileDat {
   returnCode: number;
   tfstart: number[];
@@ -169,6 +194,7 @@ export interface FileDat {
   denum: number;
 }
 
+/** Return value for swe_fixstar_ut. */
 export interface XxSerr {
   returnCode: number;
   xx: number[];
@@ -268,7 +294,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_calc_ut: Compute planetary position for a given UT date
+   * Compute planetary position for a given Universal Time (UT) date.
+   *
+   * @param tjd_ut Julian Day in Universal Time (UT)
+   * @param ipl Body number (e.g. `Constants.SE_SUN`)
+   * @param iflag Calculation flags (e.g. `Constants.SEFLG_SPEED`)
+   * @returns Object containing status code, position array `xx`, and error string
    */
   swe_calc_ut(
     tjd_ut: number,
@@ -447,7 +478,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_jdet_to_utc: Convert Julian Day ET to UTC
+   * Convert Julian Day ET to UTC.
+   *
+   * @param tjd_et Julian Day in Ephemeris Time (ET)
+   * @param gregflag Calendar flag (`Constants.SE_GREG_CAL` or `Constants.SE_JUL_CAL`)
+   * @returns Object with year, month, day, hour, min, sec
    */
   swe_jdet_to_utc(
     tjd_et: number,
@@ -497,7 +532,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_jdut1_to_utc: Convert Julian Day UT1 to UTC
+   * Convert Julian Day UT1 to UTC.
+   *
+   * @param tjd_ut Julian Day in Universal Time (UT1)
+   * @param gregflag Calendar flag (`Constants.SE_GREG_CAL` or `Constants.SE_JUL_CAL`)
+   * @returns Object with year, month, day, hour, min, sec
    */
   swe_jdut1_to_utc(
     tjd_ut: number,
@@ -547,7 +586,10 @@ export class SwissEph {
   }
 
   /**
-   * swe_deltat: Delta T (TT - UT) for a given Julian Day
+   * Compute Delta T (TT - UT) for a given Julian Day.
+   *
+   * @param tjd Julian Day
+   * @returns Delta T value in days
    */
   swe_deltat(tjd: number): number {
     return this.exports.swe_deltat(tjd);
@@ -573,14 +615,22 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_sidtime: Sidereal time at Greenwich
+   * Calculate sidereal time at Greenwich.
+   *
+   * @param tjd_ut Julian Day in Universal Time (UT)
+   * @returns Sidereal time in hours
    */
   swe_sidtime(tjd_ut: number): number {
     return this.exports.swe_sidtime(tjd_ut);
   }
 
   /**
-   * swe_sidtime0: Sidereal time at Greenwich with obliquity and nutation
+   * Calculate sidereal time at Greenwich with obliquity and nutation.
+   *
+   * @param tjd_ut Julian Day in Universal Time (UT)
+   * @param eps Ecliptic obliquity (optional, 0 to calculate)
+   * @param nut Nutation in longitude (optional, 0 to calculate)
+   * @returns Sidereal time in hours
    */
   swe_sidtime0(tjd_ut: number, eps: number, nut: number): number {
     return this.exports.swe_sidtime0(tjd_ut, eps, nut);
@@ -591,28 +641,42 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_set_sid_mode: Set sidereal mode for sidereal calculations
+   * Set sidereal mode for sidereal calculations (tropical to sidereal).
+   *
+   * @param sid_mode Sidereal mode (e.g., `Constants.SE_SIDM_LAHIRI`)
+   * @param t0 Reference epoch (usually 0)
+   * @param ayan_t0 Initial ayanamsa at t0 (usually 0)
    */
   swe_set_sid_mode(sid_mode: number, t0: number, ayan_t0: number): void {
     this.exports.swe_set_sid_mode(sid_mode, t0, ayan_t0);
   }
 
   /**
-   * swe_get_ayanamsa: Get ayanamsa for a given TT Julian Day
+   * Get ayanamsa for a given TT Julian Day.
+   *
+   * @param tjd_et Julian Day in Ephemeris Time (ET)
+   * @returns Ayanamsa value in degrees
    */
   swe_get_ayanamsa(tjd_et: number): number {
     return this.exports.swe_get_ayanamsa(tjd_et);
   }
 
   /**
-   * swe_get_ayanamsa_ut: Get ayanamsa for a given UT Julian Day
+   * Get ayanamsa for a given UT Julian Day.
+   *
+   * @param tjd_ut Julian Day in Universal Time (UT)
+   * @returns Ayanamsa value in degrees
    */
   swe_get_ayanamsa_ut(tjd_ut: number): number {
     return this.exports.swe_get_ayanamsa_ut(tjd_ut);
   }
 
   /**
-   * swe_get_ayanamsa_ex: Extended ayanamsa with ephemeris flag
+   * Compute ayanamsa with ephemeris flag.
+   *
+   * @param tjd_et Julian Day in Ephemeris Time (ET)
+   * @param iflag Ephemeris flag
+   * @returns Object containing ayanamsa, status code, and error string
    */
   swe_get_ayanamsa_ex(
     tjd_et: number,
@@ -638,7 +702,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_get_ayanamsa_ex_ut: Extended ayanamsa for UT with ephemeris flag
+   * Compute ayanamsa for UT with ephemeris flag.
+   *
+   * @param tjd_ut Julian Day in Universal Time (UT)
+   * @param iflag Ephemeris flag
+   * @returns Object containing ayanamsa, status code, and error string
    */
   swe_get_ayanamsa_ex_ut(
     tjd_ut: number,
@@ -664,7 +732,10 @@ export class SwissEph {
   }
 
   /**
-   * swe_get_ayanamsa_name: Get name of ayanamsa
+   * Get name of ayanamsa mode.
+   *
+   * @param isidmode Sidereal mode ID
+   * @returns Name of the sidereal mode
    */
   swe_get_ayanamsa_name(isidmode: number): string {
     const ptr = this.exports.swe_get_ayanamsa_name(isidmode);
@@ -676,7 +747,11 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_set_topo: Set geographic position for topocentric calculations
+   * Set geographic position for topocentric calculations.
+   *
+   * @param geolon Geographic longitude (degrees)
+   * @param geolat Geographic latitude (degrees)
+   * @param geoalt Geographic altitude (meters)
    */
   swe_set_topo(geolon: number, geolat: number, geoalt: number): void {
     this.exports.swe_set_topo(geolon, geolat, geoalt);
@@ -687,7 +762,10 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_get_planet_name: Get name of a planet/body
+   * Get name of a planet/body.
+   *
+   * @param ipl Body number
+   * @returns Name of the body
    */
   swe_get_planet_name(ipl: number): string {
     const ptr = this.heap.alloc(256);
@@ -698,35 +776,52 @@ export class SwissEph {
   }
 
   /**
-   * swe_degnorm: Normalize degrees to 0..360
+   * Normalize degrees to 0..360.
+   *
+   * @param x Input degrees
+   * @returns Normalized degrees
    */
   swe_degnorm(x: number): number {
     return this.exports.swe_degnorm(x);
   }
 
   /**
-   * swe_radnorm: Normalize radians to 0..2*PI
+   * Normalize radians to 0..2*PI.
+   *
+   * @param x Input radians
+   * @returns Normalized radians
    */
   swe_radnorm(x: number): number {
     return this.exports.swe_radnorm(x);
   }
 
   /**
-   * swe_difdeg2n: Difference of degrees normalized to -180..180
+   * Difference of degrees normalized to -180..180.
+   *
+   * @param p1 Point 1
+   * @param p2 Point 2
+   * @returns Shortest distance between p1 and p2
    */
   swe_difdeg2n(p1: number, p2: number): number {
     return this.exports.swe_difdeg2n(p1, p2);
   }
 
   /**
-   * swe_deg_midp: Midpoint of two degree values
+   * Midpoint of two degree values.
+   *
+   * @param x1 Point 1
+   * @param x0 Point 2
+   * @returns Midpoint between x1 and x0
    */
   swe_deg_midp(x1: number, x0: number): number {
     return this.exports.swe_deg_midp(x1, x0);
   }
 
   /**
-   * swe_day_of_week: Day of week (0=Monday, 6=Sunday)
+   * Day of week (0=Monday, 6=Sunday).
+   *
+   * @param jd Julian Day
+   * @returns Day of week number
    */
   swe_day_of_week(jd: number): number {
     return this.exports.swe_day_of_week(jd);
@@ -740,7 +835,9 @@ export class SwissEph {
   }
 
   /**
-   * swe_set_tid_acc: Set tidal acceleration
+   * Set tidal acceleration.
+   *
+   * @param t_acc Tidal acceleration value
    */
   swe_set_tid_acc(t_acc: number): void {
     this.exports.swe_set_tid_acc(t_acc);
@@ -751,7 +848,14 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_houses_ex: Houses with extended flags
+   * Calculate houses with extended flags.
+   *
+   * @param tjd_ut Julian Day (UT)
+   * @param iflag Calculation flags
+   * @param geolat Geographic latitude
+   * @param geolon Geographic longitude
+   * @param hsys House system code
+   * @returns Object with cusps and ascmc
    */
   swe_houses_ex(
     tjd_ut: number,
@@ -783,7 +887,13 @@ export class SwissEph {
   }
 
   /**
-   * swe_houses_armc: Houses from ARMC
+   * Calculate houses from ARMC (Sidereal Time).
+   *
+   * @param armc Right Ascension of MC (Sidereal Time expressed in degrees)
+   * @param geolat Geographic latitude
+   * @param eps Ecliptic obliquity
+   * @param hsys House system code
+   * @returns Object with cusps and ascmc
    */
   swe_houses_armc(
     armc: number,
@@ -813,7 +923,14 @@ export class SwissEph {
   }
 
   /**
-   * swe_house_pos: House position of a planet
+   * Calculate house position of a planet.
+   *
+   * @param armc Right Ascension of MC
+   * @param geolat Geographic latitude
+   * @param eps Ecliptic obliquity
+   * @param hsys House system code
+   * @param xpin Coordinates of planet [lon, lat]
+   * @returns Object containing position and error
    */
   swe_house_pos(
     armc: number,
@@ -845,7 +962,10 @@ export class SwissEph {
   }
 
   /**
-   * swe_house_name: Get house system name
+   * Get house system name.
+   *
+   * @param hsys House system character code
+   * @returns Name of the house system
    */
   swe_house_name(hsys: number): string {
     const ptr = this.exports.swe_house_name(hsys);
@@ -857,7 +977,11 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_cotrans: Coordinate transformation (ecliptic <-> equatorial)
+   * Coordinate transformation (ecliptic <-> equatorial).
+   *
+   * @param xpo Input coordinates [x, y, z] or [lon, lat, dist]
+   * @param eps Ecliptic obliquity
+   * @returns Transformed coordinates
    */
   swe_cotrans(xpo: [number, number, number], eps: number): Float64Array {
     const xpo_ptr = this.heap.alloc(24);
@@ -876,7 +1000,15 @@ export class SwissEph {
   }
 
   /**
-   * swe_azalt: Transform ecliptic/equatorial to horizontal coordinates
+   * Transform ecliptic/equatorial to horizontal coordinates (Azimuth/Altitude).
+   *
+   * @param tjd_ut Julian Day (UT)
+   * @param calc_flag Calculation flag (`Constants.SE_ECL2HOR` or `bit 1`)
+   * @param geopos Geographic position [lon, lat, alt]
+   * @param atpress Atmospheric pressure
+   * @param attemp Atmospheric temperature
+   * @param xin Input coordinates
+   * @returns Output coordinates [azimuth, altitude, dist]
    */
   swe_azalt(
     tjd_ut: number,
@@ -914,7 +1046,13 @@ export class SwissEph {
   }
 
   /**
-   * swe_azalt_rev: Transform horizontal to ecliptic/equatorial coordinates
+   * Transform horizontal to ecliptic/equatorial coordinates.
+   *
+   * @param tjd_ut Julian Day (UT)
+   * @param calc_flag Calculation flag (`Constants.SE_HOR2ECL` or `bit 0`)
+   * @param geopos Geographic position [lon, lat, alt]
+   * @param xin Input coordinates [azimuth, true_altitude]
+   * @returns Output coordinates
    */
   swe_azalt_rev(
     tjd_ut: number,
@@ -948,7 +1086,13 @@ export class SwissEph {
   }
 
   /**
-   * swe_refrac: Atmospheric refraction
+   * Calculate atmospheric refraction.
+   *
+   * @param inalt Input altitude
+   * @param atpress Atmospheric pressure
+   * @param attemp Atmospheric temperature
+   * @param calc_flag Calculation method
+   * @returns Refraction angle
    */
   swe_refrac(
     inalt: number,
@@ -1083,7 +1227,13 @@ export class SwissEph {
   }
 
   /**
-   * swe_lun_eclipse_when: Find next lunar eclipse
+   * Find the next lunar eclipse.
+   *
+   * @param tjd_start Start Julian Day
+   * @param ifl Ephemeris flags
+   * @param ifltype Eclipse type
+   * @param backward True to search backward
+   * @returns Object with results, status, and error
    */
   swe_lun_eclipse_when(
     tjd_start: number,
@@ -1652,7 +1802,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_mooncross_ut
+   * Calculate position of Moon crossing separate from a body (UT).
+   *
+   * @param x2cross Position of the other body
+   * @param jd_ut Julian Day (UT)
+   * @param flag Calculation flags
+   * @returns Object containing status code and error string
    */
   swe_mooncross_ut(
     x2cross: number,
@@ -1668,7 +1823,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_mooncross_node
+   * Calculate position of Moon nodes crossing.
+   *
+   * @param jd_et Julian Day (ET)
+   * @param flag Calculation flags
+   * @returns Object containing node positions and error string
    */
   swe_mooncross_node(
     jd_et: number,
@@ -1695,7 +1854,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_mooncross_node_ut
+   * Calculate position of Moon nodes crossing (UT).
+   *
+   * @param jd_ut Julian Day (UT)
+   * @param flag Calculation flags
+   * @returns Object containing node positions and error string
    */
   swe_mooncross_node_ut(
     jd_ut: number,
@@ -1722,7 +1885,14 @@ export class SwissEph {
   }
 
   /**
-   * swe_helio_cross
+   * Calculate heliocentric crossing of a planet.
+   *
+   * @param ipl Body number
+   * @param x2cross Position to cross
+   * @param jd_et Julian Day (ET)
+   * @param iflag Calculation flags
+   * @param dir Direction flag
+   * @returns Object containing crossing position and error string
    */
   swe_helio_cross(
     ipl: number,
@@ -1751,7 +1921,14 @@ export class SwissEph {
   }
 
   /**
-   * swe_helio_cross_ut
+   * Calculate heliocentric crossing of a planet (UT).
+   *
+   * @param ipl Body number
+   * @param x2cross Position to cross
+   * @param jd_ut Julian Day (UT)
+   * @param iflag Calculation flags
+   * @param dir Direction flag
+   * @returns Object containing crossing position and error string
    */
   swe_helio_cross_ut(
     ipl: number,
@@ -1780,7 +1957,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_fixstar
+   * Calculate position of a fixed star.
+   *
+   * @param star Name of the fixed star
+   * @param tjd Julian Day (ET)
+   * @param iflag Calculation flags
+   * @returns Object containing position, status code, and error string
    */
   swe_fixstar(
     star: string,
@@ -1807,7 +1989,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_fixstar_ut
+   * Calculate position of a fixed star (UT).
+   *
+   * @param star Name of the fixed star
+   * @param tjd_ut Julian Day (UT)
+   * @param iflag Calculation flags
+   * @returns Object containing position, status code, and error string
    */
   swe_fixstar_ut(
     star: string,
@@ -1834,7 +2021,10 @@ export class SwissEph {
   }
 
   /**
-   * swe_fixstar_mag
+   * Calculate magnitude of a fixed star.
+   *
+   * @param star Name of the fixed star
+   * @returns Object containing magnitude info and error string
    */
   swe_fixstar_mag(star: string): MagSerr {
     const star_ptr = this.heap.putString(star);
@@ -1851,7 +2041,10 @@ export class SwissEph {
   }
 
   /**
-   * swe_fixstar2_mag
+   * Calculate magnitude of a fixed star (alternative).
+   *
+   * @param star Name of the fixed star
+   * @returns Object containing magnitude info and error string
    */
   swe_fixstar2_mag(star: string): MagSerr {
     const star_ptr = this.heap.putString(star);
@@ -1868,28 +2061,37 @@ export class SwissEph {
   }
 
   /**
-   * swe_close
+   * Close the library and free resources.
+   *
+   * @param arg0 Unused parameter (legacy)
    */
   swe_close(arg0: number): void {
     this.exports.swe_close(arg0);
   }
 
   /**
-   * swe_set_ephe_path
+   * Set the path to ephemeris files.
+   *
+   * @param path The path string (pointer or ignored in WASM context usually)
    */
   swe_set_ephe_path(path: number): void {
     this.exports.swe_set_ephe_path(path);
   }
 
   /**
-   * swe_set_jpl_file
+   * Set the JPL file name.
+   *
+   * @param fname The file name
    */
   swe_set_jpl_file(fname: number): void {
     this.exports.swe_set_jpl_file(fname);
   }
 
   /**
-   * swe_get_current_file_data
+   * Get data about the currently loaded ephemeris file.
+   *
+   * @param ifno File number/index
+   * @returns Object containing start/end dates and denominator
    */
   swe_get_current_file_data(
     ifno: number,
@@ -1914,14 +2116,24 @@ export class SwissEph {
   }
 
   /**
-   * swe_set_timeout
+   * Set the timeout for ephemeris calculations.
+   *
+   * @param tsec Timeout in seconds
    */
   swe_set_timeout(tsec: number): void {
     this.exports.swe_set_timeout(tsec);
   }
 
   /**
-   * swe_date_conversion
+   * Convert date to Julian Day and vice versa.
+   *
+   * @param y Year
+   * @param m Month
+   * @param d Day
+   * @param year Year (for time conversion)
+   * @param arg4 UNUSED
+   * @param c Calendar flag (`Constants.SE_GREG_CAL` or `Constants.SE_JUL_CAL`)
+   * @returns Object containing `utime` and `tjd`
    */
   swe_date_conversion(
     y: number,
@@ -1952,7 +2164,16 @@ export class SwissEph {
   }
 
   /**
-   * swe_utc_time_zone
+   * Convert UTC to local time zone.
+   *
+   * @param iyear Year
+   * @param imonth Month
+   * @param iday Day
+   * @param ihour Hour
+   * @param imin Minute
+   * @param dsec Second
+   * @param d_timezone Timezone offset in hours
+   * @returns Object containing converted date/time components
    */
   swe_utc_time_zone(
     iyear: number,
@@ -2008,7 +2229,14 @@ export class SwissEph {
   }
 
   /**
-   * swe_houses_ex2
+   * Calculate houses with extended flags and speeds.
+   *
+   * @param tjd_ut Julian Day (UT)
+   * @param iflag Calculation flags
+   * @param geolat Geographic latitude
+   * @param geolon Geographic longitude
+   * @param hsys House system code
+   * @returns Object containing cusps, ascmc, speeds, and error string
    */
   swe_houses_ex2(
     tjd_ut: number,
@@ -2051,7 +2279,13 @@ export class SwissEph {
   }
 
   /**
-   * swe_houses_armc_ex2
+   * Calculate houses from ARMC with extended flags and speeds.
+   *
+   * @param armc Right Ascension of MC
+   * @param geolat Geographic latitude
+   * @param eps Ecliptic obliquity
+   * @param hsys House system code
+   * @returns Object containing cusps, ascmc, speeds, and error string
    */
   swe_houses_armc_ex2(
     armc: number,
@@ -2092,7 +2326,17 @@ export class SwissEph {
   }
 
   /**
-   * swe_gauquelin_sector
+   * Calculate Gauquelin sector for a planet.
+   *
+   * @param t_ut Julian Day (UT)
+   * @param ipl Body number
+   * @param starname Star name (if ipl is 0)
+   * @param iflag Calculation flags
+   * @param imeth Calculation method
+   * @param geopos Geographic position [lon, lat, alt]
+   * @param atpress Atmospheric pressure
+   * @param attemp Atmospheric temperature
+   * @returns Object containing sector info and error string
    */
   swe_gauquelin_sector(
     t_ut: number,
@@ -2135,7 +2379,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_sol_eclipse_where
+   * Calculate where a solar eclipse is visible.
+   *
+   * @param tjd Julian Day
+   * @param ifl Ephemeris flags
+   * @param geopos Geographic position [lon, lat, alt]
+   * @returns Object containing eclipse attributes and error string
    */
   swe_sol_eclipse_where(
     tjd: number,
@@ -2166,7 +2415,14 @@ export class SwissEph {
   }
 
   /**
-   * swe_lun_occult_where
+   * Calculate where a lunar occultation is visible.
+   *
+   * @param tjd Julian Day
+   * @param ipl Body number
+   * @param starname Star name
+   * @param ifl Ephemeris flags
+   * @param geopos Geographic position [lon, lat, alt]
+   * @returns Object containing occultation attributes and error string
    */
   swe_lun_occult_where(
     tjd: number,
@@ -2203,7 +2459,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_sol_eclipse_how
+   * Calculate how a solar eclipse looks.
+   *
+   * @param tjd Julian Day
+   * @param ifl Ephemeris flags
+   * @param geopos Geographic position [lon, lat, alt]
+   * @returns Object containing eclipse attributes and error string
    */
   swe_sol_eclipse_how(
     tjd: number,
@@ -2234,7 +2495,13 @@ export class SwissEph {
   }
 
   /**
-   * swe_sol_eclipse_when_loc
+   * Find when a solar eclipse occurs at a specific location.
+   *
+   * @param tjd_start Start Julian Day
+   * @param ifl Ephemeris flags
+   * @param geopos Geographic position [lon, lat, alt]
+   * @param backward Search backward in time
+   * @returns Object containing result array `tret`, attributes, and error string
    */
   swe_sol_eclipse_when_loc(
     tjd_start: number,
@@ -2271,7 +2538,15 @@ export class SwissEph {
   }
 
   /**
-   * swe_lun_occult_when_loc
+   * Find when a lunar occultation occurs at a specific location.
+   *
+   * @param tjd_start Start Julian Day
+   * @param ipl Body number
+   * @param starname Star name
+   * @param ifl Ephemeris flags
+   * @param geopos Geographic position [lon, lat, alt]
+   * @param backward Search backward in time
+   * @returns Object containing result array `tret`, attributes, and error string
    */
   swe_lun_occult_when_loc(
     tjd_start: number,
@@ -2314,7 +2589,15 @@ export class SwissEph {
   }
 
   /**
-   * swe_lun_occult_when_glob
+   * Find when a lunar occultation occurs globally.
+   *
+   * @param tjd_start Start Julian Day
+   * @param ipl Body number
+   * @param starname Star name
+   * @param ifl Ephemeris flags
+   * @param ifltype Eclipse type
+   * @param backward Search backward in time
+   * @returns Object containing result array `tret` and error string
    */
   swe_lun_occult_when_glob(
     tjd_start: number,
@@ -2347,7 +2630,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_lun_eclipse_how
+   * Calculate how a lunar eclipse looks.
+   *
+   * @param tjd_ut Julian Day (UT)
+   * @param ifl Ephemeris flags
+   * @param geopos Geographic position [lon, lat, alt]
+   * @returns Object containing eclipse attributes and error string
    */
   swe_lun_eclipse_how(
     tjd_ut: number,
@@ -2378,7 +2666,13 @@ export class SwissEph {
   }
 
   /**
-   * swe_lun_eclipse_when_loc
+   * Find when a lunar eclipse occurs at a specific location.
+   *
+   * @param tjd_start Start Julian Day
+   * @param ifl Ephemeris flags
+   * @param geopos Geographic position [lon, lat, alt]
+   * @param backward Search backward in time
+   * @returns Object containing result array `tret`, attributes, and error string
    */
   swe_lun_eclipse_when_loc(
     tjd_start: number,
@@ -2415,7 +2709,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_pheno
+   * Calculate planetary phenomena.
+   *
+   * @param tjd Julian Day
+   * @param ipl Body number
+   * @param iflag Calculation flags
+   * @returns Object containing attributes and error string
    */
   swe_pheno(
     tjd: number,
@@ -2434,7 +2733,15 @@ export class SwissEph {
   }
 
   /**
-   * swe_refrac_extended
+   * Calculate atmospheric refraction (extended).
+   *
+   * @param inalt Input altitude
+   * @param geoalt Geographic altitude
+   * @param atpress Atmospheric pressure
+   * @param attemp Atmospheric temperature
+   * @param lapse_rate Temperature lapse rate
+   * @param calc_flag Calculation flag
+   * @returns Object containing refraction result array
    */
   swe_refrac_extended(
     inalt: number,
@@ -2461,14 +2768,27 @@ export class SwissEph {
   }
 
   /**
-   * swe_set_lapse_rate
+   * Set the temperature lapse rate.
+   *
+   * @param lapse_rate Lapse rate in K/m
    */
   swe_set_lapse_rate(lapse_rate: number): void {
     this.exports.swe_set_lapse_rate(lapse_rate);
   }
 
   /**
-   * swe_rise_trans_true_hor
+   * Calculate rise/set/transit times for a body with a specific horizon altitude.
+   *
+   * @param tjd_ut Start Julian Day (UT)
+   * @param ipl Body number
+   * @param starname Star name (if ipl is 0)
+   * @param epheflag Ephemeris flags
+   * @param rsmi Event flag
+   * @param geopos Geographic position [lon, lat, alt]
+   * @param atpress Atmospheric pressure
+   * @param attemp Atmospheric temperature
+   * @param horhgt Horizon altitude
+   * @returns Object containing result array `tret` and error string
    */
   swe_rise_trans_true_hor(
     tjd_ut: number,
@@ -2513,7 +2833,13 @@ export class SwissEph {
   }
 
   /**
-   * swe_nod_aps_ut
+   * Compute nodes and apsides of planets (UT).
+   *
+   * @param tjd_ut Julian Day (UT)
+   * @param ipl Body number
+   * @param iflag Calculation flags
+   * @param method Calculation method
+   * @returns Object containing nodes, apsides, and error string
    */
   swe_nod_aps_ut(
     tjd_ut: number,
@@ -2552,7 +2878,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_orbit_max_min_true_distance
+   * Compute maximum, minimum, and true distance of a body.
+   *
+   * @param tjd_et Julian Day (ET)
+   * @param ipl Body number
+   * @param iflag Calculation flags
+   * @returns Object containing distance info and error string
    */
   swe_orbit_max_min_true_distance(
     tjd_et: number,
@@ -2585,7 +2916,10 @@ export class SwissEph {
   }
 
   /**
-   * swe_time_equ
+   * Calculate the Equation of Time.
+   *
+   * @param tjd Julian Day
+   * @returns Object containing equation of time and error string
    */
   swe_time_equ(tjd: number): TimeEqu {
     const te_ptr = this.heap.alloc(6 * 8);
@@ -2600,7 +2934,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_lmt_to_lat
+   * Convert Local Mean Time (LMT) to Local Apparent Time (LAT).
+   *
+   * @param tjd_lmt Julian Day in LMT
+   * @param geolon Geographic longitude
+   * @returns Object containing LAT and error string
    */
   swe_lmt_to_lat(
     tjd_lmt: number,
@@ -2623,7 +2961,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_lat_to_lmt
+   * Convert Local Apparent Time (LAT) to Local Mean Time (LMT).
+   *
+   * @param tjd_lat Julian Day in LAT
+   * @param geolon Geographic longitude
+   * @returns Object containing LMT and error string
    */
   swe_lat_to_lmt(
     tjd_lat: number,
@@ -2646,14 +2988,20 @@ export class SwissEph {
   }
 
   /**
-   * swe_set_interpolate_nut
+   * Enable or disable nutation interpolation (optimization).
+   *
+   * @param do_interpolate 1 to enable, 0 to disable
    */
   swe_set_interpolate_nut(do_interpolate: number): void {
     this.exports.swe_set_interpolate_nut(do_interpolate);
   }
 
   /**
-   * swe_cotrans_sp
+   * Coordinate transformation (spherical).
+   *
+   * @param xpo Input coordinates [lon, lat, dist]
+   * @param eps Ecliptic obliquity
+   * @returns Object containing transformed coordinates
    */
   swe_cotrans_sp(xpo: number[], eps: number): CotransSp {
     const xpo_ptr = this.heap.alloc(3 * 8);
@@ -2668,14 +3016,20 @@ export class SwissEph {
   }
 
   /**
-   * swe_set_delta_t_userdef
+   * Set a user-defined Delta T value.
+   *
+   * @param dt Delta T value
    */
   swe_set_delta_t_userdef(dt: number): void {
     this.exports.swe_set_delta_t_userdef(dt);
   }
 
   /**
-   * swe_rad_midp
+   * Midpoint of two radian values.
+   *
+   * @param x1 Radian 1
+   * @param x0 Radian 2
+   * @returns Object containing status code (result implicit?)
    */
   swe_rad_midp(x1: number, x0: number): { returnCode: number } {
     const ret = this.exports.swe_rad_midp(x1, x0);
@@ -2684,7 +3038,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_split_deg
+   * Split degrees into DMS (degrees, minutes, seconds).
+   *
+   * @param ddeg Decimal degrees
+   * @param roundflag Rounding flag
+   * @returns Object containing split components (result)
    */
   swe_split_deg(
     ddeg: number,
@@ -2718,7 +3076,10 @@ export class SwissEph {
   }
 
   /**
-   * swe_csnorm
+   * Normalize centiseconds to 0..360*3600.
+   *
+   * @param p Centiseconds
+   * @returns Object containing status code
    */
   swe_csnorm(p: number): { returnCode: number } {
     const ret = this.exports.swe_csnorm(p);
@@ -2727,7 +3088,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_difcsn
+   * Difference of centiseconds normalized.
+   *
+   * @param p1 Centiseconds 1
+   * @param p2 Centiseconds 2
+   * @returns Object containing status code
    */
   swe_difcsn(p1: number, p2: number): { returnCode: number } {
     const ret = this.exports.swe_difcsn(p1, p2);
@@ -2736,7 +3101,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_difdegn
+   * Difference of degrees normalized.
+   *
+   * @param p1 Degree 1
+   * @param p2 Degree 2
+   * @returns Object containing status code
    */
   swe_difdegn(p1: number, p2: number): { returnCode: number } {
     const ret = this.exports.swe_difdegn(p1, p2);
@@ -2745,7 +3114,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_difcs2n
+   * Difference of centiseconds to -180..180 (normalized).
+   *
+   * @param p1 Centiseconds 1
+   * @param p2 Centiseconds 2
+   * @returns Object containing status code
    */
   swe_difcs2n(p1: number, p2: number): { returnCode: number } {
     const ret = this.exports.swe_difcs2n(p1, p2);
@@ -2754,7 +3127,11 @@ export class SwissEph {
   }
 
   /**
-   * swe_difrad2n
+   * Difference of radians to -PI..PI (normalized).
+   *
+   * @param p1 Radian 1
+   * @param p2 Radian 2
+   * @returns Object containing status code
    */
   swe_difrad2n(p1: number, p2: number): { returnCode: number } {
     const ret = this.exports.swe_difrad2n(p1, p2);
@@ -2763,7 +3140,10 @@ export class SwissEph {
   }
 
   /**
-   * swe_csroundsec
+   * Round centiseconds to seconds.
+   *
+   * @param x Centiseconds
+   * @returns Object containing status code
    */
   swe_csroundsec(x: number): { returnCode: number } {
     const ret = this.exports.swe_csroundsec(x);

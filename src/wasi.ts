@@ -6,15 +6,21 @@
  * like the browser.
  */
 export class WASI {
+  /** WebAssembly imports object containing WASI syscall implementations. */
   imports: WebAssembly.Imports;
+  /** WebAssembly memory instance, set via setMemory. */
   memory?: WebAssembly.Memory;
 
   // Virtual File System
-  virtualFiles = new Map<string, Uint8Array>();
-  openFiles = new Map<
-    number,
-    { pos: number; content: Uint8Array; path: string }
-  >();
+  /** Map of virtual file paths to their content. */
+  virtualFiles: Map<string, Uint8Array> = new Map<string, Uint8Array>();
+  /** Map of open file descriptors to file handles. */
+  openFiles: Map<number, { pos: number; content: Uint8Array; path: string }> =
+    new Map<
+      number,
+      { pos: number; content: Uint8Array; path: string }
+    >();
+  /** Next available file descriptor. */
   nextFd = 10;
 
   constructor() {
@@ -314,10 +320,20 @@ export class WASI {
     };
   }
 
+  /**
+   * Mounts a virtual file.
+   * @param path The path to mount the file at (e.g. "ephe/seas_18.se1").
+   * @param content The content of the file as a Uint8Array.
+   */
   mount(path: string, content: Uint8Array) {
     this.virtualFiles.set(path, content);
   }
 
+  /**
+   * Sets the WebAssembly memory instance.
+   * This is required for syscalls to access WASM memory.
+   * @param memory The WebAssembly.Memory instance.
+   */
   setMemory(memory: WebAssembly.Memory) {
     this.memory = memory;
   }
