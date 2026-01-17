@@ -33,6 +33,11 @@ jobs:
       - name: Build WASM
         run: deno task build:wasm
 
+      - name: Build Native swetest
+        run: |
+          cd vendor/swisseph
+          make swetest
+
       - name: Run Tests
         run: deno task test
 
