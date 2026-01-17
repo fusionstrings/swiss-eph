@@ -25,6 +25,7 @@ import {
   PLANET_POSITIONS,
   POSITIONS_BY_DATE,
   SIDEREAL_MODES,
+  SIDEREAL_TIME_VALUES,
   TEST_DATES,
   TEST_JD,
   TEST_LOCATION,
@@ -212,7 +213,6 @@ Deno.test("Swetest Comparison: All House Systems", async () => {
 
     // Verify all 12 cusps
     for (let i = 0; i < 12; i++) {
-      const cuspDiff = Math.abs(cusps[i + 1] - golden.cusps[i]);
       assertAlmostEquals(
         cusps[i + 1],
         golden.cusps[i],
@@ -230,6 +230,40 @@ Deno.test("Swetest Comparison: All House Systems", async () => {
       tolerance: TOLERANCES.STRICT,
       timestamp: new Date().toISOString(),
     });
+  }
+
+  // --- ADDED: Location Robustness (Verify no crashes and sane results for all locations) ---
+  console.log(
+    `\n  Location Robustness (All ${
+      Object.keys(TEST_LOCATIONS).length
+    } locations):`,
+  );
+  const wholeSign = "W".charCodeAt(0);
+  for (const [name, loc] of Object.entries(TEST_LOCATIONS)) {
+    const { ascmc, returnCode } = eph.swe_houses(
+      utJD,
+      loc.lat,
+      loc.lon,
+      wholeSign,
+    );
+    const passed = returnCode >= 0 && ascmc[0] >= 0 && ascmc[0] < 360;
+    console.log(
+      `    ${name.padEnd(15)} | ASC: ${ascmc[0].toFixed(2).padStart(6)} | ${
+        passed ? "OK" : "FAILED"
+      }`,
+    );
+
+    allResults.push({
+      name: `House Robustness: ${name}`,
+      passed,
+      expected: 180, // placeholder
+      actual: ascmc[0],
+      diff: 0,
+      tolerance: 180,
+      timestamp: new Date().toISOString(),
+    });
+
+    if (!passed) throw new Error(`House calculation failed for ${name}`);
   }
 });
 
@@ -290,6 +324,11 @@ Deno.test("Swetest Comparison: Delta-T Values", async () => {
     const wasmSec = dt * 86400;
     const diff = Math.abs(wasmSec - value.seconds);
 
+    // Verify against direct DELTA_T if this is the primary date
+    if (dateKey === "PRIMARY") {
+      assertAlmostEquals(dt, DELTA_T.days, TOLERANCES.IDENTICAL);
+    }
+
     console.log(
       `  ${dateKey.padEnd(18)} | ${value.seconds.toFixed(4)}s vs ${
         wasmSec.toFixed(4)
@@ -311,7 +350,44 @@ Deno.test("Swetest Comparison: Delta-T Values", async () => {
 });
 
 // ============================================================================
-// TEST 6: EDGE CASES
+// TEST 6: SIDEREAL TIME ACROSS EPOCHS
+// ============================================================================
+Deno.test("Swetest Comparison: Sidereal Time", async () => {
+  const eph = await load({ ephePath: EPHE_PATH });
+
+  console.log(`\n${"=".repeat(60)}`);
+  console.log(`  TEST 6: Sidereal Time Across Epochs`);
+  console.log(`${"=".repeat(60)}`);
+
+  for (const [dateKey, value] of Object.entries(SIDEREAL_TIME_VALUES)) {
+    const date = TEST_DATES[dateKey as keyof typeof TEST_DATES];
+    const { dt } = eph.swe_deltat_ex(date.jd, Constants.SEFLG_SWIEPH);
+    const utJD = date.jd - dt;
+    const sidTime = eph.swe_sidtime(utJD);
+    const diff = Math.abs(sidTime - value);
+
+    console.log(
+      `  ${dateKey.padEnd(18)} | ${value.toFixed(10)} vs ${
+        sidTime.toFixed(10)
+      } | Diff: ${diff.toExponential(2)}`,
+    );
+
+    allResults.push({
+      name: `Sidereal Time: ${dateKey}`,
+      passed: diff <= TOLERANCES.STRICT,
+      expected: value,
+      actual: sidTime,
+      diff,
+      tolerance: TOLERANCES.STRICT,
+      timestamp: new Date().toISOString(),
+    });
+
+    assertAlmostEquals(sidTime, value, TOLERANCES.STRICT);
+  }
+});
+
+// ============================================================================
+// TEST 7: EDGE CASES
 // ============================================================================
 
 Deno.test("Swetest Comparison: Edge Cases", async () => {
@@ -437,6 +513,9 @@ Deno.test("Generate Comprehensive Test Artifacts", async () => {
       ),
     );
     console.log(`Artifacts written to ${artifactDir}/`);
+
+    // Use the printReport utility as requested
+    printReport(report);
   } catch (e: unknown) {
     console.log("Could not write artifacts:", (e as Error).message);
   }

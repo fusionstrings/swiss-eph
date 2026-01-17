@@ -27,13 +27,31 @@ import type { BenchmarkResult, TestReport, TestResult } from "./test_utils.ts";
  */
 export function runE2ETests(
   eph: {
-    swe_calc: Function;
-    swe_julday: Function;
-    swe_revjul: Function;
-    swe_houses: Function;
-    swe_cotrans: Function;
-    swe_version: Function;
-    swe_degnorm: Function;
+    swe_calc: (
+      tjd_et: number,
+      ipl: number,
+      iflag: number,
+    ) => { returnCode: number; xx: Float64Array; error: string };
+    swe_julday: (
+      year: number,
+      month: number,
+      day: number,
+      hour: number,
+      gregflag: number,
+    ) => number;
+    swe_revjul: (
+      jd: number,
+      gregflag: number,
+    ) => { year: number; month: number; day: number; hour: number };
+    swe_houses: (
+      tjd_ut: number,
+      geolat: number,
+      geolon: number,
+      hsys: number,
+    ) => { cusps: Float64Array; ascmc: Float64Array; returnCode: number };
+    swe_cotrans: (xpin: [number, number, number], eps: number) => Float64Array;
+    swe_version: () => string;
+    swe_degnorm: (x: number) => number;
   },
   Constants: Record<string, number>,
   platform: string,
@@ -206,7 +224,7 @@ export function runE2ETests(
 
   try {
     const eps = 23.44;
-    const ecliptic = [100.0, 5.0, 1.0];
+    const ecliptic: [number, number, number] = [100.0, 5.0, 1.0];
     const equatorial = eph.swe_cotrans(ecliptic, -eps);
     const backToEcl = eph.swe_cotrans([equatorial[0], equatorial[1], 1.0], eps);
 

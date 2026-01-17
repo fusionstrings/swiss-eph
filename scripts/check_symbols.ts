@@ -1,5 +1,4 @@
 import { parseMetadata } from "./metadata.ts";
-import { assert } from "@std/assert";
 
 const HEADER_PATH = "src/swisseph/swephexp.h";
 const DEF_PATH = "src/swisseph/sweodef.h";

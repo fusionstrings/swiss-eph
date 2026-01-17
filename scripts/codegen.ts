@@ -1,4 +1,4 @@
-import { dirname, join } from "@std/path";
+import { dirname } from "@std/path";
 import { ensureDir } from "@std/fs/ensure-dir";
 import { parseMetadata } from "./metadata.ts";
 

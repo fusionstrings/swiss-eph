@@ -2,6 +2,7 @@ import { Constants, SwissEph } from "../../../npm/esm/mod.js";
 import { promises as fs } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import process from "node:process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const wasmPath = join(__dirname, "../../../npm/wasm/libswephe.wasm");
@@ -42,7 +43,7 @@ async function run() {
       const content = await fs.readFile(join(epheDir, file));
       eph.mount(file, new Uint8Array(content));
       console.log(`  ✓ Mounted ${file}`);
-    } catch (e) {
+    } catch (_e) {
       console.warn(`  ! Could not mount ${file}, falling back to Moshier`);
     }
   }

@@ -1,5 +1,3 @@
-import { join } from "@std/path";
-
 const MOD_PATH = "mod.ts";
 const WRAPPERS_PATH = "bindings/generated_wrappers.ts";
 

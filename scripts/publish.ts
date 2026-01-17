@@ -12,10 +12,9 @@
  * 5. Publishes to NPM (dry-run by default).
  */
 
-import { parse } from "https://deno.land/std@0.211.0/flags/mod.ts";
-import { assert } from "https://deno.land/std@0.211.0/assert/mod.ts";
+import { parseArgs } from "@std/cli/parse-args";
 
-const flags = parse(Deno.args, {
+const flags = parseArgs(Deno.args, {
   boolean: ["dry-run", "real"],
   default: { "dry-run": true },
 });
@@ -110,7 +109,7 @@ try {
     console.error("❌ NPM publish failed.");
     Deno.exit(1);
   }
-} catch (e) {
+} catch (_e) {
   console.error("❌ Failed to run npm publish. Is npm installed?");
   Deno.exit(1);
 }

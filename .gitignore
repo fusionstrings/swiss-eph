@@ -32,6 +32,9 @@ Thumbs.db
 # Deno
 .deno/
 deno.lock.back
+
+# Node
+node_modules
 npm
 
 # Submodule artifacts
