@@ -47,3 +47,6 @@ vendor/swisseph/swetest
 
 #Env
 .env*
+
+#rust
+crate/target
