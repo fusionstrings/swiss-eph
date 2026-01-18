@@ -1198,9 +1198,11 @@
       "jsr:@std/cli@^1.0.8",
       "jsr:@std/encoding@^1.0.5",
       "jsr:@std/fs@^1.0.8",
+      "jsr:@std/http@^1.0.23",
       "jsr:@std/io@~0.225.2",
       "jsr:@std/path@^1.0.8",
-      "npm:esbuild@~0.24.2"
+      "npm:esbuild@~0.24.2",
+      "npm:puppeteer@24"
     ]
   }
 }

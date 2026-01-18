@@ -17,7 +17,7 @@ const PLANET_POSITIONS = {
 };
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(_request, _env, _ctx) {
     try {
       // Initialize module
       const module = await WebAssembly.compile(wasm);

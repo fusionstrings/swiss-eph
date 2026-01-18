@@ -1,5 +1,5 @@
-import puppeteer from "npm:puppeteer";
-import { serveDir } from "jsr:@std/http@1.0.23/file-server";
+import puppeteer from "puppeteer";
+import { serveDir } from "@std/http/file-server";
 
 const port = 8000;
 

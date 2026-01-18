@@ -1,5 +1,5 @@
 import * as esbuild from "esbuild";
-import { dirname, fromFileUrl, join } from "jsr:@std/path";
+import { dirname, fromFileUrl, join } from "@std/path";
 
 const __dirname = dirname(fromFileUrl(import.meta.url));
 // const npmDir = join(__dirname, "../../../npm");

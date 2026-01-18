@@ -1,4 +1,4 @@
-import { assert, assertEquals } from "@std/assert";
+import { assert } from "@std/assert";
 import { load } from "../src/main.ts";
 import { Constants } from "../lib/wasi/swisseph_api.generated.ts";
 
@@ -78,7 +78,14 @@ Deno.test("swe_calc Zero-Copy POC", async () => {
   const eph = await load({ ephePath: EPHE_PATH });
 
   // Access private heap with cast - standardizing for test purposes
-  const heap = (eph as unknown as { heap: any }).heap;
+  const heap =
+    (eph as unknown as {
+      heap: {
+        alloc: (size: number) => number;
+        free: (ptr: number) => void;
+        getF64: (ptr: number, length: number) => Float64Array;
+      };
+    }).heap;
 
   // Allocate memory manually
   const xx_ptr = heap.alloc(6 * 8);
@@ -88,7 +95,7 @@ Deno.test("swe_calc Zero-Copy POC", async () => {
   const iflag = Constants.SEFLG_SWIEPH;
 
   // Call with external pointers
-  const ret = eph.swe_calc(julday, Constants.SE_SUN, iflag, xx_ptr, serr_ptr);
+  const _ret = eph.swe_calc(julday, Constants.SE_SUN, iflag, xx_ptr, serr_ptr);
 
   // Verify results
   const xx_view = heap.getF64(xx_ptr, 6);

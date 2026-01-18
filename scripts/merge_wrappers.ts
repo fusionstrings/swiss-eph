@@ -27,7 +27,7 @@ async function merge() {
     const line = wrapperLines[i];
 
     // Start of a method (heuristic: starts with "  swe_")
-    const match = line.match(/^\s+(swe_[a-zA-Z0-9_]+)\(/);
+    const _match = line.match(/^\s+(swe_[a-zA-Z0-9_]+)\(/);
 
     // Also catch the JSDoc comment preceding it
     if (line.trim().startsWith("/**")) {

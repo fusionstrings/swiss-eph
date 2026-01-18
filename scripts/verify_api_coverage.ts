@@ -1,4 +1,4 @@
-import { join } from "https://deno.land/std@0.212.0/path/mod.ts";
+import { join } from "@std/path";
 
 const PROJECT_ROOT = new URL("..", import.meta.url).pathname;
 const HEADER_PATH = join(PROJECT_ROOT, "vendor/swisseph/swephexp.h");
