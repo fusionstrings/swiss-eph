@@ -19,6 +19,8 @@ async function bumpCargo(version: string) {
   content = content.replace(/version = ".*?"/, `version = "${version}"`);
   await Deno.writeTextFile(path, content);
   console.log(`Updated Cargo.toml to ${version}`);
+  console.log("Running cargo check to update lockfile...");
+  await new Deno.Command("cargo", { args: ["check"] }).output();
 }
 
 async function updateChangelog(version: string) {
