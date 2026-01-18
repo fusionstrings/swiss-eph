@@ -67,7 +67,7 @@ await build({
       // WASM
       Deno.mkdirSync("npm/wasm", { recursive: true });
       Deno.copyFileSync(
-        "lib/wasm-sdk/swiss_eph.wasm",
+        "lib/wasi/swiss_eph.wasm",
         "npm/wasm/swiss_eph.wasm",
       );
       Deno.copyFileSync(
