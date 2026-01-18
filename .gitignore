@@ -1,23 +1,15 @@
 # Build artifacts
-generated/libswephe.wasm
-dist/
-
-# Generated files
-generated/swisseph_api.generated.ts
-generated/exported_functions.json
-browser/wrapper.ts
-
-# Test artifacts
-artifacts/
-output.txt
-
-# Compiled binaries
-scripts/swetest_enhanced
+target/
+lib/wasi/
+lib/wasm-*/
+lib/artifacts/
+swetest_enhanced
+swetest_enhanced.wasm
 
 # Toolchain
 toolchain/
 wasi-sdk-*.tar.gz
-swetest_enhanced.wasm
+.cargo/
 
 # OS Specific
 .DS_Store
@@ -37,16 +29,20 @@ Thumbs.db
 deno.lock.back
 
 # Node
-node_modules
-npm
+node_modules/
+npm/
 
-# Submodule artifacts
+# Vendor build artifacts
 vendor/swisseph/*.o
 vendor/swisseph/libswe.a
 vendor/swisseph/swetest
 
-#Env
+# Environment
 .env*
 
-#rust
-crate/target
+# Legacy (removing, should already be gone)
+generated/
+dist/
+artifacts/
+browser/wrapper.ts
+output.txt

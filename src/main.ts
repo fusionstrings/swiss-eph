@@ -1,8 +1,8 @@
 import { WASI } from "./wasi.ts";
 import type { WasmExports } from "./heap.ts";
 import { WasmHeap } from "./heap.ts";
-import { Constants } from "../generated/swisseph_api.generated.ts";
-import type { SwissEphExports } from "../generated/swisseph_api.generated.ts";
+import { Constants } from "../lib/wasi/swisseph_api.generated.ts";
+import type { SwissEphExports } from "../lib/wasi/swisseph_api.generated.ts";
 
 // Interface definitions for function return values
 /** Return value for swe_azalt. */
@@ -218,10 +218,40 @@ export class SwissEph {
 
   constructor(module: WebAssembly.Module) {
     this.wasi = new WASI();
-    const imports = { ...this.wasi.imports };
+    const imports: Record<string, any> = { ...this.wasi.imports };
+
+    // Add dummy handlers for wasm-bindgen imports if they exist in the module
+    // and aren't provided. This allows loading wasmbuild artifacts for C-FFI usage.
+    WebAssembly.Module.imports(module).forEach((imp) => {
+      if (!(imp.module in imports)) {
+        imports[imp.module] = new Proxy({}, {
+          get: () => () => {/* dummy */},
+        });
+      }
+    });
+
     this.instance = new WebAssembly.Instance(module, imports);
     this.wasi.setMemory(this.instance.exports.memory as WebAssembly.Memory);
-    this.exports = this.instance.exports as unknown as SwissEphExports;
+    this.exports = { ...this.instance.exports } as unknown as SwissEphExports;
+
+    // Normalize exports: wasm-bindgen often strips 'swe_' prefix
+    // or we use 'wasm_' prefix to avoid conflicts.
+    for (const [key, value] of Object.entries(this.instance.exports)) {
+      if (!key.startsWith("swe_")) {
+        // Case 1: wasm_swe_calc -> swe_calc
+        if (key.startsWith("wasm_")) {
+          const original = key.replace("wasm_", "");
+          (this.exports as any)[original] = value;
+        } else {
+          // Case 2: calc_ut -> swe_calc_ut
+          const prefixed = `swe_${key}`;
+          if (!(prefixed in this.exports)) {
+            (this.exports as any)[prefixed] = value;
+          }
+        }
+      }
+    }
+
     this.heap = new WasmHeap(
       this.instance.exports.memory as WebAssembly.Memory,
       this.exports as unknown as WasmExports,
@@ -3233,11 +3263,9 @@ export async function load(
     bytes = wasmSource;
   } else {
     const url = wasmSource ||
-      new URL("../generated/libswephe.wasm", import.meta.url);
+      new URL("../lib/wasi/swiss_eph.wasm", import.meta.url);
     if (typeof Deno !== "undefined") {
-      bytes = await Deno.readFile(
-        url instanceof URL ? url : new URL(url, import.meta.url),
-      );
+      bytes = await Deno.readFile(url);
     } else {
       const response = await fetch(url);
       bytes = new Uint8Array(await response.arrayBuffer());

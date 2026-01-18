@@ -4,7 +4,7 @@ use std::env;
 #[test]
 fn test_fixed_star_sirius() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
-    let ephe_path = format!("{}/../vendor/swisseph/ephe", manifest_dir);
+    let ephe_path = format!("{}/vendor/swisseph/ephe", manifest_dir);
     safe::set_ephe_path(&ephe_path);
 
     // J2000
@@ -23,7 +23,7 @@ fn test_fixed_star_sirius() {
 #[test]
 fn test_rise_trans_sun() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let ephe_path = format!("{}/../vendor/swisseph/ephe", manifest_dir);
+    let ephe_path = format!("{}/vendor/swisseph/ephe", manifest_dir);
     safe::set_ephe_path(&ephe_path);
 
     let jd = 2451545.0; // J2000
@@ -77,7 +77,7 @@ fn test_phenomena_venus() {
 #[test]
 fn test_solar_eclipse_search() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let ephe_path = format!("{}/../vendor/swisseph/ephe", manifest_dir);
+    let ephe_path = format!("{}/vendor/swisseph/ephe", manifest_dir);
     safe::set_ephe_path(&ephe_path);
 
     // Search from J2000
@@ -109,7 +109,7 @@ fn test_azimuth_altitude_sun() {
     };
     
     // Need position first
-    let sun_pos = safe::calc_ut(jd, SE_SUN, safe::CalcFlags::new()).unwrap();
+    let sun_pos = safe::calc_ut(jd, SE_SUN, safe::CalcFlags::new().raw()).unwrap();
     
     let (az, alt) = safe::azimuth_altitude(jd, flags, geopos, sun_pos).unwrap();
     
@@ -122,7 +122,7 @@ fn test_azimuth_altitude_sun() {
 #[test]
 fn test_heliacal_event() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let ephe_path = format!("{}/../vendor/swisseph/ephe", manifest_dir);
+    let ephe_path = format!("{}/vendor/swisseph/ephe", manifest_dir);
     safe::set_ephe_path(&ephe_path);
     
     // J2000
@@ -167,7 +167,7 @@ fn test_heliacal_event() {
 #[test]
 fn test_lunar_eclipse_search() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let ephe_path = format!("{}/../vendor/swisseph/ephe", manifest_dir);
+    let ephe_path = format!("{}/vendor/swisseph/ephe", manifest_dir);
     safe::set_ephe_path(&ephe_path);
 
     // Search from J2000

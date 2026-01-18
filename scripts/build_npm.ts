@@ -3,27 +3,10 @@ import denoJson from "../deno.json" with { type: "json" };
 
 await emptyDir("./npm");
 
-// Ensure browser wrapper exists before building
-try {
-  await Deno.stat("./browser/wrapper.ts");
-} catch {
-  console.log("Browser wrapper not found. Running build:browser...");
-  const cmd = new Deno.Command("deno", {
-    args: ["task", "build:browser"],
-    stdout: "inherit",
-    stderr: "inherit",
-  });
-  const { success } = await cmd.output();
-  if (!success) {
-    console.error("Failed to build browser artifact.");
-    Deno.exit(1);
-  }
-}
-
 await build({
   entryPoints: [
-    { name: ".", path: "./mod.ts" },
-    { name: "./browser", path: "./browser/wrapper.ts" },
+    { name: ".", path: "./src/main.ts" },
+    { name: "./browser", path: "./lib/swiss_eph.js" },
   ],
   outDir: "./npm",
   typeCheck: false,
@@ -55,7 +38,9 @@ await build({
       url: "https://github.com/fusionstrings/swiss-eph/issues",
     },
     exports: {
-      "./wasm": "./wasm/libswephe.wasm",
+      "./wasm": "./wasm/swiss_eph.wasm",
+      "./wasm-wasi": "./wasm/swiss-eph-wasi.wasm",
+      "./browser": "./esm/lib/swiss_eph.js",
     },
   },
   compilerOptions: {
@@ -65,7 +50,22 @@ await build({
     try {
       // WASM
       Deno.mkdirSync("npm/wasm", { recursive: true });
-      Deno.copyFileSync("generated/libswephe.wasm", "npm/wasm/libswephe.wasm");
+      Deno.copyFileSync("lib/swiss_eph.wasm", "npm/wasm/swiss_eph.wasm");
+      Deno.copyFileSync(
+        "lib/swiss-eph-wasi.wasm",
+        "npm/wasm/swiss-eph-wasi.wasm",
+      );
+      // Ensure internal JS is available for the browser entry point
+      try {
+        Deno.mkdirSync("npm/esm/lib", { recursive: true });
+        Deno.copyFileSync(
+          "lib/swiss_eph.internal.js",
+          "npm/esm/lib/swiss_eph.internal.js",
+        );
+      } catch (e) {
+        // Might already exist if dnt followed imports
+        console.log("Note: Internal JS copy skipped or handled by dnt");
+      }
 
       Deno.copyFileSync("README.md", "npm/README.md");
       Deno.copyFileSync("LICENSE", "npm/LICENSE");

@@ -13,8 +13,8 @@
  */
 
 import { assertAlmostEquals } from "@std/assert";
-import { load } from "../mod.ts";
-import { Constants } from "../generated/swisseph_api.generated.ts";
+import { load } from "../src/main.ts";
+import { Constants } from "../lib/wasi/swisseph_api.generated.ts";
 import {
   AYANAMSA_VALUES,
   DELTA_T,
@@ -497,7 +497,7 @@ Deno.test("Generate Comprehensive Test Artifacts", async () => {
   console.log(`${"=".repeat(60)}\n`);
 
   // Write artifacts
-  const artifactDir = "./artifacts";
+  const artifactDir = "./lib/artifacts";
   try {
     await Deno.mkdir(artifactDir, { recursive: true });
     await Deno.writeTextFile(

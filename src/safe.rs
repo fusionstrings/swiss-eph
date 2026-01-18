@@ -7,13 +7,16 @@ use std::ffi::{CStr, CString};
 use std::os::raw::c_int;
 
 /// Error returned by Swiss Ephemeris calculations
+#[wasm_bindgen]
 #[derive(Debug, Clone)]
+#[wasm_bindgen(getter_with_clone)]
 pub struct SwissEphError {
     /// Error message from the library
     pub message: String,
     /// Return code
     pub code: i32,
 }
+
 
 impl std::fmt::Display for SwissEphError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -27,6 +30,7 @@ impl std::error::Error for SwissEphError {}
 pub type Result<T> = std::result::Result<T, SwissEphError>;
 
 /// Planetary position result
+#[wasm_bindgen]
 #[derive(Debug, Clone, Copy)]
 pub struct Position {
     /// Ecliptic longitude in degrees
@@ -229,6 +233,7 @@ impl HouseSystem {
 }
 
 /// Set the ephemeris path
+#[wasm_bindgen]
 pub fn set_ephe_path(path: &str) {
     let c_path = CString::new(path).unwrap();
     unsafe {
@@ -258,6 +263,7 @@ pub fn close() {
 }
 
 /// Get Swiss Ephemeris version
+#[wasm_bindgen]
 pub fn version() -> String {
     let mut buf = [0i8; 256];
     unsafe {
@@ -329,12 +335,13 @@ pub fn calc(jd: f64, planet: i32, flags: CalcFlags) -> Result<Position> {
 }
 
 /// Calculate planetary position using UT (Universal Time)
-pub fn calc_ut(jd_ut: f64, planet: i32, flags: CalcFlags) -> Result<Position> {
+#[wasm_bindgen]
+pub fn calc_ut(jd_ut: f64, planet: i32, flags: i32) -> std::result::Result<Position, SwissEphError> {
     let mut xx = [0.0f64; 6];
     let mut serr = [0i8; 256];
     
     let ret = unsafe {
-        swe_calc_ut(jd_ut, planet, flags.raw(), xx.as_mut_ptr(), serr.as_mut_ptr())
+        swe_calc_ut(jd_ut, planet, flags, xx.as_mut_ptr(), serr.as_mut_ptr())
     };
     
     if ret < 0 {
@@ -759,17 +766,25 @@ pub fn gauquelin_sector(
     let mut serr = [0i8; 256];
     let mut geopos_arr = [geopos.longitude, geopos.latitude, geopos.altitude];
     
-    let c_star = if let Some(name) = star_name {
-        CString::new(name).unwrap()
-    } else {
-        CString::new("").unwrap()
-    };
+    let mut star_buf = [0i8; 256];
+    if let Some(name) = star_name {
+        let c_star = CString::new(name).map_err(|e| SwissEphError {
+            message: format!("Invalid star name: {}", e),
+            code: -1,
+        })?;
+        let bytes = c_star.as_bytes_with_nul();
+        if bytes.len() < 256 {
+            unsafe {
+                std::ptr::copy_nonoverlapping(bytes.as_ptr(), star_buf.as_mut_ptr() as *mut u8, bytes.len());
+            }
+        }
+    }
 
     let ret = unsafe {
         swe_gauquelin_sector(
             jd_ut, 
             ipl, 
-            c_star.as_ptr() as *mut _, 
+            star_buf.as_mut_ptr(), 
             flags, 
             imeth, 
             geopos_arr.as_mut_ptr(), 
