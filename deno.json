@@ -7,7 +7,7 @@
     ".": "./src/main.ts",
     "./wasi": "./src/wasi.ts",
     "./browser": "./lib/wasm-sdk-inline/swiss_eph.js",
-    "./wasm": "./lib/wasm-sdk/swiss_eph.js"
+    "./wasm": "./src/loader.ts"
   },
   "publish": {
     "include": [
@@ -15,10 +15,11 @@
       "LICENSE",
       "src/**/*.ts",
       "lib/wasm-sdk-inline/",
-      "lib/wasm-sdk/"
+      "lib/wasm-sdk/",
+      "lib/wasi/"
     ],
     "exclude": [
-      "!lib/wasm-sdk-inline/",
+      "lib/wasm-sdk/swiss_eph.wasm",
       "!lib/wasm-sdk/",
       ".github",
       ".vscode",
@@ -36,7 +37,7 @@
   "tasks": {
     "setup": "deno run -A scripts/setup_toolchain.ts",
     "build:wasm": "make -j4",
-    "build:wasmbuild": "CC=./toolchain/wasi-sdk-24.0/bin/clang deno run -A wasmbuild --project swiss-eph --out lib/wasm-sdk && cp lib/wasi/swiss_eph.wasm lib/wasm-sdk/swiss_eph.wasm",
+    "build:wasmbuild": "CC=./toolchain/wasi-sdk-24.0/bin/clang deno run -A wasmbuild --project swiss-eph --out lib/wasm-sdk",
     "build:wasmbuild:inline": "CC=./toolchain/wasi-sdk-24.0/bin/clang deno run -A wasmbuild --project swiss-eph --inline --out lib/wasm-sdk-inline",
     "build:wasm-system": "deno run -A wasmbuild --project swiss-eph --out lib/wasm-system",
     "build:wasm-system:inline": "deno run -A wasmbuild --project swiss-eph --out lib/wasm-system-inline --inline",
