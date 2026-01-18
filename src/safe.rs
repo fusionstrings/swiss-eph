@@ -7,9 +7,9 @@ use std::ffi::{CStr, CString};
 use std::os::raw::c_int;
 
 /// Error returned by Swiss Ephemeris calculations
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 #[derive(Debug, Clone)]
-#[wasm_bindgen(getter_with_clone)]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen(getter_with_clone))]
 pub struct SwissEphError {
     /// Error message from the library
     pub message: String,
@@ -30,7 +30,7 @@ impl std::error::Error for SwissEphError {}
 pub type Result<T> = std::result::Result<T, SwissEphError>;
 
 /// Planetary position result
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 #[derive(Debug, Clone, Copy)]
 pub struct Position {
     /// Ecliptic longitude in degrees
@@ -233,7 +233,7 @@ impl HouseSystem {
 }
 
 /// Set the ephemeris path
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 pub fn set_ephe_path(path: &str) {
     let c_path = CString::new(path).unwrap();
     unsafe {
@@ -263,7 +263,7 @@ pub fn close() {
 }
 
 /// Get Swiss Ephemeris version
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 pub fn version() -> String {
     let mut buf = [0i8; 256];
     unsafe {
@@ -335,7 +335,7 @@ pub fn calc(jd: f64, planet: i32, flags: CalcFlags) -> Result<Position> {
 }
 
 /// Calculate planetary position using UT (Universal Time)
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 pub fn calc_ut(jd_ut: f64, planet: i32, flags: i32) -> std::result::Result<Position, SwissEphError> {
     let mut xx = [0.0f64; 6];
     let mut serr = [0i8; 256];

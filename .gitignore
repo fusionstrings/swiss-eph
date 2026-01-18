@@ -43,7 +43,7 @@ vendor/swisseph/swetest
 .env*
 
 # Legacy (removing, should already be gone)
-generated/
+/generated/
 dist/
 artifacts/
 browser/wrapper.ts

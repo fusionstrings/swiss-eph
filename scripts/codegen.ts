@@ -4,7 +4,7 @@ import { parseMetadata } from "./metadata.ts";
 
 const SRC_PATH = "vendor/swisseph/swephexp.h";
 const DEF_PATH = "vendor/swisseph/sweodef.h";
-const OUT_PATH = "lib/wasi/swisseph_api.generated.ts"; // Moved from generated/ -> lib/ -> lib/wasi/
+const OUT_PATH = "src/generated/api.ts"; // Committed source file for JSR
 const EXPORTS_PATH = "lib/wasi/exported_functions.json"; // Moved from generated/ -> lib/ -> lib/wasi/
 // const WRAPPERS_PATH = "bindings/generated_wrappers.ts"; // Removing this
 
