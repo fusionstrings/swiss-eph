@@ -81,6 +81,44 @@ fn main() {
 }
 ```
 
+## Ephemeris Data
+
+Swiss Ephemeris supports three modes of operation:
+
+### 1. Moshier Mode (Default, No Files Needed)
+
+Works out of the box with ~1 arcsecond precision:
+
+```rust
+// Just use the library - falls back to Moshier automatically
+let sun = safe::calc_ut(jd, SE_SUN, flags)?;
+```
+
+### 2. Embedded Data (Optional Feature)
+
+Add ~1.7 MB of embedded ephemeris for higher precision (1800-2400 CE):
+
+```toml
+[dependencies]
+swiss-eph = { version = "0.1", features = ["embedded-ephe"] }
+```
+
+### 3. Manual Download (Full Control)
+
+Download ephemeris files from
+[astro.com](https://www.astro.com/ftp/swisseph/ephe/):
+
+```bash
+curl -O https://www.astro.com/ftp/swisseph/ephe/sepl_18.se1
+curl -O https://www.astro.com/ftp/swisseph/ephe/semo_18.se1
+```
+
+Then configure:
+
+```rust
+safe::set_ephe_path("/path/to/ephe/files");
+```
+
 ## API Overview (JS/TS)
 
 | Function                       | Description                 |

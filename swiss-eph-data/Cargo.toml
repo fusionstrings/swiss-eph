@@ -1,0 +1,23 @@
+[package]
+name = "swiss-eph-data"
+version = "0.1.1"
+edition = "2021"
+authors = ["fusionstrings"]
+description = "Embedded ephemeris data files for swiss-eph (Swiss Ephemeris)"
+license = "AGPL-3.0"
+repository = "https://github.com/fusionstrings/swiss-eph"
+documentation = "https://docs.rs/swiss-eph-data"
+keywords = ["astronomy", "ephemeris", "astrology", "data"]
+categories = ["science", "data-structures"]
+readme = "README.md"
+
+[lib]
+name = "swiss_eph_data"
+
+# Include the ephemeris files in the package
+include = [
+    "src/**/*.rs",
+    "ephe/*.se1",
+    "Cargo.toml",
+    "README.md",
+]
