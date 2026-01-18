@@ -1,0 +1,27 @@
+[package]
+name = "swiss-eph"
+version = "0.1.1"
+edition = "2021"
+authors = ["fusionstrings"]
+description = "Complete FFI bindings to the Swiss Ephemeris astronomical calculation library"
+license = "AGPL-3.0"
+repository = "https://github.com/fusionstrings/swiss-eph"
+documentation = "https://docs.rs/swiss-eph"
+keywords = ["astronomy", "ephemeris", "astrology", "planetary", "calculation"]
+categories = ["science", "api-bindings"]
+readme = "../../README.md"
+links = "swisseph"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2.106"
+swiss-eph-data = { version = "0.1", path = "../swiss-eph-data", optional = true }
+
+[build-dependencies]
+cc = "1.2.53"
+
+[features]
+default = []
+embedded-ephe = ["swiss-eph-data"]

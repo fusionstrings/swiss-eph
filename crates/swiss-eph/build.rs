@@ -5,7 +5,7 @@
 use std::path::PathBuf;
 
 fn main() {
-    let vendor_dir = PathBuf::from("vendor/swisseph");
+    let vendor_dir = PathBuf::from("../../vendor/swisseph");
 
     let mut build = cc::Build::new();
     build
@@ -27,7 +27,7 @@ fn main() {
     let target = std::env::var("TARGET").unwrap_or_default();
     if target.contains("wasm32") {
         let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-        let sysroot = format!("{}/toolchain/wasi-sdk-24.0/share/wasi-sysroot", manifest_dir);
+        let sysroot = format!("{}/../../toolchain/wasi-sdk-24.0/share/wasi-sysroot", manifest_dir);
         
         build.target("wasm32-wasi");
         build.flag(&format!("--sysroot={}", sysroot));
@@ -36,5 +36,5 @@ fn main() {
     build.compile("swisseph");
 
     // Tell cargo to invalidate the built crate whenever the C sources change
-    println!("cargo:rerun-if-changed=vendor/swisseph");
+    println!("cargo:rerun-if-changed=../../vendor/swisseph");
 }

@@ -71,8 +71,13 @@ name = "swiss-eph"
 version = "0.1.1"
 dependencies = [
  "cc",
+ "swiss-eph-data",
  "wasm-bindgen",
 ]
+
+[[package]]
+name = "swiss-eph-data"
+version = "0.1.1"
 
 [[package]]
 name = "syn"
