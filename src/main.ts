@@ -218,7 +218,7 @@ export class SwissEph {
 
   constructor(module: WebAssembly.Module) {
     this.wasi = new WASI();
-    const imports: Record<string, any> = { ...this.wasi.imports };
+    const imports: WebAssembly.Imports = { ...this.wasi.imports };
 
     // Add dummy handlers for wasm-bindgen imports if they exist in the module
     // and aren't provided. This allows loading wasmbuild artifacts for C-FFI usage.
@@ -236,17 +236,18 @@ export class SwissEph {
 
     // Normalize exports: wasm-bindgen often strips 'swe_' prefix
     // or we use 'wasm_' prefix to avoid conflicts.
+    const exportsRecord = this.exports as unknown as Record<string, unknown>;
     for (const [key, value] of Object.entries(this.instance.exports)) {
       if (!key.startsWith("swe_")) {
         // Case 1: wasm_swe_calc -> swe_calc
         if (key.startsWith("wasm_")) {
           const original = key.replace("wasm_", "");
-          (this.exports as any)[original] = value;
+          exportsRecord[original] = value;
         } else {
           // Case 2: calc_ut -> swe_calc_ut
           const prefixed = `swe_${key}`;
           if (!(prefixed in this.exports)) {
-            (this.exports as any)[prefixed] = value;
+            exportsRecord[prefixed] = value;
           }
         }
       }

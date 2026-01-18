@@ -29,9 +29,9 @@ export class WasmHeap {
   alloc(size: number): number {
     let ptr: number;
     if (this.exports.malloc) {
-      ptr = (this.exports.malloc as Function)(size);
+      ptr = this.exports.malloc(size);
     } else if (this.exports.__wbindgen_malloc) {
-      ptr = (this.exports.__wbindgen_malloc as Function)(size);
+      ptr = this.exports.__wbindgen_malloc(size);
     } else {
       throw new Error(
         `No malloc found in WASM exports. Available: ${
@@ -45,10 +45,10 @@ export class WasmHeap {
 
   free(ptr: number) {
     if (this.exports.free) {
-      (this.exports.free as Function)(ptr);
+      this.exports.free(ptr);
     } else if (this.exports.__wbindgen_free) {
       const size = this.allocated.get(ptr) || 0;
-      (this.exports.__wbindgen_free as Function)(ptr, size, 8);
+      this.exports.__wbindgen_free(ptr, size, 8);
     }
     this.allocated.delete(ptr);
   }

@@ -146,8 +146,8 @@ async function main() {
 
     for (const result of results) {
       const ratio = result.ops / fastest.ops;
-      const pct = (ratio - 1) * 100;
-      const bar = "█".repeat(Math.round(ratio * 10));
+      const _pct = (ratio - 1) * 100;
+      const _bar = "█".repeat(Math.round(ratio * 10));
       console.log(
         `${result.name.padEnd(30)} ${result.ops.toFixed(0).padStart(15)} ${
           (ratio.toFixed(2) + "x").padStart(12)

@@ -101,7 +101,7 @@ Deno.test("Gate C: I/O Stress (Fallback to Moshier)", async () => {
   // If file missing, it might use Moshier results but return SEFLG_DEFAULTEPH logic?
   // Let's just check if it returns a result and doesn't crash.
 
-  const { xx, returnCode, error } = eph.swe_calc(
+  const { xx: _xx, returnCode, error } = eph.swe_calc(
     tjd_ut,
     Constants.SE_SUN,
     Constants.SEFLG_SWIEPH,

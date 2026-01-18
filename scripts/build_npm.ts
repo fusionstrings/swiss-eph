@@ -6,7 +6,7 @@ await emptyDir("./npm");
 await build({
   entryPoints: [
     { name: ".", path: "./src/main.ts" },
-    { name: "./browser", path: "./lib/swiss_eph.js" },
+    { name: "./browser", path: "./lib/wasm-sdk-inline/swiss_eph.js" },
   ],
   outDir: "./npm",
   typeCheck: false,
@@ -62,7 +62,7 @@ await build({
           "lib/swiss_eph.internal.js",
           "npm/esm/lib/swiss_eph.internal.js",
         );
-      } catch (e) {
+      } catch (_e) {
         // Might already exist if dnt followed imports
         console.log("Note: Internal JS copy skipped or handled by dnt");
       }
