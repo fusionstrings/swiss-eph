@@ -49,6 +49,11 @@ jobs:
       - name: Build Legacy WASI (make)
         run: deno task build:wasm
 
+      - name: Build wasmbuild artifacts
+        run: |
+          deno task build:wasmbuild
+          deno task build:wasmbuild:inline
+
       - name: Build Native swetest
         run: |
           cd vendor/swisseph
@@ -63,10 +68,6 @@ jobs:
       - name: Run Tests
         run: deno task test
 
-      - name: Build wasmbuild artifacts
-        run: |
-          deno task build:wasmbuild
-          deno task build:wasmbuild:inline
 
       - name: Build NPM Package
         run: deno task build:npm
