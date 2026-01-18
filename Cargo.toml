@@ -11,6 +11,39 @@ keywords = ["astronomy", "ephemeris", "astrology", "planetary", "calculation"]
 categories = ["science", "api-bindings"]
 readme = "README.md"
 links = "swisseph"
+exclude = [
+    # Ephemeris data and binaries
+    "vendor/swisseph/ephe",
+    "vendor/swisseph/doc",
+    "vendor/swisseph/windows",
+    "vendor/swisseph/contrib",
+    "vendor/swisseph/test",
+    "vendor/swisseph/bin",
+    "vendor/swisseph/swetest",
+    "vendor/swisseph/setest",
+    "vendor/swisseph/swein600.jpg",
+    # Build tooling
+    "toolchain",
+    "npm",
+    "lib",
+    "scripts",
+    ".github",
+    ".vscode",
+    "swetest_enhanced",
+    "swetest_enhanced.wasm",
+    "bench_native",
+    "tests",
+    "artifacts",
+    "bindings",
+    # Deno/TypeScript files
+    "deno.json",
+    "deno.lock",
+    "src/*.ts",
+    "src/generated",
+    "skills",
+    "Makefile",
+    "crate",
+]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
