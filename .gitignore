@@ -2,9 +2,11 @@
 target/
 lib/wasi/
 lib/wasm-*/
+lib/native/
 lib/artifacts/
 swetest_enhanced
 swetest_enhanced.wasm
+bench_native
 
 # Toolchain
 toolchain/
