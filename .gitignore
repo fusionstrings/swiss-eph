@@ -16,6 +16,8 @@ scripts/swetest_enhanced
 
 # Toolchain
 toolchain/
+wasi-sdk-*.tar.gz
+swetest_enhanced.wasm
 
 # OS Specific
 .DS_Store
@@ -39,9 +41,9 @@ node_modules
 npm
 
 # Submodule artifacts
-src/swisseph/*.o
-src/swisseph/libswe.a
-src/swisseph/swetest
+vendor/swisseph/*.o
+vendor/swisseph/libswe.a
+vendor/swisseph/swetest
 
 #Env
 .env*

@@ -1,3 +1,4 @@
 [submodule "vendor/swisseph"]
 	path = vendor/swisseph
-	url = https://github.com/aloistr/swisseph
+	url = https://github.com/astronexus/swe.git
+	ignore = untracked
