@@ -58,19 +58,22 @@ static int planets[] = {
     SE_SUN, SE_MOON, SE_MERCURY, SE_VENUS, SE_MARS,
     SE_JUPITER, SE_SATURN, SE_URANUS, SE_NEPTUNE, SE_PLUTO,
     SE_MEAN_NODE, SE_TRUE_NODE, SE_MEAN_APOG, SE_OSCU_APOG,
-    SE_CHIRON, SE_PHOLUS, SE_CERES, SE_PALLAS, SE_JUNO, SE_VESTA
+    SE_CHIRON, SE_PHOLUS, SE_CERES, SE_PALLAS, SE_JUNO, SE_VESTA,
+    SE_CUPIDO, SE_HADES, SE_ZEUS, SE_KRONOS, SE_APOLLON, SE_ADMETOS, SE_VULKANUS, SE_POSEIDON
 };
 static const char *planet_keys[] = {
     "SE_SUN", "SE_MOON", "SE_MERCURY", "SE_VENUS", "SE_MARS",
     "SE_JUPITER", "SE_SATURN", "SE_URANUS", "SE_NEPTUNE", "SE_PLUTO",
     "SE_MEAN_NODE", "SE_TRUE_NODE", "SE_MEAN_APOG", "SE_OSCU_APOG",
-    "SE_CHIRON", "SE_PHOLUS", "SE_CERES", "SE_PALLAS", "SE_JUNO", "SE_VESTA"
+    "SE_CHIRON", "SE_PHOLUS", "SE_CERES", "SE_PALLAS", "SE_JUNO", "SE_VESTA",
+    "SE_CUPIDO", "SE_HADES", "SE_ZEUS", "SE_KRONOS", "SE_APOLLON", "SE_ADMETOS", "SE_VULKANUS", "SE_POSEIDON"
 };
 static const char *planet_names[] = {
     "Sun", "Moon", "Mercury", "Venus", "Mars",
     "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto",
     "MeanNode", "TrueNode", "MeanApogee", "OscuApogee",
-    "Chiron", "Pholus", "Ceres", "Pallas", "Juno", "Vesta"
+    "Chiron", "Pholus", "Ceres", "Pallas", "Juno", "Vesta",
+    "Cupido", "Hades", "Zeus", "Kronos", "Apollon", "Admetos", "Vulkanus", "Poseidon"
 };
 static int num_planets = sizeof(planets) / sizeof(planets[0]);
 

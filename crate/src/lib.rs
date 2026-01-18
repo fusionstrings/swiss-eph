@@ -113,6 +113,22 @@ pub const SE_PROSERPINA: c_int = 57;
 pub const SE_WALDEMATH: c_int = 58;
 pub const SE_FIXSTAR: c_int = -10;
 
+pub const SE_FNAME_DE200: &str = "de200.eph";
+pub const SE_FNAME_DE403: &str = "de403.eph";
+pub const SE_FNAME_DE404: &str = "de404.eph";
+pub const SE_FNAME_DE405: &str = "de405.eph";
+pub const SE_FNAME_DE406: &str = "de406.eph";
+pub const SE_FNAME_DE431: &str = "de431.eph";
+pub const SE_FNAME_DFT: &str = SE_FNAME_DE431;
+pub const SE_FNAME_DFT2: &str = SE_FNAME_DE406;
+
+pub const SE_STARFILE_OLD: &str = "fixstars.cat";
+pub const SE_STARFILE: &str = "sefstars.txt";
+pub const SE_ASTNAMFILE: &str = "seasnam.txt";
+pub const SE_FICTFILE: &str = "seorbel.txt";
+
+pub const SE_DE_NUMBER: c_int = 431;
+
 // House/angle identifiers
 pub const SE_ASC: c_int = 0;
 pub const SE_MC: c_int = 1;
@@ -249,6 +265,8 @@ pub const SE_ECL_PENUMBBEG_VISIBLE: int32 = 8192;
 pub const SE_ECL_PENUMBEND_VISIBLE: int32 = 16384;
 pub const SE_ECL_OCC_BEG_DAYLIGHT: int32 = 8192;
 pub const SE_ECL_OCC_END_DAYLIGHT: int32 = 16384;
+pub const SE_ECL_ALLTYPES_SOLAR: int32 = SE_ECL_CENTRAL | SE_ECL_NONCENTRAL | SE_ECL_TOTAL | SE_ECL_ANNULAR | SE_ECL_PARTIAL | SE_ECL_ANNULAR_TOTAL;
+pub const SE_ECL_ALLTYPES_LUNAR: int32 = SE_ECL_TOTAL | SE_ECL_PARTIAL | SE_ECL_PENUMBRAL;
 pub const SE_ECL_ONE_TRY: int32 = 32 * 1024;
 
 // =============================================================================
@@ -300,6 +318,28 @@ pub const SE_HELFLAG_NO_DETAILS: int32 = 1024;
 pub const SE_HELFLAG_SEARCH_1_PERIOD: int32 = 1 << 11;
 pub const SE_HELFLAG_VISLIM_DARK: int32 = 1 << 12;
 pub const SE_HELFLAG_VISLIM_NOMOON: int32 = 1 << 13;
+pub const SE_HELFLAG_VISLIM_PHOTOPIC: int32 = 1 << 14;
+pub const SE_HELFLAG_VISLIM_SCOTOPIC: int32 = 1 << 15;
+pub const SE_HELFLAG_AV: int32 = 1 << 16;
+pub const SE_HELFLAG_AVKIND_VR: int32 = 1 << 16;
+pub const SE_HELFLAG_AVKIND_PTO: int32 = 1 << 17;
+pub const SE_HELFLAG_AVKIND_MIN7: int32 = 1 << 18;
+pub const SE_HELFLAG_AVKIND_MIN9: int32 = 1 << 19;
+pub const SE_HELFLAG_AVKIND: int32 = SE_HELFLAG_AVKIND_VR | SE_HELFLAG_AVKIND_PTO | SE_HELFLAG_AVKIND_MIN7 | SE_HELFLAG_AVKIND_MIN9;
+pub const SE_HELIACAL_AVKIND: int32 = SE_HELFLAG_AVKIND;
+
+pub const SE_HELIACAL_HIGH_PRECISION: int32 = SE_HELFLAG_HIGH_PRECISION;
+pub const SE_HELIACAL_LONG_SEARCH: int32 = SE_HELFLAG_LONG_SEARCH;
+pub const SE_HELIACAL_NO_DETAILS: int32 = SE_HELFLAG_NO_DETAILS;
+pub const SE_HELIACAL_OPTICAL_PARAMS: int32 = SE_HELFLAG_OPTICAL_PARAMS;
+pub const SE_HELIACAL_SEARCH_1_PERIOD: int32 = SE_HELFLAG_SEARCH_1_PERIOD;
+pub const SE_HELIACAL_VISLIM_DARK: int32 = SE_HELFLAG_VISLIM_DARK;
+pub const SE_HELIACAL_VISLIM_NOMOON: int32 = SE_HELFLAG_VISLIM_NOMOON;
+pub const SE_HELIACAL_VISLIM_PHOTOPIC: int32 = SE_HELFLAG_VISLIM_PHOTOPIC;
+
+pub const SE_PHOTOPIC_FLAG: c_int = 0;
+pub const SE_SCOTOPIC_FLAG: c_int = 1;
+pub const SE_MIXEDOPIC_FLAG: c_int = 2;
 
 // =============================================================================
 // Split degree flags
@@ -350,6 +390,20 @@ pub const SE_TIDAL_DE431: c_double = -25.80;
 pub const SE_TIDAL_DE441: c_double = -25.936;
 pub const SE_TIDAL_DEFAULT: c_double = SE_TIDAL_DE431;
 pub const SE_TIDAL_AUTOMATIC: c_double = 999999.0;
+pub const SE_TIDAL_26: c_double = -26.0;
+pub const SE_TIDAL_STEPHENSON_2016: c_double = -25.85;
+pub const SE_TIDAL_MOSEPH: c_double = SE_TIDAL_DE404;
+pub const SE_TIDAL_SWIEPH: c_double = SE_TIDAL_DEFAULT;
+pub const SE_TIDAL_JPLEPH: c_double = SE_TIDAL_DEFAULT;
+
+pub const SE_MODEL_DELTAT: c_int = 0;
+pub const SE_MODEL_PREC_LONGTERM: c_int = 1;
+pub const SE_MODEL_PREC_SHORTTERM: c_int = 2;
+pub const SE_MODEL_NUT: c_int = 3;
+pub const SE_MODEL_BIAS: c_int = 4;
+pub const SE_MODEL_JPLHOR_MODE: c_int = 5;
+pub const SE_MODEL_JPLHORA_MODE: c_int = 6;
+pub const SE_MODEL_SIDT: c_int = 7;
 pub const SE_DELTAT_AUTOMATIC: c_double = -1E-10;
 
 // =============================================================================
@@ -487,6 +541,8 @@ extern "C" {
     pub fn swe_heliacal_ut(tjdstart_ut: c_double, geopos: *mut c_double, datm: *mut c_double, dobs: *mut c_double, object_name: *mut c_char, type_event: int32, iflag: int32, dret: *mut c_double, serr: *mut c_char) -> int32;
     pub fn swe_heliacal_pheno_ut(tjd_ut: c_double, geopos: *mut c_double, datm: *mut c_double, dobs: *mut c_double, object_name: *mut c_char, type_event: int32, helflag: int32, darr: *mut c_double, serr: *mut c_char) -> int32;
     pub fn swe_vis_limit_mag(tjdut: c_double, geopos: *mut c_double, datm: *mut c_double, dobs: *mut c_double, object_name: *mut c_char, helflag: int32, dret: *mut c_double, serr: *mut c_char) -> int32;
+    pub fn swe_heliacal_angle(tjdut: c_double, dgeo: *mut c_double, datm: *mut c_double, dobs: *mut c_double, helflag: int32, mag: c_double, azi_obj: c_double, azi_sun: c_double, azi_moon: c_double, alt_moon: c_double, dret: *mut c_double, serr: *mut c_char) -> int32;
+    pub fn swe_topo_arcus_visionis(tjdut: c_double, dgeo: *mut c_double, datm: *mut c_double, dobs: *mut c_double, helflag: int32, mag: c_double, azi_obj: c_double, alt_obj: c_double, azi_sun: c_double, azi_moon: c_double, alt_moon: c_double, dret: *mut c_double, serr: *mut c_char) -> int32;
 
     // Cross functions
     pub fn swe_solcross(x2cross: c_double, jd_et: c_double, flag: int32, serr: *mut c_char) -> c_double;
