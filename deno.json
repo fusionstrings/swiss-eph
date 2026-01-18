@@ -8,8 +8,7 @@
     "./bridge": "./src/bridge.ts",
     "./wasi": "./src/wasi.ts",
     "./constants": "./generated/swisseph_api.generated.ts",
-    "./browser": "./browser/wrapper.ts",
-    "./wasm": "./generated/libswephe.wasm"
+    "./browser": "./browser/wrapper.ts"
   },
   "publish": {
     "include": [
