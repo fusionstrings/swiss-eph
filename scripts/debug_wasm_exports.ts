@@ -6,16 +6,22 @@ async function run() {
   console.log(`Inspecting ${wasmPath}...`);
   const buffer = await fs.readFile(wasmPath);
   const module = await WebAssembly.compile(buffer);
-  const exports = WebAssembly.Module.exports(module);
+  const imports = WebAssembly.Module.imports(module);
 
-  console.log("Exports found:", exports.length);
-  const names = exports.map((e) => e.name).sort();
-  console.log(names.join("\n"));
+  console.log("Imports found:", imports.length);
+  const importMap = new Map<string, string[]>();
 
-  if (names.includes("swe_julday")) console.log("\nFOUND: swe_julday");
-  else if (names.includes("julday")) {
-    console.log("\nFOUND: julday (will be normalized)");
-  } else console.log("\nMISSING: swe_julday");
+  imports.forEach((imp) => {
+    if (!importMap.has(imp.module)) {
+      importMap.set(imp.module, []);
+    }
+    importMap.get(imp.module)!.push(imp.name);
+  });
+
+  for (const [mod, names] of importMap.entries()) {
+    console.log(`\nModule: ${mod}`);
+    console.log(names.sort().join("\n"));
+  }
 }
 
 run();
