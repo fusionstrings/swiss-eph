@@ -36,7 +36,7 @@
   "tasks": {
     "setup": "deno run -A scripts/setup_toolchain.ts",
     "build:wasm": "make -j4",
-    "build:wasmbuild": "CC=./toolchain/wasi-sdk-24.0/bin/clang deno run -A wasmbuild --project swiss-eph --out lib/wasm-sdk",
+    "build:wasmbuild": "CC=./toolchain/wasi-sdk-24.0/bin/clang deno run -A wasmbuild --project swiss-eph --out lib/wasm-sdk && cp lib/wasi/swiss_eph.wasm lib/wasm-sdk/swiss_eph.wasm",
     "build:wasmbuild:inline": "CC=./toolchain/wasi-sdk-24.0/bin/clang deno run -A wasmbuild --project swiss-eph --inline --out lib/wasm-sdk-inline",
     "build:wasm-system": "deno run -A wasmbuild --project swiss-eph --out lib/wasm-system",
     "build:wasm-system:inline": "deno run -A wasmbuild --project swiss-eph --out lib/wasm-system-inline --inline",
