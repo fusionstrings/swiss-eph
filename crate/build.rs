@@ -1,4 +1,4 @@
-//! Build script for swisseph-wasi
+//! Build script for swiss-eph
 //!
 //! Compiles the Swiss Ephemeris C library from the vendored sources.
 

@@ -1,4 +1,4 @@
-# @fusionstrings/swisseph-wasi
+# @fusionstrings/swiss-eph
 
 Swiss Ephemeris astronomical calculation library compiled to WebAssembly for
 cross-platform JavaScript/TypeScript usage.
@@ -20,31 +20,31 @@ cross-platform JavaScript/TypeScript usage.
 ### Deno / JSR
 
 ```typescript
-import { load } from "jsr:@fusionstrings/swisseph-wasi";
+import { load } from "jsr:@fusionstrings/swiss-eph";
 ```
 
 ### Node.js / npm
 
 ```bash
-npm install @fusionstrings/swisseph-wasi
+npm install @fusionstrings/swiss-eph
 ```
 
 ```typescript
-import { load } from "@fusionstrings/swisseph-wasi";
+import { load } from "@fusionstrings/swiss-eph";
 ```
 
 ### Browser
 
 ```html
 <script type="module">
-  import { load } from "https://esm.sh/@fusionstrings/swisseph-wasi";
+  import { load } from "https://esm.sh/@fusionstrings/swiss-eph";
 </script>
 ```
 
 ## Quick Start
 
 ```typescript
-import { Constants, load } from "@fusionstrings/swisseph-wasi";
+import { Constants, load } from "@fusionstrings/swiss-eph";
 
 // Initialize the Swiss Ephemeris
 const eph = await load();
@@ -100,7 +100,7 @@ console.log(`MC: ${ascmc[1]}°`);
 Access astronomical constants via the `Constants` export:
 
 ```typescript
-import { Constants } from "@fusionstrings/swisseph-wasi";
+import { Constants } from "@fusionstrings/swiss-eph";
 
 Constants.SE_SUN; // 0 - Sun
 Constants.SE_MOON; // 1 - Moon
