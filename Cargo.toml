@@ -12,8 +12,14 @@ categories = ["science", "api-bindings"]
 readme = "README.md"
 links = "swisseph"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2.106"
+
 [build-dependencies]
-cc = "1.0"
+cc = "1.2.53"
 
 [features]
 default = []

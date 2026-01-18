@@ -1,12 +1,17 @@
 # @fusionstrings/swiss-eph
 
 Swiss Ephemeris astronomical calculation library compiled to WebAssembly for
-cross-platform JavaScript/TypeScript usage.
+cross-platform JavaScript/TypeScript usage, with idiomatic Rust bindings.
+
+[![crates.io](https://img.shields.io/crates/v/swiss-eph.svg)](https://crates.io/crates/swiss-eph)
+[![docs.rs](https://docs.rs/swiss-eph/badge.svg)](https://docs.rs/swiss-eph)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
 ## Features
 
 - **Cross-platform**: Works in Deno, Node.js, browsers, and edge runtimes
   (Cloudflare Workers)
+- **Rust Bindings**: Complete FFI and safe Rust API for native performance
 - **High precision**: Bit-level accuracy matching native Swiss Ephemeris
   calculations
 - **Complete API**: 95+ functions for planetary positions, houses, eclipses, and
@@ -15,7 +20,7 @@ cross-platform JavaScript/TypeScript usage.
   ephemeris
 - **TypeScript**: Full type definitions with TSDoc documentation
 
-## Installation
+## Installation (JS/TS)
 
 ### Deno / JSR
 
@@ -33,15 +38,7 @@ npm install @fusionstrings/swiss-eph
 import { load } from "@fusionstrings/swiss-eph";
 ```
 
-### Browser
-
-```html
-<script type="module">
-  import { load } from "https://esm.sh/@fusionstrings/swiss-eph";
-</script>
-```
-
-## Quick Start
+## Quick Start (JS/TS)
 
 ```typescript
 import { Constants, load } from "@fusionstrings/swiss-eph";
@@ -59,16 +56,32 @@ const { xx, error } = eph.swe_calc_ut(
   Constants.SEFLG_SPEED,
 );
 console.log(`Sun longitude: ${xx[0]}°`);
-
-// Calculate house cusps (Placidus, Zurich)
-const { cusps, ascmc } = eph.swe_houses(jd, 47.3769, 8.5417, "P".charCodeAt(0));
-console.log(`Ascendant: ${ascmc[0]}°`);
-console.log(`MC: ${ascmc[1]}°`);
 ```
 
-## API Overview
+## Rust Usage
 
-### Core Calculations
+Add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
+swiss-eph = "0.1.0"
+```
+
+### Quick Start (Rust)
+
+```rust
+use swisseph_x::safe::*;
+use swisseph_x::*;
+
+fn main() {
+    let jd = julday(2024, 1, 1, 12.0);
+    let flags = CalcFlags::new().with_speed();
+    let sun = calc(jd, SE_SUN, flags).unwrap();
+    println!("Sun longitude: {:.6}°", sun.longitude);
+}
+```
+
+## API Overview (JS/TS)
 
 | Function                       | Description                 |
 | ------------------------------ | --------------------------- |
@@ -77,64 +90,6 @@ console.log(`MC: ${ascmc[1]}°`);
 | `swe_julday` / `swe_revjul`    | Julian Day conversions      |
 | `swe_sidtime`                  | Sidereal time               |
 | `swe_deltat`                   | Delta T (TT - UT)           |
-
-### Coordinate Systems
-
-| Function           | Description                  |
-| ------------------ | ---------------------------- |
-| `swe_cotrans`      | Ecliptic ↔ Equatorial        |
-| `swe_azalt`        | Horizontal coordinates       |
-| `swe_set_sid_mode` | Sidereal mode (Lahiri, etc.) |
-| `swe_get_ayanamsa` | Ayanamsa value               |
-
-### Eclipses & Events
-
-| Function                    | Description            |
-| --------------------------- | ---------------------- |
-| `swe_sol_eclipse_when_glob` | Solar eclipse timing   |
-| `swe_lun_eclipse_when`      | Lunar eclipse timing   |
-| `swe_rise_trans`            | Rise/set/transit times |
-
-### Constants
-
-Access astronomical constants via the `Constants` export:
-
-```typescript
-import { Constants } from "@fusionstrings/swiss-eph";
-
-Constants.SE_SUN; // 0 - Sun
-Constants.SE_MOON; // 1 - Moon
-Constants.SE_MERCURY; // 2 - Mercury
-// ... etc.
-
-Constants.SEFLG_SPEED; // Include velocities
-Constants.SEFLG_SWIEPH; // Use Swiss Ephemeris files
-Constants.SE_GREG_CAL; // Gregorian calendar
-```
-
-## Using Ephemeris Files
-
-By default, the library uses the built-in Moshier ephemeris. For higher
-precision, load Swiss Ephemeris data files:
-
-```typescript
-const eph = await load({ ephePath: "./ephe" });
-
-// Or mount files manually
-const sepl_18 = await Deno.readFile("./ephe/sepl_18.se1");
-eph.mount("sepl_18.se1", sepl_18);
-eph.set_ephe_path(".");
-```
-
-## Platform Support
-
-| Platform           | Status | Notes                      |
-| ------------------ | ------ | -------------------------- |
-| Deno               | ✅     | Native support             |
-| Node.js            | ✅     | Via npm package            |
-| Browser            | ✅     | ESM bundle                 |
-| Cloudflare Workers | ✅     | Edge runtime compatible    |
-| Bun                | ✅     | Works with Node.js package |
 
 ## License
 
@@ -146,4 +101,4 @@ https://www.astro.com/swisseph/ for more information.
 ## Credits
 
 - [Swiss Ephemeris](https://www.astro.com/swisseph/) by Astrodienst AG
-- WASM compilation using WASI SDK
+- WASM compilation using WASI SDK and wasmbuild

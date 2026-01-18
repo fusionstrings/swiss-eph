@@ -17,8 +17,73 @@
 #![allow(non_upper_case_globals)]
 
 use std::os::raw::{c_char, c_double, c_int};
+use wasm_bindgen::prelude::*;
 
 pub mod safe;
+
+// =============================================================================
+// Memory Management (C compatibility)
+// =============================================================================
+
+#[no_mangle]
+pub unsafe extern "C" fn malloc(size: usize) -> *mut u8 {
+    let actual_size = size + 8;
+    let layout = std::alloc::Layout::from_size_align_unchecked(actual_size, 8);
+    let ptr = std::alloc::alloc(layout);
+    if ptr.is_null() {
+        return ptr;
+    }
+    *(ptr as *mut usize) = size;
+    ptr.add(8)
+}
+
+#[export_name = "wasm_swe_calc_ut"]
+pub unsafe extern "C" fn __swe_calc_ut(
+    tjd_ut: c_double,
+    ipl: int32,
+    iflag: int32,
+    xx: *mut c_double,
+    serr: *mut c_char,
+) -> int32 {
+    swe_calc_ut(tjd_ut, ipl, iflag, xx, serr)
+}
+
+#[export_name = "wasm_swe_calc"]
+pub unsafe extern "C" fn __swe_calc(
+    tjd: c_double,
+    ipl: int32,
+    iflag: int32,
+    xx: *mut c_double,
+    serr: *mut c_char,
+) -> int32 {
+    swe_calc(tjd, ipl, iflag, xx, serr)
+}
+
+#[export_name = "wasm_swe_set_ephe_path"]
+pub unsafe extern "C" fn __swe_set_ephe_path(path: *mut c_char) {
+    swe_set_ephe_path(path)
+}
+
+#[export_name = "wasm_swe_version"]
+pub unsafe extern "C" fn __swe_version(s: *mut c_char) -> *mut c_char {
+    swe_version(s)
+}
+
+#[export_name = "wasm_swe_close"]
+pub unsafe extern "C" fn __swe_close() {
+    swe_close()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn free(ptr: *mut u8) {
+    if ptr.is_null() {
+        return;
+    }
+    let actual_ptr = ptr.sub(8);
+    let size = *(actual_ptr as *const usize);
+    let layout = std::alloc::Layout::from_size_align_unchecked(size + 8, 8);
+    std::alloc::dealloc(actual_ptr, layout);
+}
 
 // =============================================================================
 // Type definitions (from sweodef.h)

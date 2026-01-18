@@ -1,6 +1,6 @@
 import { assert, assertEquals } from "@std/assert";
-import { load } from "../mod.ts";
-import { Constants } from "../generated/swisseph_api.generated.ts";
+import { load } from "../src/main.ts";
+import { Constants } from "../lib/wasi/swisseph_api.generated.ts";
 
 const EPHE_PATH = "./vendor/swisseph/ephe";
 

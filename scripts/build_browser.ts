@@ -15,8 +15,8 @@ async function main() {
     // 2. Create the wrapper code
     // We re-export everything from mod.ts and provide a default instantiated instance
     const wrapperCode = `
-import { SwissEph } from "../mod.ts";
-export * from "../mod.ts";
+import { SwissEph } from "../src/main.ts";
+export * from "../src/main.ts";
 
 const wasmBase64 = "${wasmBase64}";
 

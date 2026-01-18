@@ -4,10 +4,8 @@ import { parseMetadata } from "./metadata.ts";
 
 const SRC_PATH = "vendor/swisseph/swephexp.h";
 const DEF_PATH = "vendor/swisseph/sweodef.h";
-const OUT_PATH = "generated/swisseph_api.generated.ts";
-// Removed redundant EXPORTS_PATH and WRAPPERS_PATH unused variables if not needed,
-// OR update them if you want to keep them for debug:
-const EXPORTS_PATH = "generated/exported_functions.json";
+const OUT_PATH = "lib/wasi/swisseph_api.generated.ts"; // Moved from generated/ -> lib/ -> lib/wasi/
+const EXPORTS_PATH = "lib/wasi/exported_functions.json"; // Moved from generated/ -> lib/ -> lib/wasi/
 // const WRAPPERS_PATH = "bindings/generated_wrappers.ts"; // Removing this
 
 async function generate() {

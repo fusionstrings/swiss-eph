@@ -2,7 +2,7 @@ import { join } from "https://deno.land/std@0.212.0/path/mod.ts";
 
 const PROJECT_ROOT = new URL("..", import.meta.url).pathname;
 const HEADER_PATH = join(PROJECT_ROOT, "vendor/swisseph/swephexp.h");
-const LIB_RS_PATH = join(PROJECT_ROOT, "crate/src/lib.rs");
+const LIB_RS_PATH = join(PROJECT_ROOT, "src/lib.rs");
 
 async function main() {
   console.log("🔍 Verifying API Coverage...");

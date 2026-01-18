@@ -1,8 +1,14 @@
-import type { SwissEphExports } from "../generated/swisseph_api.generated.ts";
-
-export interface WasmExports extends SwissEphExports {
-  malloc(size: number): number;
-  free(ptr: number): void;
+/**
+ * Interface for WASM memory allocation exports.
+ * Supports both standard C malloc/free and wasm-bindgen variants.
+ */
+export interface WasmExports {
+  memory: WebAssembly.Memory;
+  malloc?(size: number): number;
+  free?(ptr: number): void;
+  __wbindgen_malloc?(size: number): number;
+  __wbindgen_free?(ptr: number, size: number, align: number): void;
+  [key: string]: unknown;
 }
 
 /**
@@ -13,17 +19,38 @@ export interface WasmExports extends SwissEphExports {
  * and WebAssembly.
  */
 export class WasmHeap {
+  private allocated = new Map<number, number>();
+
   constructor(
     private memory: WebAssembly.Memory,
     private exports: WasmExports,
   ) {}
 
   alloc(size: number): number {
-    return this.exports.malloc(size);
+    let ptr: number;
+    if (this.exports.malloc) {
+      ptr = (this.exports.malloc as Function)(size);
+    } else if (this.exports.__wbindgen_malloc) {
+      ptr = (this.exports.__wbindgen_malloc as Function)(size);
+    } else {
+      throw new Error(
+        `No malloc found in WASM exports. Available: ${
+          Object.keys(this.exports).join(", ")
+        }`,
+      );
+    }
+    this.allocated.set(ptr, size);
+    return ptr;
   }
 
   free(ptr: number) {
-    this.exports.free(ptr);
+    if (this.exports.free) {
+      (this.exports.free as Function)(ptr);
+    } else if (this.exports.__wbindgen_free) {
+      const size = this.allocated.get(ptr) || 0;
+      (this.exports.__wbindgen_free as Function)(ptr, size, 8);
+    }
+    this.allocated.delete(ptr);
   }
 
   getU8(ptr: number, length: number): Uint8Array {

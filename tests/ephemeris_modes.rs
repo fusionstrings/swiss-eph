@@ -12,7 +12,7 @@ fn test_ephemeris_modes() {
     
     // 2. Test Swiss Ephemeris (Needs files)
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
-    let ephe_path = format!("{}/../vendor/swisseph/ephe", manifest_dir);
+    let ephe_path = format!("{}/vendor/swisseph/ephe", manifest_dir);
     safe::set_ephe_path(&ephe_path);
 
     let flags_swe = safe::CalcFlags::new().with_swiss_ephemeris();

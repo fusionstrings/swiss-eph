@@ -12,13 +12,13 @@ async function bumpDeno(version: string) {
 }
 
 async function bumpCargo(version: string) {
-  const path = join(CWD, "crate/Cargo.toml");
+  const path = join(CWD, "Cargo.toml");
   let content = await Deno.readTextFile(path);
   // Match `version = "x.y.z"`
   // Use regex that catches the first version = "..."
   content = content.replace(/version = ".*?"/, `version = "${version}"`);
   await Deno.writeTextFile(path, content);
-  console.log(`Updated crate/Cargo.toml to ${version}`);
+  console.log(`Updated Cargo.toml to ${version}`);
 }
 
 async function updateChangelog(version: string) {

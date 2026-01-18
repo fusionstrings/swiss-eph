@@ -9,7 +9,7 @@ SOURCES = $(SRCDIR)/swedate.c $(SRCDIR)/swehouse.c $(SRCDIR)/swejpl.c \
           $(SRCDIR)/swemmoon.c $(SRCDIR)/swemplan.c $(SRCDIR)/sweph.c \
           $(SRCDIR)/swephlib.c $(SRCDIR)/swecl.c $(SRCDIR)/swehel.c
 
-TARGET = generated/libswephe.wasm
+TARGET = lib/wasi/swiss_eph.wasm
 
 all: $(TARGET)
 
