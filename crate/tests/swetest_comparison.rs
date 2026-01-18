@@ -3,7 +3,7 @@
 //! These tests verify that the Rust FFI bindings produce identical results
 //! to the native swetest_enhanced tool.
 
-use swisseph_wasi::*;
+use swiss_eph::*;
 use std::ffi::CString;
 use std::os::raw::c_int;
 
