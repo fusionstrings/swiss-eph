@@ -1,11 +1,11 @@
-import { Constants, SwissEph } from "../../../npm/esm/mod.js";
+import { Constants, SwissEph } from "../../../npm/esm/main.js";
 import { promises as fs } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import process from "node:process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const wasmPath = join(__dirname, "../../../npm/wasm/libswephe.wasm");
+const wasmPath = join(__dirname, "../../../npm/wasm/swiss_eph.wasm");
 const epheDir = join(__dirname, "../../../vendor/swisseph/ephe");
 
 // Golden Values from tests/fixtures/golden_values.ts
@@ -69,8 +69,8 @@ async function run() {
     Constants.SEFLG_NOABERR | Constants.SEFLG_NONUT;
 
   for (const body of bodies) {
-    const { xx } = eph.swe_calc(TEST_JD, body.id, iflag);
-    const golden = PLANET_POSITIONS[body.key];
+    const { xx } = eph.swe_calc(TEST_JD, body.id, iflag, undefined, undefined);
+    const golden = PLANET_POSITIONS[body.key as keyof typeof PLANET_POSITIONS];
     const diff = Math.abs(xx[0] - golden.lon);
 
     // If files are mounted, tolerance should be tight.
@@ -149,6 +149,8 @@ async function run() {
     TEST_JD,
     Constants.SE_SUN,
     iflagMoshier,
+    undefined,
+    undefined,
   );
   const moshierDiff = Math.abs(moshierXx[0] - PLANET_POSITIONS.SE_SUN.lon);
 
