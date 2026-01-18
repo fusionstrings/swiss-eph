@@ -1,7 +1,16 @@
 # Build artifacts
 target/
 lib/wasi/
-lib/wasm-*/
+#lib/wasm-*/     <- Un-commenting to allow publishing? No, they are generated.
+#lib/native/     <- Actually I should exclude them but make exceptions?
+# Or relying on publish.include to force include them?
+# JSR documentation says 'publish.include' overrides .gitignore if used?
+# No, 1460 error said 'module ... was excluded ... hint: remove from exclude ... or unexclude from gitignore'
+# So I MUST unexclude them in .gitignore or JSR fails.
+
+lib/wasi/
+lib/wasm-sdk/
+lib/wasm-sdk-inline/
 lib/native/
 lib/artifacts/
 swetest_enhanced
