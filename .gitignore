@@ -5,6 +5,7 @@ dist/
 # Generated files
 generated/swisseph_api.generated.ts
 generated/exported_functions.json
+browser/wrapper.ts
 
 # Test artifacts
 artifacts/

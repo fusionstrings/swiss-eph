@@ -16,7 +16,6 @@
       "mod.ts",
       "README.md",
       "LICENSE",
-      "LICENSE",
       "src/**/*.ts",
       "browser/wrapper.ts",
       "generated/libswephe.wasm",
