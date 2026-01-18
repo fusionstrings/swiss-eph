@@ -5,15 +5,21 @@
   "license": "AGPL-3.0",
   "exports": {
     ".": "./src/main.ts",
-    "./wasi": "./src/wasi.ts"
+    "./wasi": "./src/wasi.ts",
+    "./browser": "./lib/wasm-sdk-inline/swiss_eph.js",
+    "./wasm": "./lib/wasm-sdk/swiss_eph.js"
   },
   "publish": {
     "include": [
       "README.md",
       "LICENSE",
-      "src/**/*.ts"
+      "src/**/*.ts",
+      "lib/wasm-sdk-inline/",
+      "lib/wasm-sdk/"
     ],
     "exclude": [
+      "!lib/wasm-sdk-inline/",
+      "!lib/wasm-sdk/",
       ".github",
       ".vscode",
       "artifacts",
@@ -64,7 +70,8 @@
     "esbuild": "npm:esbuild@^0.24.2",
     "puppeteer": "npm:puppeteer@^24.0.0",
     "wasmbuild": "jsr:@deno/wasmbuild@^0.21.0",
-    "wasi_snapshot_preview1": "./src/wasi_snapshot_preview1.ts"
+    "wasi_snapshot_preview1": "./src/wasi_snapshot_preview1.ts",
+    "env": "./src/env_mock.ts"
   },
   "nodeModulesDir": "auto"
 }

@@ -7,7 +7,6 @@ use std::ffi::{CStr, CString};
 use std::os::raw::c_int;
 
 /// Error returned by Swiss Ephemeris calculations
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 #[derive(Debug, Clone)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen(getter_with_clone))]
 pub struct SwissEphError {
