@@ -52,9 +52,10 @@
     "test:node": "deno task build:npm && node tests/e2e/node/test.ts",
     "test:browser": "deno run -A tests/e2e/browser/build.ts && deno run -A --unstable-net tests/e2e/browser/runner.ts",
     "test:cloudflare": "echo 'Run: cd tests/e2e/cloudflare && npx wrangler dev'",
-    "test:all": "deno task test && deno task test:node && deno task test:browser && deno task test:rust",
+    "test:all": "deno task test && deno task test:node && deno task test:browser && deno task test:rust && deno task check:publish",
     "check-version": "deno run -A scripts/check_version.ts",
     "bump-version": "deno run -A scripts/version_bump.ts",
+    "check:publish": "deno publish --dry-run --allow-dirty",
     "build:browser": "deno run -A scripts/build_browser.ts",
     "verify:golden": "deno run -A scripts/verify_golden.ts",
     "gen:golden": "make swetest_enhanced.wasm && deno run -A scripts/run_swetest_wasm.ts > tests/fixtures/golden_values.ts && deno fmt tests/fixtures/golden_values.ts && rm swetest_enhanced.wasm"
