@@ -1,5 +1,5 @@
 
-name = "swisseph-wasi-test"
+name = "swiss-eph-test"
 main = "worker.ts"
 compatibility_date = "2023-10-25"
 

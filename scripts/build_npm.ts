@@ -1,4 +1,5 @@
 import { build, emptyDir } from "@deno/dnt";
+import denoJson from "../deno.json" with { type: "json" };
 
 await emptyDir("./npm");
 
@@ -32,13 +33,13 @@ await build({
     undici: true,
   },
   package: {
-    name: "@fusionstrings/swisseph-wasi",
-    version: "0.1.0",
-    description: "Swiss Ephemeris WASM port for Node.js and Browser",
-    license: "AGPL-3.0",
+    name: denoJson.name,
+    version: denoJson.version,
+    description: denoJson.description,
+    license: denoJson.license,
     repository: {
       type: "git",
-      url: "git+https://github.com/fusionstrings/swisseph-wasi.git",
+      url: "git+https://github.com/fusionstrings/swiss-eph.git",
     },
     keywords: [
       "astrology",
@@ -49,9 +50,9 @@ await build({
       "planets",
       "houses",
     ],
-    homepage: "https://github.com/fusionstrings/swisseph-wasi#readme",
+    homepage: "https://github.com/fusionstrings/swiss-eph#readme",
     bugs: {
-      url: "https://github.com/fusionstrings/swisseph-wasi/issues",
+      url: "https://github.com/fusionstrings/swiss-eph/issues",
     },
     exports: {
       "./wasm": "./wasm/libswephe.wasm",

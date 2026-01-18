@@ -11,13 +11,14 @@ async function bumpDeno(version: string) {
   console.log(`Updated deno.json to ${version}`);
 }
 
-async function bumpNpm(version: string) {
-  const path = join(CWD, "scripts/build_npm.ts");
+async function bumpCargo(version: string) {
+  const path = join(CWD, "crate/Cargo.toml");
   let content = await Deno.readTextFile(path);
-  // Match `version: "x.y.z",` inside the package object
-  content = content.replace(/version:\s*".*?",/, `version: "${version}",`);
+  // Match `version = "x.y.z"`
+  // Use regex that catches the first version = "..."
+  content = content.replace(/version = ".*?"/, `version = "${version}"`);
   await Deno.writeTextFile(path, content);
-  console.log(`Updated scripts/build_npm.ts to ${version}`);
+  console.log(`Updated crate/Cargo.toml to ${version}`);
 }
 
 async function updateChangelog(version: string) {
@@ -65,7 +66,7 @@ async function main() {
 
   try {
     await bumpDeno(newVersion);
-    await bumpNpm(newVersion);
+    await bumpCargo(newVersion);
     await updateChangelog(newVersion);
     console.log("\n✅ Version bump complete.");
     console.log("Run 'deno task build:npm' to verify new metadata.");
