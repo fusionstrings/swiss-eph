@@ -7,6 +7,9 @@
 //! All functions in this crate are `unsafe` as they call into C code.
 //! Callers must ensure proper buffer sizes and valid pointers.
 //!
+//! # Safe API
+//! For a safe, idiomatic Rust API, use the `safe` module.
+//!
 //! # License
 //! AGPL-3.0 (inherited from Swiss Ephemeris)
 
@@ -14,6 +17,8 @@
 #![allow(non_upper_case_globals)]
 
 use std::os::raw::{c_char, c_double, c_int};
+
+pub mod safe;
 
 // =============================================================================
 // Type definitions (from sweodef.h)
