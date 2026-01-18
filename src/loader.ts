@@ -20,7 +20,7 @@ export async function instantiate(): Promise<SwissEph> {
 
   // Check if _initialize exists (reactor model) or _start (command model)
   // WASI SDK usually exports _initialize for libraries
-  const exports = instance.exports as Record<string, Function>;
+  const exports = instance.exports as Record<string, () => void>;
   if (exports._initialize) {
     exports._initialize();
   } else if (exports._start) {
