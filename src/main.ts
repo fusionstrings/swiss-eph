@@ -1,8 +1,8 @@
 import { WASI } from "./wasi.ts";
 import type { WasmExports } from "./heap.ts";
 import { WasmHeap } from "./heap.ts";
-import { Constants } from "../lib/wasi/swisseph_api.generated.ts";
-import type { SwissEphExports } from "../lib/wasi/swisseph_api.generated.ts";
+import { Constants } from "./generated/api.ts";
+import type { SwissEphExports } from "./generated/api.ts";
 
 // Interface definitions for function return values
 /** Return value for swe_azalt. */

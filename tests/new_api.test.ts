@@ -1,6 +1,6 @@
 import { assert } from "@std/assert";
 import { load } from "../src/main.ts";
-import { Constants } from "../lib/wasi/swisseph_api.generated.ts";
+import { Constants } from "../src/generated/api.ts";
 
 const EPHE_PATH = "./vendor/swisseph/ephe";
 
@@ -78,14 +78,13 @@ Deno.test("swe_calc Zero-Copy POC", async () => {
   const eph = await load({ ephePath: EPHE_PATH });
 
   // Access private heap with cast - standardizing for test purposes
-  const heap =
-    (eph as unknown as {
-      heap: {
-        alloc: (size: number) => number;
-        free: (ptr: number) => void;
-        getF64: (ptr: number, length: number) => Float64Array;
-      };
-    }).heap;
+  const heap = (eph as unknown as {
+    heap: {
+      alloc: (size: number) => number;
+      free: (ptr: number) => void;
+      getF64: (ptr: number, length: number) => Float64Array;
+    };
+  }).heap;
 
   // Allocate memory manually
   const xx_ptr = heap.alloc(6 * 8);

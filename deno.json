@@ -5,21 +5,13 @@
   "license": "AGPL-3.0",
   "exports": {
     ".": "./src/main.ts",
-    "./main": "./src/main.ts",
-    "./browser": "./lib/wasm-sdk-inline/swiss_eph.js",
-    "./wasi": "./src/wasi.ts",
-    "./constants": "./lib/wasi/swisseph_api.generated.ts",
-    "./wasm": "./lib/wasm-sdk/swiss_eph.wasm",
-    "./wasm-wasi": "./lib/wasi/swiss_eph.wasm"
+    "./wasi": "./src/wasi.ts"
   },
   "publish": {
     "include": [
       "README.md",
       "LICENSE",
-      "src/**/*.ts",
-      "lib/wasm-sdk/**",
-      "lib/wasm-sdk-inline/**",
-      "lib/wasi/**"
+      "src/**/*.ts"
     ],
     "exclude": [
       ".github",
