@@ -19,7 +19,8 @@
       "LICENSE",
       "src/**/*.ts",
       "browser/wrapper.ts",
-      "generated/libswephe.wasm"
+      "generated/libswephe.wasm",
+      "generated/swisseph_api.generated.ts"
     ],
     "exclude": [
       ".github",

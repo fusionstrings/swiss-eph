@@ -34,13 +34,13 @@ let cachedModule: WebAssembly.Module | null = null;
 export function createSwissEph(): SwissEph {
   if (!cachedModule) {
     const bytes = decodeWasm(wasmBase64);
-    cachedModule = new WebAssembly.Module(bytes);
+    cachedModule = new WebAssembly.Module(bytes.buffer as ArrayBuffer);
   }
   return new SwissEph(cachedModule);
 }
 
 // Default instance for quick usage
-export const swisseph = createSwissEph();
+export const swisseph: SwissEph = createSwissEph();
 `;
 
     // 3. Write intermediate wrapper
