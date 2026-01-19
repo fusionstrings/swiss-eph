@@ -28,10 +28,6 @@ jobs:
         with:
           deno-version: ${{ env.DENO_VERSION }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: latest
 
       - name: Setup WASI SDK
         run: |
@@ -68,12 +64,15 @@ jobs:
       - name: Run Tests
         run: deno task test
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
 
-      - name: Build NPM Package
-        run: deno task build:npm
-
-      - name: Verify Node.js Support
+      - name: Run Node.js E2E Tests
         run: deno task test:node
+
+
 
       - name: Dry-run JSR Publish
         run: deno publish --dry-run
@@ -87,11 +86,6 @@ jobs:
             lib/wasm-sdk/
             lib/wasm-sdk-inline/
 
-      - name: Upload NPM Package
-        uses: actions/upload-artifact@v4
-        with:
-          name: npm-package
-          path: npm/
 
   # Rust crate build and test
   rust-build:
@@ -150,10 +144,6 @@ jobs:
         with:
           deno-version: ${{ env.DENO_VERSION }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: latest
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -176,7 +166,6 @@ jobs:
           deno task build:wasm
           deno task build:wasmbuild
           deno task build:wasmbuild:inline
-          deno task build:npm
 
       - name: Check Version Consistency
         run: deno run -A scripts/check_version.ts
@@ -184,11 +173,6 @@ jobs:
       - name: Publish to JSR
         run: deno publish
 
-      - name: Publish to NPM
-        run: |
-          cd npm
-          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
-          npm publish --access public
 
       - name: Publish to crates.io
         run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}

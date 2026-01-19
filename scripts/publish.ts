@@ -7,9 +7,7 @@
  * Steps:
  * 1. Checks for clean git status (no uncommitted changes).
  * 2. Runs full test suite.
- * 3. Builds npm package.
- * 4. Publishes to JSR (dry-run by default unless --real flag is used).
- * 5. Publishes to NPM (dry-run by default).
+ * 3. Publishes to JSR (dry-run by default unless --real flag is used).
  */
 
 import { parseArgs } from "@std/cli/parse-args";
@@ -56,21 +54,7 @@ if (!testResult.success) {
 }
 console.log("✅ Tests passed.");
 
-// 2. Build NPM Package
-console.log("\n📦 Building NPM package...");
-const buildCmd = new Deno.Command("deno", {
-  args: ["task", "build:npm", version],
-  stdout: "inherit",
-  stderr: "inherit",
-});
-const buildResult = await buildCmd.output();
-if (!buildResult.success) {
-  console.error("❌ NPM build failed. Aborting publish.");
-  Deno.exit(1);
-}
-console.log("✅ NPM package built.");
-
-// 3. Publish to JSR
+// 2. Publish to JSR
 console.log("\n🚀 Publishing to JSR...");
 const jsrArgs = ["publish"];
 if (!flags.real) {
@@ -85,32 +69,6 @@ const jsrCmd = new Deno.Command("deno", {
 const jsrResult = await jsrCmd.output();
 if (!jsrResult.success) {
   console.error("❌ JSR publish failed.");
-  Deno.exit(1);
-}
-
-// 4. Publish to NPM
-console.log("\n🚀 Publishing to NPM...");
-const npmArgs = ["publish", "--access", "public"];
-if (!flags.real) {
-  console.log("   (Dry Run)");
-  npmArgs.push("--dry-run");
-}
-
-const npmCmd = new Deno.Command("npm", {
-  args: npmArgs,
-  cwd: "./npm",
-  stdout: "inherit",
-  stderr: "inherit",
-});
-
-try {
-  const npmResult = await npmCmd.output();
-  if (!npmResult.success) {
-    console.error("❌ NPM publish failed.");
-    Deno.exit(1);
-  }
-} catch (_e) {
-  console.error("❌ Failed to run npm publish. Is npm installed?");
   Deno.exit(1);
 }
 

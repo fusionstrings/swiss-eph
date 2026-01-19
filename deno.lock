@@ -12,26 +12,36 @@
     "jsr:@std/assert@~0.213.1": "0.213.1",
     "jsr:@std/bytes@^1.0.5": "1.0.6",
     "jsr:@std/cli@^1.0.11": "1.0.25",
+    "jsr:@std/cli@^1.0.25": "1.0.25",
     "jsr:@std/encoding@0.213": "0.213.1",
+    "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/encoding@^1.0.6": "1.0.10",
     "jsr:@std/fmt@1": "1.0.8",
     "jsr:@std/fmt@^1.0.4": "1.0.8",
+    "jsr:@std/fmt@^1.0.8": "1.0.8",
     "jsr:@std/fs@1": "1.0.21",
     "jsr:@std/fs@^1.0.10": "1.0.21",
+    "jsr:@std/fs@^1.0.21": "1.0.21",
     "jsr:@std/fs@^1.0.8": "1.0.21",
+    "jsr:@std/html@^1.0.5": "1.0.5",
+    "jsr:@std/http@^1.0.23": "1.0.23",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/io@*": "0.225.2",
     "jsr:@std/jsonc@0.213": "0.213.1",
+    "jsr:@std/media-types@^1.1.0": "1.1.0",
+    "jsr:@std/net@^1.0.6": "1.0.6",
     "jsr:@std/path@0.213": "0.213.1",
     "jsr:@std/path@1": "1.1.4",
     "jsr:@std/path@^1.0.8": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
     "jsr:@std/streams@^1.0.13": "1.0.16",
+    "jsr:@std/streams@^1.0.16": "1.0.16",
     "jsr:@std/tar@~0.1.4": "0.1.9",
     "jsr:@ts-morph/bootstrap@0.27": "0.27.0",
     "jsr:@ts-morph/common@0.27": "0.27.0",
     "npm:esbuild@~0.24.2": "0.24.2",
-    "npm:puppeteer@*": "24.35.0_devtools-protocol@0.0.1534754"
+    "npm:puppeteer@*": "24.35.0_devtools-protocol@0.0.1534754",
+    "npm:puppeteer@24": "24.35.0_devtools-protocol@0.0.1534754"
   },
   "jsr": {
     "@david/code-block-writer@13.0.3": {
@@ -65,7 +75,7 @@
       "dependencies": [
         "jsr:@david/path",
         "jsr:@david/temp",
-        "jsr:@std/cli",
+        "jsr:@std/cli@^1.0.11",
         "jsr:@std/encoding@^1.0.6",
         "jsr:@std/fmt@^1.0.4",
         "jsr:@std/fs@^1.0.10",
@@ -111,6 +121,23 @@
         "jsr:@std/path@^1.1.4"
       ]
     },
+    "@std/html@1.0.5": {
+      "integrity": "4e2d693f474cae8c16a920fa5e15a3b72267b94b84667f11a50c6dd1cb18d35e"
+    },
+    "@std/http@1.0.23": {
+      "integrity": "6634e9e034c589bf35101c1b5ee5bbf052a5987abca20f903e58bdba85c80dee",
+      "dependencies": [
+        "jsr:@std/cli@^1.0.25",
+        "jsr:@std/encoding@^1.0.10",
+        "jsr:@std/fmt@^1.0.8",
+        "jsr:@std/fs@^1.0.21",
+        "jsr:@std/html",
+        "jsr:@std/media-types",
+        "jsr:@std/net",
+        "jsr:@std/path@^1.1.4",
+        "jsr:@std/streams@^1.0.16"
+      ]
+    },
     "@std/internal@1.0.12": {
       "integrity": "972a634fd5bc34b242024402972cd5143eac68d8dffaca5eaa4dba30ce17b027"
     },
@@ -125,6 +152,12 @@
       "dependencies": [
         "jsr:@std/assert@~0.213.1"
       ]
+    },
+    "@std/media-types@1.1.0": {
+      "integrity": "c9d093f0c05c3512932b330e3cc1fe1d627b301db33a4c2c2185c02471d6eaa4"
+    },
+    "@std/net@1.0.6": {
+      "integrity": "110735f93e95bb9feb95790a8b1d1bf69ec0dc74f3f97a00a76ea5efea25500c"
     },
     "@std/path@0.213.1": {
       "integrity": "f187bf278a172752e02fcbacf6bd78a335ed320d080a7ed3a5a59c3e88abc673",
@@ -144,7 +177,7 @@
     "@std/tar@0.1.9": {
       "integrity": "9d684ddfbe66db61ade4b717e3b2519e3b09c7697f28edef2bef798d8d9083ba",
       "dependencies": [
-        "jsr:@std/streams"
+        "jsr:@std/streams@^1.0.13"
       ]
     },
     "@ts-morph/bootstrap@0.27.0": {

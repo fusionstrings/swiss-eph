@@ -33,8 +33,12 @@ mod wasm_exports {
     use super::*;
     use std::os::raw::{c_char, c_double};
 
-    #[no_mangle]
-    pub unsafe extern "C" fn malloc(size: usize) -> *mut u8 {
+#[cfg(not(target_os = "wasi"))]
+mod alloc_exports {
+    use super::*;
+
+    #[export_name = "malloc"]
+    pub unsafe extern "C" fn custom_malloc(size: usize) -> *mut u8 {
         let actual_size = size + 8;
         let layout = std::alloc::Layout::from_size_align_unchecked(actual_size, 8);
         let ptr = std::alloc::alloc(layout);
@@ -45,8 +49,8 @@ mod wasm_exports {
         ptr.add(8)
     }
 
-    #[no_mangle]
-    pub unsafe extern "C" fn free(ptr: *mut u8) {
+    #[export_name = "free"]
+    pub unsafe extern "C" fn custom_free(ptr: *mut u8) {
         if ptr.is_null() {
             return;
         }
@@ -55,6 +59,7 @@ mod wasm_exports {
         let layout = std::alloc::Layout::from_size_align_unchecked(size + 8, 8);
         std::alloc::dealloc(actual_ptr, layout);
     }
+}
 
     #[export_name = "wasm_swe_calc_ut"]
     pub unsafe extern "C" fn __swe_calc_ut(
@@ -91,6 +96,51 @@ mod wasm_exports {
     #[export_name = "wasm_swe_close"]
     pub unsafe extern "C" fn __swe_close() {
         swe_close()
+    }
+
+    #[export_name = "wasm_swe_julday"]
+    pub unsafe extern "C" fn __swe_julday(
+        year: c_int,
+        month: c_int,
+        day: c_int,
+        hour: c_double,
+        gregflag: c_int,
+    ) -> c_double {
+        swe_julday(year, month, day, hour, gregflag)
+    }
+
+    #[export_name = "wasm_swe_revjul"]
+    pub unsafe extern "C" fn __swe_revjul(
+        jd: c_double,
+        gregflag: c_int,
+        year: *mut c_int,
+        month: *mut c_int,
+        day: *mut c_int,
+        hour: *mut c_double,
+    ) {
+        swe_revjul(jd, gregflag, year, month, day, hour)
+    }
+
+    #[export_name = "wasm_swe_houses"]
+    pub unsafe extern "C" fn __swe_houses(
+        tjd_ut: c_double,
+        geolat: c_double,
+        geolon: c_double,
+        hsys: c_int,
+        cusps: *mut c_double,
+        ascmc: *mut c_double,
+    ) -> c_int {
+        swe_houses(tjd_ut, geolat, geolon, hsys, cusps, ascmc)
+    }
+
+    #[export_name = "wasm_swe_sidtime"]
+    pub unsafe extern "C" fn __swe_sidtime(tjd_ut: c_double) -> c_double {
+        swe_sidtime(tjd_ut)
+    }
+
+    #[export_name = "wasm_swe_set_topo"]
+    pub unsafe extern "C" fn __swe_set_topo(geolon: c_double, geolat: c_double, geoalt: c_double) {
+        swe_set_topo(geolon, geolat, geoalt)
     }
 }
 

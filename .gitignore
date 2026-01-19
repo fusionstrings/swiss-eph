@@ -9,8 +9,8 @@ lib/wasi/
 # So I MUST unexclude them in .gitignore or JSR fails.
 
 lib/wasi/
-lib/wasm-sdk/
-lib/wasm-sdk-inline/
+lib/wasm/
+lib/wasm-inline/
 lib/native/
 lib/artifacts/
 swetest_enhanced

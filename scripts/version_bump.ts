@@ -71,7 +71,6 @@ async function main() {
     await bumpCargo(newVersion);
     await updateChangelog(newVersion);
     console.log("\n✅ Version bump complete.");
-    console.log("Run 'deno task build:npm' to verify new metadata.");
   } catch (error) {
     console.error("\n❌ Error bumping version:", error);
     Deno.exit(1);

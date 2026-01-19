@@ -11,7 +11,33 @@ const server = Deno.serve({ port }, (req) => {
   });
 });
 
+console.log(`Server root: ${Deno.cwd()}`);
+try {
+  const checkPath = "tests/e2e/browser/dist/swiss_eph.js";
+  const stat = await Deno.stat(checkPath);
+  console.log(`Verified ${checkPath}: exists (${stat.size} bytes)`);
+} catch (e) {
+  console.error(
+    `ERROR: Could not find tests/e2e/browser/dist/swiss_eph.js:`,
+    e,
+  );
+}
+
 console.log(`Server running on http://localhost:${port}`);
+
+// Verify server accessibility
+try {
+  const verifyUrl =
+    `http://localhost:${port}/tests/e2e/browser/dist/swiss_eph.js`;
+  console.log(`Verifying URL from Deno: ${verifyUrl}`);
+  const resp = await fetch(verifyUrl);
+  console.log(`Verification fetch status: ${resp.status} ${resp.statusText}`);
+  if (!resp.ok) {
+    console.log("Verification text:", await resp.text());
+  }
+} catch (e) {
+  console.error("Verification fetch failed:", e);
+}
 
 (async () => {
   // Launch browser

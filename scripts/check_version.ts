@@ -32,7 +32,7 @@ async function main() {
     const cargoVer = await getCargoVersion();
     const releaseTag = getReleaseTag();
 
-    console.log(`deno.json (JSR/NPM):   ${denoVer}`);
+    console.log(`deno.json (JSR):       ${denoVer}`);
     console.log(`Cargo.toml:            ${cargoVer}`);
     if (releaseTag) {
       console.log(`Release tag:           ${releaseTag}`);

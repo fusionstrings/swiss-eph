@@ -21,10 +21,13 @@ export interface WasmExports {
 export class WasmHeap {
   private allocated = new Map<number, number>();
 
-  constructor(
-    private memory: WebAssembly.Memory,
-    private exports: WasmExports,
-  ) {}
+  private memory: WebAssembly.Memory;
+  private exports: WasmExports;
+
+  constructor(memory: WebAssembly.Memory, exports: WasmExports) {
+    this.memory = memory;
+    this.exports = exports;
+  }
 
   alloc(size: number): number {
     let ptr: number;

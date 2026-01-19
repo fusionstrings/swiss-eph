@@ -25,17 +25,17 @@ cross-platform JavaScript/TypeScript usage, with idiomatic Rust bindings.
 ### Deno / JSR
 
 ```typescript
-import { load } from "jsr:@fusionstrings/swiss-eph";
+import { Constants, SwissEph } from "jsr:@fusionstrings/swiss-eph/wasi";
 ```
 
-### Node.js / npm
+### Node.js (via JSR)
 
 ```bash
-npm install @fusionstrings/swiss-eph
+npx jsr add @fusionstrings/swiss-eph
 ```
 
 ```typescript
-import { load } from "@fusionstrings/swiss-eph";
+import { Constants, SwissEph } from "@fusionstrings/swiss-eph/wasi";
 ```
 
 ## Quick Start (JS/TS)

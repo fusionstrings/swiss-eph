@@ -23,14 +23,49 @@ fn main() {
         .opt_level(3)
         .warnings(false);
 
-    // If targeting WASM, we need the WASI sysroot for standard C headers
+    // If targeting WASM, we need the WASI SDK (compiler + sysroot) for C compilation
     let target = std::env::var("TARGET").unwrap_or_default();
     if target.contains("wasm32") {
         let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-        let sysroot = format!("{}/../../toolchain/wasi-sdk-24.0/share/wasi-sysroot", manifest_dir);
         
+        // Try to find WASI SDK in order of preference:
+        // 1. WASI_SDK_PATH environment variable
+        // 2. Common system installation paths
+        // 3. Local toolchain directory
+        let sdk_path = std::env::var("WASI_SDK_PATH").ok()
+            .or_else(|| {
+                let candidates = [
+                    "/opt/wasi-sdk",
+                    "/usr/local/opt/wasi-sdk",
+                    "/opt/homebrew/opt/wasi-sdk",
+                ];
+                candidates.iter()
+                    .find(|p| std::path::Path::new(*p).join("bin/clang").exists())
+                    .map(|s| s.to_string())
+            })
+            .unwrap_or_else(|| {
+                format!("{}/../../toolchain/wasi-sdk-24.0", manifest_dir)
+            });
+        
+        let sysroot = format!("{}/share/wasi-sysroot", sdk_path);
+        let clang = format!("{}/bin/clang", sdk_path);
+        
+        println!("cargo:warning=Using WASI SDK: {}", sdk_path);
+        println!("cargo:warning=Using WASI clang: {}", clang);
+        
+        // Set the compiler to WASI SDK's clang
+        build.compiler(&clang);
         build.target("wasm32-wasi");
         build.flag(&format!("--sysroot={}", sysroot));
+    }
+
+    // If targeting wasm32-unknown-unknown (browser/standalone), we need to stub libc symbols
+    // that the C code expects but aren't provided by the browser environment.
+    if target.contains("wasm32-unknown-unknown") {
+         println!("cargo:warning=Targeting wasm32-unknown-unknown: Including stubs.c");
+         build.file("src/stubs.c");
+         // We might need to ensure -fno-builtin to avoid compiler optimizing calls to intrinsics
+         build.flag("-fno-builtin"); 
     }
 
     build.compile("swisseph");
