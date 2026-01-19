@@ -1,0 +1,1 @@
+// Example for node | wasi | direct_wasm

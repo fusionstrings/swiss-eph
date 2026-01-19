@@ -1,0 +1,1 @@
+// Example for node | wasmbuild | js_api

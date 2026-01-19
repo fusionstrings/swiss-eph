@@ -1,0 +1,1 @@
+// Example for node | wasmbuild | direct_wasm

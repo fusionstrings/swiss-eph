@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SwissEph Browser: Inline Standard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; max-width: 800px; margin: auto; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .success { color: #2e7d32; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>SwissEph Browser: Inline Standard</h1>
+    <p>This example demonstrates using the <strong>Inline (Base64)</strong> bundle. This version is entirely self-contained and does not require fetching a separate .wasm file.</p>
+    
+    <div id="status">Status: Initializing...</div>
+    <pre id="output"></pre>
+
+    <script type="module">
+        // In a real project: import { SwissEph, Constants } from 'https://esm.sh/@fusionstrings/swiss-eph'
+        import { SwissEph } from '../../lib/wasm-inline/swiss_eph.js';
+        import { Constants } from '../../src/generated/api.ts';
+        import { runVerification } from '../shared/logic.ts';
+
+        const statusEl = document.getElementById('status');
+        const outputEl = document.getElementById('output');
+
+        async function init() {
+            try {
+                // 1. Instantiate Standard API
+                // The Inline build exports SwissEph directly and manages its own internal instantiation
+                // if configured, otherwise it might expose a getter or instantiate function.
+                statusEl.textContent = 'Status: Instantiating...';
+                
+                /**
+                 * Note: Since this is an internal repo example, we might need to use 
+                 * the internal loader or handle the fact that the inline module 
+                 * needs its wasm dependency supplied if it's not fully bundled yet.
+                 */
+                import { instantiate } from '../../src/loader.ts';
+                const eph = await instantiate(); // Loader manages implementation details
+                
+                // 3. Run Calculations
+                statusEl.textContent = 'Status: Running calculations...';
+                const results = runVerification(eph, Constants);
+
+                // Display Results
+                statusEl.innerHTML = '<span class="success">Status: Success!</span>';
+                outputEl.textContent = JSON.stringify(results, null, 2);
+            } catch (err) {
+                statusEl.innerHTML = '<span style="color:red">Status: Error - ' + err.message + '</span>';
+                console.error(err);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

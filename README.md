@@ -11,16 +11,33 @@ cross-platform JavaScript/TypeScript usage, with idiomatic Rust bindings.
 
 - **Cross-platform**: Works in Deno, Node.js, browsers, and edge runtimes
   (Cloudflare Workers)
+- **3x2x4 Support**: 3 entrypoint styles across 2 build types on all 4 platform
+  families
 - **Rust Bindings**: Complete FFI and safe Rust API for native performance
 - **High precision**: Bit-level accuracy matching native Swiss Ephemeris
   calculations
 - **Complete API**: 95+ functions for planetary positions, houses, eclipses, and
   more
-- **Zero dependencies**: Self-contained WASM module with built-in Moshier
-  ephemeris
+- **Zero dependencies**: Self-contained WASM module or WASI package
 - **TypeScript**: Full type definitions with TSDoc documentation
 
-## Installation (JS/TS)
+## Platform Support Matrix (3x2x4 = 24 Combinations)
+
+We support 24 distinct integration paths. See [EXAMPLES.md](./EXAMPLES.md) for
+exhaustive code and caveats.
+
+| #         | Platform    | Builds          | Entrypoint Styles           | Status |
+| :-------- | :---------- | :-------------- | :-------------------------- | :----: |
+| **1-6**   | **Deno**    | wasmbuild, wasi | JS API, Direct WASM, Inline |   ✅   |
+| **7-12**  | **Node.js** | wasmbuild, wasi | JS API, Direct WASM, Inline |   ✅   |
+| **13-18** | **Browser** | wasmbuild, wasi | JS API, Direct WASM, Inline |   ✅   |
+| **19-24** | **Worker**  | wasmbuild, wasi | JS API, Direct WASM, Inline |   ✅   |
+
+> [!TIP]
+> The **3x2x4 matrix** covers 3 Styles (JS API, Direct WASM, Inline) x 2 Builds
+> (wasmbuild, wasi) x 4 Platforms (Deno, Node, Browser, Worker).
+
+## Installation
 
 ### Deno / JSR
 
@@ -34,7 +51,7 @@ import { Constants, SwissEph } from "jsr:@fusionstrings/swiss-eph/wasi";
 npx jsr add @fusionstrings/swiss-eph
 ```
 
-```typescript
+```javascript
 import { Constants, SwissEph } from "@fusionstrings/swiss-eph/wasi";
 ```
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>SwissEph Browser: WASI Standard</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: auto;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      .success {
+        color: #2e7d32;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SwissEph Browser: WASI Standard</h1>
+    <p>
+      This example demonstrates loading the <strong>external WASI .wasm</strong>
+      binary in a browser using the <code>SwissEph</code> wrapper class.
+    </p>
+
+    <div id="status">Status: Initializing...</div>
+    <pre id="output"></pre>
+
+    <script type="module">
+      // In a real project, use: import { SwissEph, Constants } from 'https://esm.sh/@fusionstrings/swiss-eph/wasi'
+      import { SwissEph } from "../../src/main.ts";
+      import { Constants } from "../../src/generated/api.ts";
+      import { runVerification } from "../shared/logic.ts";
+
+      const statusEl = document.getElementById("status");
+      const outputEl = document.getElementById("output");
+
+      async function init() {
+        try {
+          // 1. Fetch and compile the external WASI binary
+          statusEl.textContent = "Status: Fetching WASM...";
+          const wasmUrl = "../../lib/wasi/swiss_eph.wasm";
+          const response = await fetch(wasmUrl);
+          const wasmBytes = await response.arrayBuffer();
+          const wasmModule = await WebAssembly.compile(wasmBytes);
+
+          // 2. Instantiate using Standard API
+          // SwissEph class provides polyfills for standard library imports
+          statusEl.textContent = "Status: Instantiating...";
+          const eph = new SwissEph(wasmModule);
+
+          // 3. Run Calculations
+          statusEl.textContent = "Status: Running calculations...";
+          const results = runVerification(eph, Constants);
+
+          // Display Results
+          statusEl.innerHTML =
+            '<span class="success">Status: Success!</span>';
+          outputEl.textContent = JSON.stringify(results, null, 2);
+
+          console.log("Results:", results);
+        } catch (err) {
+          statusEl.innerHTML =
+            '<span style="color:red">Status: Error - ' + err.message +
+            "</span>";
+          console.error(err);
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+// Example for worker | wasmbuild | direct_wasm
