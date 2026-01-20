@@ -4,6 +4,13 @@ import { SwissEph } from "./main.ts";
 // Note: In JSR published package, lib/wasi/ is sibling to src/
 const WASM_URL = new URL("../lib/wasi/swiss_eph.wasm", import.meta.url);
 
+/**
+ * Instantiate the Swiss Ephemeris WASM module.
+ *
+ * @param wasmUrl Optional URL to the WASM binary. If not provided, it defaults to the
+ *                packaged WASM binary location.
+ * @returns A promise that resolves to a `SwissEph` instance.
+ */
 export async function instantiate(wasmUrl?: string | URL): Promise<SwissEph> {
   const url = wasmUrl || WASM_URL;
 
