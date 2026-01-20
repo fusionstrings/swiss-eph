@@ -71,6 +71,7 @@ When adding new API wrappers, document:
 | Commit without running tests                   | ❌ FORBIDDEN |
 | Regenerate golden values without investigation | ❌ FORBIDDEN |
 | Skip CI verification                           | ❌ FORBIDDEN |
+| Auto-commit or Push without permission         | ❌ FORBIDDEN |
 
 ## Quality Gates
 

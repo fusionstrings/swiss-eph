@@ -127,3 +127,18 @@ Deno.test("swe_newfunction vs native", async () => {
   assertAlmostEquals(wasmResult.value, nativeValue, 1e-11);
 });
 ```
+
+## JSR Compatibility (Fast Check)
+
+JSR performs a "Fast Check" for static analysis. Generated JS files with
+re-exports often fail this check (`no-slow-types`).
+
+**Pattern**: Always provide a TypeScript wrapper (`mod.ts`) for generated WASM
+loaders in `deno.json` exports:
+
+```typescript
+// lib/wasm/mod.ts
+export * from "./swiss_eph.js";
+import type { Position, SwissEphError } from "./swiss_eph.internal.js";
+export type { Position, SwissEphError };
+```

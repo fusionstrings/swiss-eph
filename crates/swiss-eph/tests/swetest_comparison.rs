@@ -100,7 +100,7 @@ fn test_planet_positions_vs_swetest_enhanced() {
             let ret = swe_calc(TEST_JD_TT, planet, iflag, xx.as_mut_ptr(), serr.as_mut_ptr());
             
             if ret < 0 {
-                eprintln!("ERROR calculating {}: return code {}", name, ret);
+                println!("ERROR calculating {}: return code {}", name, ret);
                 failed += 1;
                 continue;
             }
