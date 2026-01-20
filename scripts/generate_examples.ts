@@ -105,10 +105,12 @@ const FULL_GEN = (ctx: Context) => {
         code += `const exports = (instance.instance || instance).exports;\n`;
       }
       code += `\n// Direct WASM call with ${m.toUpperCase()} mode\n`;
-      code += `const jd = exports.swe_julday(2024, 6, 15, 12, 1);\n`;
+      code +=
+        `const jd = (exports.swe_julday || exports.wasm_swe_julday)(2024, 6, 15, 12, 1);\n`;
       code += `const xxPtr = exports.malloc(6 * 8);\n`;
       code += `const errPtr = exports.malloc(256);\n`;
-      code += `exports.swe_calc_ut(jd, 0, CALC_FLAG, xxPtr, errPtr);\n`;
+      code +=
+        `(exports.swe_calc_ut || exports.wasm_swe_calc_ut)(jd, 0, CALC_FLAG, xxPtr, errPtr);\n`;
       code += `const xx = new Float64Array(exports.memory.buffer, xxPtr, 6);\n`;
       code +=
         `console.log(\`${p} | ${b} | ${s} | ${m}: Sun longitude = \${xx[0].toFixed(6)}°\`);\n`;

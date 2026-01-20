@@ -16,10 +16,10 @@ const instance = await WebAssembly.instantiate(wasmModule, {
 const exports = (instance.instance || instance).exports;
 
 // Direct WASM call with SWISS mode
-const jd = exports.swe_julday(2024, 6, 15, 12, 1);
+const jd = (exports.swe_julday || exports.wasm_swe_julday)(2024, 6, 15, 12, 1);
 const xxPtr = exports.malloc(6 * 8);
 const errPtr = exports.malloc(256);
-exports.swe_calc_ut(jd, 0, CALC_FLAG, xxPtr, errPtr);
+(exports.swe_calc_ut || exports.wasm_swe_calc_ut)(jd, 0, CALC_FLAG, xxPtr, errPtr);
 const xx = new Float64Array(exports.memory.buffer, xxPtr, 6);
 console.log(`node | wasmbuild | direct_wasm | swiss: Sun longitude = ${xx[0].toFixed(6)}°`);
 exports.free(xxPtr); exports.free(errPtr);
