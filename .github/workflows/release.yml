@@ -51,6 +51,7 @@ jobs:
       - name: Pre-flight Validation (Lint & Tests)
         run: |
           deno lint
+          deno task build:swetest
           deno task test
           
       - name: Setup Node.js

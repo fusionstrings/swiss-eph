@@ -41,6 +41,7 @@
     "build:wasm": "make -j4",
     "build:wasmbuild": "CC=./toolchain/wasi-sdk-24.0/bin/clang deno run -A wasmbuild --project swiss-eph --out lib/wasm",
     "build:wasmbuild:inline": "CC=./toolchain/wasi-sdk-24.0/bin/clang deno run -A wasmbuild --project swiss-eph --inline --out lib/wasm-inline",
+    "build:swetest": "make -C vendor/swisseph swetest",
     "check:header": "deno run -A scripts/codegen.ts",
     "test": "deno test -A tests/test_suite.ts tests/swetest_comparison.test.ts",
     "test:rust": "cargo test",
