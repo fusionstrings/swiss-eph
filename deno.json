@@ -30,7 +30,10 @@
       "toolchain",
       "Makefile",
       "*.c",
-      "generated_wrappers.ts"
+      "generated_wrappers.ts",
+      "!lib/wasm/**",
+      "!lib/wasm-inline/**",
+      "!lib/wasi/swiss_eph.wasm"
     ]
   },
   "tasks": {
