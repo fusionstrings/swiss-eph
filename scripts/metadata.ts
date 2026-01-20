@@ -1,3 +1,6 @@
+import { exists } from "@std/fs";
+import { join } from "@std/path";
+
 export interface SweFunctionArg {
   type: string;
   name: string;
@@ -22,8 +25,18 @@ export async function parseMetadata(
   headerPath: string,
   defPath: string,
 ): Promise<SweMetadata> {
-  const content = await Deno.readTextFile(headerPath);
-  const defContent = await Deno.readTextFile(defPath);
+  const tryPaths = async (p: string) => {
+    if (await exists(p)) return p;
+    const alt = join("crates/swiss-eph", p);
+    if (await exists(alt)) return alt;
+    throw new Error(`Path not found: ${p} (also tried ${alt})`);
+  };
+
+  const actualHeaderPath = await tryPaths(headerPath);
+  const actualDefPath = await tryPaths(defPath);
+
+  const content = await Deno.readTextFile(actualHeaderPath);
+  const defContent = await Deno.readTextFile(actualDefPath);
   const fullContent = content + "\n" + defContent;
 
   const defineRegex = /#\s*define\s+(\w+)\s+(.+)/g;
