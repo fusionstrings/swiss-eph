@@ -1,10 +1,10 @@
-import type { SwissEph } from "../../src/main.ts";
-import { SwissEph as SwissEphClass } from "../../src/main.ts";
+import type { SwissEph } from "@fusionstrings/swiss-eph";
+import { SwissEph as SwissEphClass } from "@fusionstrings/swiss-eph";
 
 // Ephemeris Mode: JPL (flag: 1)
 const CALC_FLAG = 1;
 
-const wasmUrl = new URL("../../lib/wasm/swiss_eph.wasm", import.meta.url);
+const wasmUrl = new URL("@fusionstrings/swiss-eph/wasm", import.meta.url);
 const wasmModule = await WebAssembly.compileStreaming(fetch(wasmUrl));
 const eph: SwissEph = new SwissEphClass(wasmModule);
 

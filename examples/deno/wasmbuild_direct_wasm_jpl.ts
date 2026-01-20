@@ -2,7 +2,7 @@
 // Ephemeris Mode: JPL (flag: 1)
 const CALC_FLAG = 1;
 
-const wasmUrl = new URL("../../lib/wasm/swiss_eph.wasm", import.meta.url);
+const wasmUrl = new URL("@fusionstrings/swiss-eph/wasm", import.meta.url);
 const wasmModule = await WebAssembly.compileStreaming(fetch(wasmUrl));
 interface WasmExports extends WebAssembly.Exports {
   memory: WebAssembly.Memory;

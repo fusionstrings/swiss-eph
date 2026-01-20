@@ -859,7 +859,9 @@ export class SwissEph {
   }
 
   /**
-   * swe_get_tid_acc: Get tidal acceleration
+   * Get the current tidal acceleration used in calculations.
+   *
+   * @returns Tidal acceleration in arcsec/cty^2
    */
   swe_get_tid_acc(): number {
     return this.exports.swe_get_tid_acc(0);
@@ -1363,7 +1365,17 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_pheno_ut: Planetary phenomena for UT
+   * Compute planetary phenomena (phase, magnitude, etc.) for a given UT date.
+   *
+   * @param tjd_ut Julian Day in Universal Time (UT)
+   * @param ipl Body number
+   * @param iflag Calculation flags
+   * @returns Object containing attributes array `attr`, status code, and error string.
+   *          `attr[0]`: phase angle (earth-planet-sun)
+   *          `attr[1]`: phase (illuminated fraction of disk)
+   *          `attr[2]`: elongation of planet
+   *          `attr[3]`: apparent diameter of disc
+   *          `attr[4]`: apparent magnitude
    */
   swe_pheno_ut(
     tjd_ut: number,
@@ -1395,7 +1407,13 @@ export class SwissEph {
   // ============================================================
 
   /**
-   * swe_nod_aps: Compute nodes and apsides of planets
+   * Compute nodes and apsides of planets.
+   *
+   * @param tjd_et Julian Day in Ephemeris Time (ET)
+   * @param ipl Body number
+   * @param iflag Calculation flags
+   * @param method Method flag (0=default)
+   * @returns Object containing arrays for ascending node, descending node, perihelion, aphelion, status code, and error string.
    */
   swe_nod_aps(
     tjd_et: number,
@@ -1444,7 +1462,12 @@ export class SwissEph {
   }
 
   /**
-   * swe_get_orbital_elements: Compute orbital elements
+   * Compute orbital elements of a planet.
+   *
+   * @param tjd_et Julian Day in Ephemeris Time (ET)
+   * @param ipl Body number
+   * @param iflag Calculation flags
+   * @returns Object containing `elements` array, status code, and error string.
    */
   swe_get_orbital_elements(
     tjd_et: number,

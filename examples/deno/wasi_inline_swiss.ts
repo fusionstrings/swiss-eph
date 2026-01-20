@@ -1,5 +1,5 @@
-import type { SwissEph } from "../../src/main.ts";
-import { SwissEph as SwissEphClass } from "../../src/main.ts";
+import type { SwissEph } from "@fusionstrings/swiss-eph/wasi";
+import { SwissEph as SwissEphClass } from "@fusionstrings/swiss-eph/wasi";
 
 // Ephemeris Mode: SWISS (flag: 2)
 const CALC_FLAG = 2;

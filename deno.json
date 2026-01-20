@@ -73,7 +73,11 @@
     "puppeteer": "npm:puppeteer@^24.0.0",
     "wasmbuild": "jsr:@deno/wasmbuild@^0.21.0",
     "wasi_snapshot_preview1": "./src/wasi_snapshot_preview1.ts",
-    "env": "./src/env_mock.ts"
+    "env": "./src/env_mock.ts",
+    "@fusionstrings/swiss-eph": "./src/wasm_loader.ts",
+    "@fusionstrings/swiss-eph/wasi": "./src/main.ts",
+    "@fusionstrings/swiss-eph/inline": "./src/inline_loader.ts",
+    "@fusionstrings/swiss-eph/wasm": "./lib/wasm/swiss_eph.wasm"
   },
   "nodeModulesDir": "auto"
 }
