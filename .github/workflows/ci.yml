@@ -121,7 +121,9 @@ jobs:
           RUST_BACKTRACE: 1
 
       - name: Dry-run Cargo Publish
-        run: cargo publish --dry-run
+        run: |
+          cp -r vendor/swisseph crates/swiss-eph/vendor/
+          cargo publish --dry-run --allow-dirty
 
   # Publish job (only on release)
   publish:
