@@ -1,6 +1,6 @@
 # Build artifacts
 target/
-lib/wasi/
+#lib/wasi/
 #lib/wasm-*/     <- Un-commenting to allow publishing? No, they are generated.
 #lib/native/     <- Actually I should exclude them but make exceptions?
 # Or relying on publish.include to force include them?
@@ -8,11 +8,25 @@ lib/wasi/
 # No, 1460 error said 'module ... was excluded ... hint: remove from exclude ... or unexclude from gitignore'
 # So I MUST unexclude them in .gitignore or JSR fails.
 
-/lib/wasi/*
+# Allow WASM artifacts for JSR publishing
 /lib/wasm/*
 !/lib/wasm/mod.ts
+!/lib/wasm/swiss_eph.js
+!/lib/wasm/swiss_eph.d.ts
+!/lib/wasm/swiss_eph.wasm
+!/lib/wasm/swiss_eph_bg.wasm
+!/lib/wasm/swiss_eph.internal.js
+!/lib/wasm/swiss_eph_bg.wasm.d.ts
+
 /lib/wasm-inline/*
 !/lib/wasm-inline/mod.ts
+!/lib/wasm-inline/swiss_eph.js
+!/lib/wasm-inline/swiss_eph.d.ts
+!/lib/wasm-inline/swiss_eph.internal.js
+
+/lib/wasi/*
+!/lib/wasi/swiss_eph.wasm
+
 /lib/native/
 /lib/artifacts/
 /tests/e2e/browser/dist/
