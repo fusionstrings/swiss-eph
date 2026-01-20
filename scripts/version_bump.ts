@@ -11,32 +11,73 @@ async function bumpDeno(version: string) {
   console.log(`Updated deno.json to ${version}`);
 }
 
-async function bumpCargo(version: string) {
-  const path = join(CWD, "Cargo.toml");
+async function bumpCargoFile(path: string, version: string) {
   let content = await Deno.readTextFile(path);
-  // Match `version = "x.y.z"`
-  // Use regex that catches the first version = "..."
-  content = content.replace(/version = ".*?"/, `version = "${version}"`);
+  // Match `version = "x.y.z"` in the [package] section
+  const packageMatch = content.match(/\[package\]([\s\S]*?)^version = ".*?"/m);
+  if (packageMatch) {
+    content = content.replace(/^version = ".*?"/m, `version = "${version}"`);
+  } else {
+    content = content.replace(/^version = ".*?"/m, `version = "${version}"`);
+  }
+
+  // Update swiss-eph-data dependency to use current version AND include path for workspace
+  // This ensures cargo can find it even if not published to crates.io yet
+  const shortVersion = version.split(".").slice(0, 2).join(".");
+  if (content.includes("swiss-eph-data = {")) {
+    content = content.replace(
+      /swiss-eph-data = \{([\s\S]*?)\}/g,
+      (_match, inner) => {
+        // Preserve optional = true if it exists
+        const isOptional = inner.includes("optional = true");
+        return `swiss-eph-data = { version = "${shortVersion}", path = "../swiss-eph-data"${
+          isOptional ? ", optional = true" : ""
+        } }`;
+      },
+    );
+  }
+
   await Deno.writeTextFile(path, content);
-  console.log(`Updated Cargo.toml to ${version}`);
-  console.log("Running cargo check to update lockfile...");
-  await new Deno.Command("cargo", { args: ["check"] }).output();
+  console.log(`Updated ${path} to ${version}`);
+}
+
+async function getWorkspaceMembers(): Promise<string[]> {
+  const path = join(CWD, "Cargo.toml");
+  try {
+    const content = await Deno.readTextFile(path);
+    const match = content.match(/members\s*=\s*\[([\s\S]*?)\]/);
+    if (!match) return [];
+    return match[1]
+      .split(",")
+      .map((m) => m.trim().replace(/"/g, ""))
+      .filter((m) => m.length > 0);
+  } catch {
+    return [];
+  }
 }
 
 async function updateChangelog(version: string) {
   const path = join(CWD, "CHANGELOG.md");
-  let content = await Deno.readTextFile(path);
+  let content = "";
+  try {
+    content = await Deno.readTextFile(path);
+  } catch {
+    console.log("No CHANGELOG.md found, skipping.");
+    return;
+  }
+
   const date = new Date().toISOString().split("T")[0];
 
   if (!content.includes(`## [${version}]`)) {
     const newEntry =
-      `## [${version}] - ${date}\n\n### Changed\n- Version bump.\n\n`;
-    content = content.replace(
-      "## [Unreleased]",
-      `## [Unreleased]\n\n${newEntry}`,
-    );
-    // If no Unreleased section, add after header
-    if (!content.includes("## [Unreleased]")) {
+      `## [${version}] - ${date}\n\n### Changed\n- Version bump to ${version}.\n\n`;
+
+    if (content.includes("## [Unreleased]")) {
+      content = content.replace(
+        "## [Unreleased]",
+        `## [Unreleased]\n\n${newEntry}`,
+      );
+    } else {
       // Look for the first release header or append after main header
       const match = content.match(/^## \[.*?\]/m);
       if (match) {
@@ -68,8 +109,44 @@ async function main() {
 
   try {
     await bumpDeno(newVersion);
-    await bumpCargo(newVersion);
+
+    // Root Cargo.toml
+    const rootCargo = join(CWD, "Cargo.toml");
+    const rootContent = await Deno.readTextFile(rootCargo);
+    if (rootContent.includes("[package]")) {
+      await bumpCargoFile(rootCargo, newVersion);
+    }
+
+    // Workspace members
+    const members = await getWorkspaceMembers();
+    for (const member of members) {
+      const memberCargo = join(CWD, member, "Cargo.toml");
+      await bumpCargoFile(memberCargo, newVersion);
+    }
+
     await updateChangelog(newVersion);
+
+    console.log("Running cargo check to update Cargo.lock...");
+    const cargoStatus = await new Deno.Command("cargo", { args: ["check"] })
+      .spawn()
+      .status;
+    if (!cargoStatus.success) {
+      console.warn(
+        "Warning: 'cargo check' failed. You may need to run it manually.",
+      );
+    }
+
+    console.log("Updating deno.lock...");
+    const denoStatus = await new Deno.Command("deno", {
+      args: ["install", "--lockfile-only"],
+    }).spawn()
+      .status;
+    if (!denoStatus.success) {
+      console.warn(
+        "Warning: updating 'deno.lock' failed.",
+      );
+    }
+
     console.log("\n✅ Version bump complete.");
   } catch (error) {
     console.error("\n❌ Error bumping version:", error);
