@@ -8,11 +8,13 @@ lib/wasi/
 # No, 1460 error said 'module ... was excluded ... hint: remove from exclude ... or unexclude from gitignore'
 # So I MUST unexclude them in .gitignore or JSR fails.
 
-lib/wasi/
-lib/wasm/
-lib/wasm-inline/
-lib/native/
-lib/artifacts/
+/lib/wasi/
+/lib/wasm/
+/lib/wasm-inline/
+/lib/native/
+/lib/artifacts/
+/tests/e2e/browser/dist/
+/vendor/
 swetest_enhanced
 swetest_enhanced.wasm
 bench_native
@@ -44,17 +46,12 @@ node_modules/
 npm/
 
 # Vendor build artifacts
-vendor/swisseph/*.o
-vendor/swisseph/libswe.a
-vendor/swisseph/swetest
+crates/swiss-eph/vendor/swisseph/*.o
+crates/swiss-eph/vendor/swisseph/libswe.a
+crates/swiss-eph/vendor/swisseph/swetest
 
 # Environment
 .env*
 
-# Legacy (removing, should already be gone)
-/generated/
-dist/
-artifacts/
-browser/wrapper.ts
-output.txt# Ephemeral vendor copy for cargo publish
-crates/swiss-eph/vendor/
+# Ephemeris data (if any)
+*.se1

@@ -9,17 +9,12 @@ fn main() {
     
     // Check for vendor sources in crate directory first (for cargo publish),
     // then fall back to repo root (for local development)
-    let vendor_dir = if manifest_dir.join("vendor/swisseph").exists() {
-        manifest_dir.join("vendor/swisseph")
-    } else {
-        manifest_dir.join("../../vendor/swisseph")
-    };
+    let vendor_dir = manifest_dir.join("vendor/swisseph");
     
     if !vendor_dir.exists() {
         panic!(
             "Swiss Ephemeris vendor sources not found at {:?}.\n\
-             If you are publishing, ensure you copy the vendor directory into the crate: \n\
-             cp -r vendor/swisseph crates/swiss-eph/vendor/",
+             The submodule should be located at crates/swiss-eph/vendor/swisseph",
             vendor_dir
         );
     }

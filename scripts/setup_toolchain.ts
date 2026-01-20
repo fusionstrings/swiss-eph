@@ -67,6 +67,20 @@ async function installWasiSdk() {
   console.log("wasi-sdk installed successfully.");
 }
 
+async function ensureVendorSymlink() {
+  const symlinkPath = join(Deno.cwd(), "vendor/swisseph");
+  const targetPath = join(Deno.cwd(), "crates/swiss-eph/vendor/swisseph");
+
+  if (!(await exists(symlinkPath))) {
+    console.log(`Creating symlink: ${symlinkPath} -> ${targetPath}`);
+    await ensureDir(join(Deno.cwd(), "vendor"));
+    await Deno.symlink(targetPath, symlinkPath);
+  } else {
+    console.log(`Symlink already exists at ${symlinkPath}`);
+  }
+}
+
 if (import.meta.main) {
   await installWasiSdk();
+  await ensureVendorSymlink();
 }

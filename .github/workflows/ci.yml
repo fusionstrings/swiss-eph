@@ -121,10 +121,7 @@ jobs:
           RUST_BACKTRACE: 1
 
       - name: Dry-run Cargo Publish
-        run: |
-          mkdir -p crates/swiss-eph/vendor
-          cp -r vendor/swisseph crates/swiss-eph/vendor/
-          cd crates/swiss-eph && cargo publish --dry-run --allow-dirty
+        run: cd crates/swiss-eph && cargo publish --dry-run
 
   # Publish job (only on release)
   publish:
@@ -179,6 +176,6 @@ jobs:
 
       - name: Publish to crates.io
         run: |
-          mkdir -p crates/swiss-eph/vendor
-          cp -r vendor/swisseph crates/swiss-eph/vendor/
-          cd crates/swiss-eph && cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }} --allow-dirty
+          cargo publish --manifest-path crates/swiss-eph-data/Cargo.toml --token ${{ secrets.CARGO_REGISTRY_TOKEN }} || true
+          sleep 30
+          cargo publish --manifest-path crates/swiss-eph/Cargo.toml --token ${{ secrets.CARGO_REGISTRY_TOKEN }}

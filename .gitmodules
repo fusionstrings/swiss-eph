@@ -1,4 +1,4 @@
 [submodule "vendor/swisseph"]
-	path = vendor/swisseph
+	path = crates/swiss-eph/vendor/swisseph
 	url = https://github.com/aloistr/swisseph.git
 	ignore = untracked
