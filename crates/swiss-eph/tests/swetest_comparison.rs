@@ -67,9 +67,9 @@ fn approx_eq(a: f64, b: f64, tol: f64) -> bool {
 /// Set ephemeris path for accurate calculations
 /// Uses compile-time CARGO_MANIFEST_DIR for reliable path resolution
 fn setup_ephemeris() {
-    // Build absolute path: crate dir + ../vendor/swisseph/ephe
+    // Build absolute path: crate dir + ../../vendor/swisseph/ephe
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    let ephe_path = format!("{}/vendor/swisseph/ephe", manifest_dir);
+    let ephe_path = format!("{}/../../vendor/swisseph/ephe", manifest_dir);
     let path = CString::new(ephe_path).unwrap();
     unsafe {
         swe_set_ephe_path(path.as_ptr());
