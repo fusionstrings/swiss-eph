@@ -5,7 +5,17 @@
 use std::path::PathBuf;
 
 fn main() {
-    let vendor_dir = PathBuf::from("../../vendor/swisseph");
+    let manifest_dir = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
+    
+    // Check for vendor sources in crate directory first (for cargo publish),
+    // then fall back to repo root (for local development)
+    let vendor_dir = if manifest_dir.join("vendor/swisseph").exists() {
+        manifest_dir.join("vendor/swisseph")
+    } else {
+        manifest_dir.join("../../vendor/swisseph")
+    };
+    
+    println!("cargo:warning=Using vendor sources from: {:?}", vendor_dir);
 
     let mut build = cc::Build::new();
     build
@@ -71,5 +81,5 @@ fn main() {
     build.compile("swisseph");
 
     // Tell cargo to invalidate the built crate whenever the C sources change
-    println!("cargo:rerun-if-changed=../../vendor/swisseph");
+    println!("cargo:rerun-if-changed={}", vendor_dir.display());
 }

@@ -56,4 +56,5 @@ vendor/swisseph/swetest
 dist/
 artifacts/
 browser/wrapper.ts
-output.txt
+output.txt# Ephemeral vendor copy for cargo publish
+crates/swiss-eph/vendor/
