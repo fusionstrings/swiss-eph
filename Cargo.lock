@@ -71,13 +71,19 @@ name = "swiss-eph"
 version = "0.1.1"
 dependencies = [
  "cc",
- "swiss-eph-data",
+ "swiss-eph-data 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasm-bindgen",
 ]
 
 [[package]]
 name = "swiss-eph-data"
 version = "0.1.1"
+
+[[package]]
+name = "swiss-eph-data"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb966b21334d32c965c891087bf507453f2c9d87e9e8bd834e0aef4621adbf94"
 
 [[package]]
 name = "syn"
