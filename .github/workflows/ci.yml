@@ -122,8 +122,9 @@ jobs:
 
       - name: Dry-run Cargo Publish
         run: |
+          mkdir -p crates/swiss-eph/vendor
           cp -r vendor/swisseph crates/swiss-eph/vendor/
-          cargo publish --dry-run --allow-dirty
+          cd crates/swiss-eph && cargo publish --dry-run --allow-dirty
 
   # Publish job (only on release)
   publish:
@@ -177,4 +178,7 @@ jobs:
 
 
       - name: Publish to crates.io
-        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          mkdir -p crates/swiss-eph/vendor
+          cp -r vendor/swisseph crates/swiss-eph/vendor/
+          cd crates/swiss-eph && cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }} --allow-dirty

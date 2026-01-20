@@ -15,6 +15,15 @@ fn main() {
         manifest_dir.join("../../vendor/swisseph")
     };
     
+    if !vendor_dir.exists() {
+        panic!(
+            "Swiss Ephemeris vendor sources not found at {:?}.\n\
+             If you are publishing, ensure you copy the vendor directory into the crate: \n\
+             cp -r vendor/swisseph crates/swiss-eph/vendor/",
+            vendor_dir
+        );
+    }
+    
     println!("cargo:warning=Using vendor sources from: {:?}", vendor_dir);
 
     let mut build = cc::Build::new();
