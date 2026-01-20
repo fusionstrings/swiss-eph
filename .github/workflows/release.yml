@@ -24,6 +24,9 @@ jobs:
         with:
           deno-version: v2.x
       
+      - name: Setup Toolchain (Symlinks & SDK)
+        run: deno task setup
+
       - name: Lint & Test
         run: |
           deno lint
@@ -43,6 +46,11 @@ jobs:
       
       - name: Setup Rust
         uses: dtolnay/rust-action@stable
+
+      - name: Create vendor symlink
+        run: |
+          mkdir -p vendor
+          ln -s ../crates/swiss-eph/vendor/swisseph vendor/swisseph
       
       - name: Run Rust tests
         run: cargo test --manifest-path crates/swiss-eph/Cargo.toml

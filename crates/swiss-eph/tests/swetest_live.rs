@@ -11,7 +11,14 @@ use std::process::Command;
 /// Set ephemeris path for accurate calculations
 fn setup_ephemeris() {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    let ephe_path = format!("{}/../../vendor/swisseph/ephe", manifest_dir);
+    
+    // 1. Try local crate vendor path (cleaner)
+    let mut ephe_path = format!("{}/vendor/swisseph/ephe", manifest_dir);
+    if !std::path::Path::new(&ephe_path).exists() {
+        // 2. Try repository root vendor path (compatibility)
+        ephe_path = format!("{}/../../vendor/swisseph/ephe", manifest_dir);
+    }
+    
     let path = CString::new(ephe_path).unwrap();
     unsafe {
         swe_set_ephe_path(path.as_ptr());
@@ -68,7 +75,10 @@ const TOLERANCE: f64 = 1e-10;
 fn test_live_comparison_with_swetest_enhanced() {
     // Run swetest_enhanced
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    let swetest_path = format!("{}/../../scripts/swetest_enhanced", manifest_dir);
+    let mut swetest_path = format!("{}/../../scripts/swetest_enhanced", manifest_dir);
+    if !std::path::Path::new(&swetest_path).exists() {
+        swetest_path = format!("{}/../../swetest_enhanced", manifest_dir);
+    }
     
     let output = Command::new(&swetest_path)
         .current_dir(manifest_dir)
@@ -163,7 +173,10 @@ fn test_live_comparison_with_swetest_enhanced() {
 #[test]
 fn test_live_delta_t_comparison() {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    let swetest_path = format!("{}/../../scripts/swetest_enhanced", manifest_dir);
+    let mut swetest_path = format!("{}/../../scripts/swetest_enhanced", manifest_dir);
+    if !std::path::Path::new(&swetest_path).exists() {
+        swetest_path = format!("{}/../../swetest_enhanced", manifest_dir);
+    }
     
     let output = Command::new(&swetest_path)
         .current_dir(manifest_dir)
