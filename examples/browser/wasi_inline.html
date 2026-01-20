@@ -1,1 +1,12 @@
-// Example for browser | wasi | inline
+<!DOCTYPE html>
+<html>
+<body>
+<pre id="log"></pre>
+<script type="module">
+  import { runVerification, printResults, runBenchmark } from "../shared/logic.ts";
+  const log = (msg) => document.getElementById('log').textContent += msg + '\n';
+  console.log = log;
+  log("Browser benchmark for wasi | inline");
+</script>
+</body>
+</html>

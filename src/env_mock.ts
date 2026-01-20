@@ -31,10 +31,9 @@ export function memcmp(_s1: number, _s2: number, _n: number): number {
 export function memchr(_s: number, _c: number, _n: number): number {
   return 0;
 }
+
+// Strings
 export function strlen(_s: number): number {
-  return 0;
-}
-export function strdup(_s: number): number {
   return 0;
 }
 export function strcpy(_dest: number, _src: number): number {
@@ -44,6 +43,9 @@ export function strncpy(_dest: number, _src: number, _n: number): number {
   return 0;
 }
 export function strcat(_dest: number, _src: number): number {
+  return 0;
+}
+export function strncat(_dest: number, _src: number, _n: number): number {
   return 0;
 }
 export function strcmp(_s1: number, _s2: number): number {
@@ -62,6 +64,9 @@ export function strstr(_haystack: number, _needle: number): number {
   return 0;
 }
 export function strpbrk(_s: number, _accept: number): number {
+  return 0;
+}
+export function strdup(_s: number): number {
   return 0;
 }
 
@@ -161,6 +166,9 @@ export function atof(_nptr: number): number {
   return 0;
 }
 export function tolower(_c: number): number {
+  return 0;
+}
+export function toupper(_c: number): number {
   return 0;
 }
 

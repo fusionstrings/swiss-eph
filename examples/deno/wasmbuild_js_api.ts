@@ -1,6 +1,9 @@
-import * as SwissEph from "../../lib/wasm-inline/swiss_eph.js";
-import { printResults } from "../shared/logic.ts";
+import { SwissEph } from "../../src/main.ts";
+import { runVerification, printResults, runBenchmark } from "../shared/logic.ts";
 
-const ver = SwissEph.version();
-const pos = SwissEph.calc_ut(2460477, 0, 0);
-printResults("Deno", "wasmbuild", "JS API", { jd: 2460477, sun: { longitude: pos.longitude }, ascmc: [0, 0] });
+const wasmUrl = new URL("../../lib/wasm/swiss_eph.wasm", import.meta.url);
+const wasmModule = await WebAssembly.compileStreaming(fetch(wasmUrl));
+const eph = new SwissEph(wasmModule);
+const results = runVerification(eph, {});
+const ops = runBenchmark(eph, {});
+printResults("deno", "wasmbuild", "js_api", results, ops);

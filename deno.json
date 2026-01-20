@@ -20,8 +20,7 @@
       "lib/wasi/"
     ],
     "exclude": [
-      "lib/wasm/swiss_eph.wasm",
-      "!lib/wasm-sdk/",
+      "lib/wasm-sdk/",
       ".github",
       ".vscode",
       "artifacts",

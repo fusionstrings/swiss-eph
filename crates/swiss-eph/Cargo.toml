@@ -9,7 +9,7 @@ repository = "https://github.com/fusionstrings/swiss-eph"
 documentation = "https://docs.rs/swiss-eph"
 keywords = ["astronomy", "ephemeris", "astrology", "planetary", "calculation"]
 categories = ["science", "api-bindings"]
-readme = "../../README.md"
+readme = "README.md"
 links = "swisseph"
 
 [lib]
