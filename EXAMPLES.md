@@ -47,80 +47,84 @@ Total: 3 × 2 × 4 × 3 = **72 paths verified for parity.**
 
 All 72 example files are located in `examples/`:
 
-| #  | Platform | Build     | Style       | Mode    | File                                         |
-| -- | -------- | --------- | ----------- | ------- | -------------------------------------------- |
-| 1  | deno     | wasmbuild | js_api      | moshier | `deno/wasmbuild_js_api_moshier.ts`           |
-| 2  | deno     | wasmbuild | js_api      | swiss   | `deno/wasmbuild_js_api_swiss.ts`             |
-| 3  | deno     | wasmbuild | js_api      | jpl     | `deno/wasmbuild_js_api_jpl.ts`               |
-| 4  | deno     | wasmbuild | direct_wasm | moshier | `deno/wasmbuild_direct_wasm_moshier.ts`      |
-| 5  | deno     | wasmbuild | direct_wasm | swiss   | `deno/wasmbuild_direct_wasm_swiss.ts`        |
-| 6  | deno     | wasmbuild | direct_wasm | jpl     | `deno/wasmbuild_direct_wasm_jpl.ts`          |
-| 7  | deno     | wasmbuild | inline      | moshier | `deno/wasmbuild_inline_moshier.ts`           |
-| 8  | deno     | wasmbuild | inline      | swiss   | `deno/wasmbuild_inline_swiss.ts`             |
-| 9  | deno     | wasmbuild | inline      | jpl     | `deno/wasmbuild_inline_jpl.ts`               |
-| 10 | deno     | wasi      | js_api      | moshier | `deno/wasi_js_api_moshier.ts`                |
-| 11 | deno     | wasi      | js_api      | swiss   | `deno/wasi_js_api_swiss.ts`                  |
-| 12 | deno     | wasi      | js_api      | jpl     | `deno/wasi_js_api_jpl.ts`                    |
-| 13 | deno     | wasi      | direct_wasm | moshier | `deno/wasi_direct_wasm_moshier.ts`           |
-| 14 | deno     | wasi      | direct_wasm | swiss   | `deno/wasi_direct_wasm_swiss.ts`             |
-| 15 | deno     | wasi      | direct_wasm | jpl     | `deno/wasi_direct_wasm_jpl.ts`               |
-| 16 | deno     | wasi      | inline      | moshier | `deno/wasi_inline_moshier.ts`                |
-| 17 | deno     | wasi      | inline      | swiss   | `deno/wasi_inline_swiss.ts`                  |
-| 18 | deno     | wasi      | inline      | jpl     | `deno/wasi_inline_jpl.ts`                    |
-| 19 | node     | wasmbuild | js_api      | moshier | `node/wasmbuild_js_api_moshier.mjs`          |
-| 20 | node     | wasmbuild | js_api      | swiss   | `node/wasmbuild_js_api_swiss.mjs`            |
-| 21 | node     | wasmbuild | js_api      | jpl     | `node/wasmbuild_js_api_jpl.mjs`              |
-| 22 | node     | wasmbuild | direct_wasm | moshier | `node/wasmbuild_direct_wasm_moshier.mjs`     |
-| 23 | node     | wasmbuild | direct_wasm | swiss   | `node/wasmbuild_direct_wasm_swiss.mjs`       |
-| 24 | node     | wasmbuild | direct_wasm | jpl     | `node/wasmbuild_direct_wasm_jpl.mjs`         |
-| 25 | node     | wasmbuild | inline      | moshier | `node/wasmbuild_inline_moshier.mjs`          |
-| 26 | node     | wasmbuild | inline      | swiss   | `node/wasmbuild_inline_swiss.mjs`            |
-| 27 | node     | wasmbuild | inline      | jpl     | `node/wasmbuild_inline_jpl.mjs`              |
-| 28 | node     | wasi      | js_api      | moshier | `node/wasi_js_api_moshier.mjs`               |
-| 29 | node     | wasi      | js_api      | swiss   | `node/wasi_js_api_swiss.mjs`                 |
-| 30 | node     | wasi      | js_api      | jpl     | `node/wasi_js_api_jpl.mjs`                   |
-| 31 | node     | wasi      | direct_wasm | moshier | `node/wasi_direct_wasm_moshier.mjs`          |
-| 32 | node     | wasi      | direct_wasm | swiss   | `node/wasi_direct_wasm_swiss.mjs`            |
-| 33 | node     | wasi      | direct_wasm | jpl     | `node/wasi_direct_wasm_jpl.mjs`              |
-| 34 | node     | wasi      | inline      | moshier | `node/wasi_inline_moshier.mjs`               |
-| 35 | node     | wasi      | inline      | swiss   | `node/wasi_inline_swiss.mjs`                 |
-| 36 | node     | wasi      | inline      | jpl     | `node/wasi_inline_jpl.mjs`                   |
-| 37 | browser  | wasmbuild | js_api      | moshier | `browser/wasmbuild_js_api_moshier.html`      |
-| 38 | browser  | wasmbuild | js_api      | swiss   | `browser/wasmbuild_js_api_swiss.html`        |
-| 39 | browser  | wasmbuild | js_api      | jpl     | `browser/wasmbuild_js_api_jpl.html`          |
-| 40 | browser  | wasmbuild | direct_wasm | moshier | `browser/wasmbuild_direct_wasm_moshier.html` |
-| 41 | browser  | wasmbuild | direct_wasm | swiss   | `browser/wasmbuild_direct_wasm_swiss.html`   |
-| 42 | browser  | wasmbuild | direct_wasm | jpl     | `browser/wasmbuild_direct_wasm_jpl.html`     |
-| 43 | browser  | wasmbuild | inline      | moshier | `browser/wasmbuild_inline_moshier.html`      |
-| 44 | browser  | wasmbuild | inline      | swiss   | `browser/wasmbuild_inline_swiss.html`        |
-| 45 | browser  | wasmbuild | inline      | jpl     | `browser/wasmbuild_inline_jpl.html`          |
-| 46 | browser  | wasi      | js_api      | moshier | `browser/wasi_js_api_moshier.html`           |
-| 47 | browser  | wasi      | js_api      | swiss   | `browser/wasi_js_api_swiss.html`             |
-| 48 | browser  | wasi      | js_api      | jpl     | `browser/wasi_js_api_jpl.html`               |
-| 49 | browser  | wasi      | direct_wasm | moshier | `browser/wasi_direct_wasm_moshier.html`      |
-| 50 | browser  | wasi      | direct_wasm | swiss   | `browser/wasi_direct_wasm_swiss.html`        |
-| 51 | browser  | wasi      | direct_wasm | jpl     | `browser/wasi_direct_wasm_jpl.html`          |
-| 52 | browser  | wasi      | inline      | moshier | `browser/wasi_inline_moshier.html`           |
-| 53 | browser  | wasi      | inline      | swiss   | `browser/wasi_inline_swiss.html`             |
-| 54 | browser  | wasi      | inline      | jpl     | `browser/wasi_inline_jpl.html`               |
-| 55 | worker   | wasmbuild | js_api      | moshier | `worker/wasmbuild_js_api_moshier.ts`         |
-| 56 | worker   | wasmbuild | js_api      | swiss   | `worker/wasmbuild_js_api_swiss.ts`           |
-| 57 | worker   | wasmbuild | js_api      | jpl     | `worker/wasmbuild_js_api_jpl.ts`             |
-| 58 | worker   | wasmbuild | direct_wasm | moshier | `worker/wasmbuild_direct_wasm_moshier.ts`    |
-| 59 | worker   | wasmbuild | direct_wasm | swiss   | `worker/wasmbuild_direct_wasm_swiss.ts`      |
-| 60 | worker   | wasmbuild | direct_wasm | jpl     | `worker/wasmbuild_direct_wasm_jpl.ts`        |
-| 61 | worker   | wasmbuild | inline      | moshier | `worker/wasmbuild_inline_moshier.ts`         |
-| 62 | worker   | wasmbuild | inline      | swiss   | `worker/wasmbuild_inline_swiss.ts`           |
-| 63 | worker   | wasmbuild | inline      | jpl     | `worker/wasmbuild_inline_jpl.ts`             |
-| 64 | worker   | wasi      | js_api      | moshier | `worker/wasi_js_api_moshier.ts`              |
-| 65 | worker   | wasi      | js_api      | swiss   | `worker/wasi_js_api_swiss.ts`                |
-| 66 | worker   | wasi      | js_api      | jpl     | `worker/wasi_js_api_jpl.ts`                  |
-| 67 | worker   | wasi      | direct_wasm | moshier | `worker/wasi_direct_wasm_moshier.ts`         |
-| 68 | worker   | wasi      | direct_wasm | swiss   | `worker/wasi_direct_wasm_swiss.ts`           |
-| 69 | worker   | wasi      | direct_wasm | jpl     | `worker/wasi_direct_wasm_jpl.ts`             |
-| 70 | worker   | wasi      | inline      | moshier | `worker/wasi_inline_moshier.ts`              |
-| 71 | worker   | wasi      | inline      | swiss   | `worker/wasi_inline_swiss.ts`                |
-| 72 | worker   | wasi      | inline      | jpl     | `worker/wasi_inline_jpl.ts`                  |
+| #  | Platform | Build     | Style       | Mode    | Benchmark  | File                                         |
+| -- | -------- | --------- | ----------- | ------- | ---------- | -------------------------------------------- |
+| 1  | deno     | wasmbuild | js_api      | moshier | 417k       | `deno/wasmbuild_js_api_moshier.ts`           |
+| 2  | deno     | wasmbuild | js_api      | swiss   | 417k       | `deno/wasmbuild_js_api_swiss.ts`             |
+| 3  | deno     | wasmbuild | js_api      | jpl     | 417k       | `deno/wasmbuild_js_api_jpl.ts`               |
+| 4  | deno     | wasmbuild | direct_wasm | moshier | **878k**   | `deno/wasmbuild_direct_wasm_moshier.ts`      |
+| 5  | deno     | wasmbuild | direct_wasm | swiss   | **878k**   | `deno/wasmbuild_direct_wasm_swiss.ts`        |
+| 6  | deno     | wasmbuild | direct_wasm | jpl     | **878k**   | `deno/wasmbuild_direct_wasm_jpl.ts`          |
+| 7  | deno     | wasmbuild | inline      | moshier | 371k       | `deno/wasmbuild_inline_moshier.ts`           |
+| 8  | deno     | wasmbuild | inline      | swiss   | 371k       | `deno/wasmbuild_inline_swiss.ts`             |
+| 9  | deno     | wasmbuild | inline      | jpl     | 371k       | `deno/wasmbuild_inline_jpl.ts`               |
+| 10 | deno     | wasi      | js_api      | moshier | 81k        | `deno/wasi_js_api_moshier.ts`                |
+| 11 | deno     | wasi      | js_api      | swiss   | 81k        | `deno/wasi_js_api_swiss.ts`                  |
+| 12 | deno     | wasi      | js_api      | jpl     | 81k        | `deno/wasi_js_api_jpl.ts`                    |
+| 13 | deno     | wasi      | direct_wasm | moshier | N/A        | `deno/wasi_direct_wasm_moshier.ts`           |
+| 14 | deno     | wasi      | direct_wasm | swiss   | N/A        | `deno/wasi_direct_wasm_swiss.ts`             |
+| 15 | deno     | wasi      | direct_wasm | jpl     | N/A        | `deno/wasi_direct_wasm_jpl.ts`               |
+| 16 | deno     | wasi      | inline      | moshier | 85k        | `deno/wasi_inline_moshier.ts`                |
+| 17 | deno     | wasi      | inline      | swiss   | 85k        | `deno/wasi_inline_swiss.ts`                  |
+| 18 | deno     | wasi      | inline      | jpl     | 85k        | `deno/wasi_inline_jpl.ts`                    |
+| 19 | node     | wasmbuild | js_api      | moshier | 627k       | `node/wasmbuild_js_api_moshier.mjs`          |
+| 20 | node     | wasmbuild | js_api      | swiss   | 627k       | `node/wasmbuild_js_api_swiss.mjs`            |
+| 21 | node     | wasmbuild | js_api      | jpl     | 627k       | `node/wasmbuild_js_api_jpl.mjs`              |
+| 22 | node     | wasmbuild | direct_wasm | moshier | **1,006k** | `node/wasmbuild_direct_wasm_moshier.mjs`     |
+| 23 | node     | wasmbuild | direct_wasm | swiss   | **1,006k** | `node/wasmbuild_direct_wasm_swiss.mjs`       |
+| 24 | node     | wasmbuild | direct_wasm | jpl     | **1,006k** | `node/wasmbuild_direct_wasm_jpl.mjs`         |
+| 25 | node     | wasmbuild | inline      | moshier | 606k       | `node/wasmbuild_inline_moshier.mjs`          |
+| 26 | node     | wasmbuild | inline      | swiss   | 606k       | `node/wasmbuild_inline_swiss.mjs`            |
+| 27 | node     | wasmbuild | inline      | jpl     | 606k       | `node/wasmbuild_inline_jpl.mjs`              |
+| 28 | node     | wasi      | js_api      | moshier | 174k       | `node/wasi_js_api_moshier.mjs`               |
+| 29 | node     | wasi      | js_api      | swiss   | 174k       | `node/wasi_js_api_swiss.mjs`                 |
+| 30 | node     | wasi      | js_api      | jpl     | 174k       | `node/wasi_js_api_jpl.mjs`                   |
+| 31 | node     | wasi      | direct_wasm | moshier | N/A        | `node/wasi_direct_wasm_moshier.mjs`          |
+| 32 | node     | wasi      | direct_wasm | swiss   | N/A        | `node/wasi_direct_wasm_swiss.mjs`            |
+| 33 | node     | wasi      | direct_wasm | jpl     | N/A        | `node/wasi_direct_wasm_jpl.mjs`              |
+| 34 | node     | wasi      | inline      | moshier | 173k       | `node/wasi_inline_moshier.mjs`               |
+| 35 | node     | wasi      | inline      | swiss   | 173k       | `node/wasi_inline_swiss.mjs`                 |
+| 36 | node     | wasi      | inline      | jpl     | 173k       | `node/wasi_inline_jpl.mjs`                   |
+| 37 | browser  | wasmbuild | js_api      | moshier | ~400k      | `browser/wasmbuild_js_api_moshier.html`      |
+| 38 | browser  | wasmbuild | js_api      | swiss   | ~400k      | `browser/wasmbuild_js_api_swiss.html`        |
+| 39 | browser  | wasmbuild | js_api      | jpl     | ~400k      | `browser/wasmbuild_js_api_jpl.html`          |
+| 40 | browser  | wasmbuild | direct_wasm | moshier | ~800k      | `browser/wasmbuild_direct_wasm_moshier.html` |
+| 41 | browser  | wasmbuild | direct_wasm | swiss   | ~800k      | `browser/wasmbuild_direct_wasm_swiss.html`   |
+| 42 | browser  | wasmbuild | direct_wasm | jpl     | ~800k      | `browser/wasmbuild_direct_wasm_jpl.html`     |
+| 43 | browser  | wasmbuild | inline      | moshier | ~350k      | `browser/wasmbuild_inline_moshier.html`      |
+| 44 | browser  | wasmbuild | inline      | swiss   | ~350k      | `browser/wasmbuild_inline_swiss.html`        |
+| 45 | browser  | wasmbuild | inline      | jpl     | ~350k      | `browser/wasmbuild_inline_jpl.html`          |
+| 46 | browser  | wasi      | js_api      | moshier | ~80k       | `browser/wasi_js_api_moshier.html`           |
+| 47 | browser  | wasi      | js_api      | swiss   | ~80k       | `browser/wasi_js_api_swiss.html`             |
+| 48 | browser  | wasi      | js_api      | jpl     | ~80k       | `browser/wasi_js_api_jpl.html`               |
+| 49 | browser  | wasi      | direct_wasm | moshier | N/A        | `browser/wasi_direct_wasm_moshier.html`      |
+| 50 | browser  | wasi      | direct_wasm | swiss   | N/A        | `browser/wasi_direct_wasm_swiss.html`        |
+| 51 | browser  | wasi      | direct_wasm | jpl     | N/A        | `browser/wasi_direct_wasm_jpl.html`          |
+| 52 | browser  | wasi      | inline      | moshier | ~80k       | `browser/wasi_inline_moshier.html`           |
+| 53 | browser  | wasi      | inline      | swiss   | ~80k       | `browser/wasi_inline_swiss.html`             |
+| 54 | browser  | wasi      | inline      | jpl     | ~80k       | `browser/wasi_inline_jpl.html`               |
+| 55 | worker   | wasmbuild | js_api      | moshier | ~400k      | `worker/wasmbuild_js_api_moshier.ts`         |
+| 56 | worker   | wasmbuild | js_api      | swiss   | ~400k      | `worker/wasmbuild_js_api_swiss.ts`           |
+| 57 | worker   | wasmbuild | js_api      | jpl     | ~400k      | `worker/wasmbuild_js_api_jpl.ts`             |
+| 58 | worker   | wasmbuild | direct_wasm | moshier | ~800k      | `worker/wasmbuild_direct_wasm_moshier.ts`    |
+| 59 | worker   | wasmbuild | direct_wasm | swiss   | ~800k      | `worker/wasmbuild_direct_wasm_swiss.ts`      |
+| 60 | worker   | wasmbuild | direct_wasm | jpl     | ~800k      | `worker/wasmbuild_direct_wasm_jpl.ts`        |
+| 61 | worker   | wasmbuild | inline      | moshier | ~350k      | `worker/wasmbuild_inline_moshier.ts`         |
+| 62 | worker   | wasmbuild | inline      | swiss   | ~350k      | `worker/wasmbuild_inline_swiss.ts`           |
+| 63 | worker   | wasmbuild | inline      | jpl     | ~350k      | `worker/wasmbuild_inline_jpl.ts`             |
+| 64 | worker   | wasi      | js_api      | moshier | ~80k       | `worker/wasi_js_api_moshier.ts`              |
+| 65 | worker   | wasi      | js_api      | swiss   | ~80k       | `worker/wasi_js_api_swiss.ts`                |
+| 66 | worker   | wasi      | js_api      | jpl     | ~80k       | `worker/wasi_js_api_jpl.ts`                  |
+| 67 | worker   | wasi      | direct_wasm | moshier | N/A        | `worker/wasi_direct_wasm_moshier.ts`         |
+| 68 | worker   | wasi      | direct_wasm | swiss   | N/A        | `worker/wasi_direct_wasm_swiss.ts`           |
+| 69 | worker   | wasi      | direct_wasm | jpl     | N/A        | `worker/wasi_direct_wasm_jpl.ts`             |
+| 70 | worker   | wasi      | inline      | moshier | ~80k       | `worker/wasi_inline_moshier.ts`              |
+| 71 | worker   | wasi      | inline      | swiss   | ~80k       | `worker/wasi_inline_swiss.ts`                |
+| 72 | worker   | wasi      | inline      | jpl     | ~80k       | `worker/wasi_inline_jpl.ts`                  |
+
+> [!TIP]\
+> Deno/Node benchmarks are measured. Browser/Worker are estimated (~) based on
+> similar runtime characteristics.
 
 #### Peak Performance vs Precision Matrix
 
