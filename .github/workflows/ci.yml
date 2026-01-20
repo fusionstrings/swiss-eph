@@ -124,7 +124,7 @@ jobs:
         run: cargo build --release
 
       - name: Run Rust Tests
-        run: cargo test --test swetest_comparison -- --test-threads=1
+        run: cargo test --manifest-path crates/swiss-eph/Cargo.toml -- --test-threads=1
         env:
           RUST_BACKTRACE: 1
 

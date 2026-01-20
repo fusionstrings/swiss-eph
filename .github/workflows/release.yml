@@ -53,7 +53,7 @@ jobs:
           ln -s ../crates/swiss-eph/vendor/swisseph vendor/swisseph
       
       - name: Run Rust tests
-        run: cargo test --manifest-path crates/swiss-eph/Cargo.toml
+        run: cargo test --manifest-path crates/swiss-eph/Cargo.toml -- --test-threads=1
       
       # Publish swiss-eph-data first (if version changed)
       - name: Publish swiss-eph-data
