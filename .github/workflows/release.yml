@@ -90,9 +90,13 @@ jobs:
       
       - name: Pre-flight Rust Validation
         run: |
+          # Test the main crate
           cargo test --manifest-path crates/swiss-eph/Cargo.toml -- --test-threads=1
-          cd crates/swiss-eph && cargo publish --dry-run
-          cd ../swiss-eph-data && cargo publish --dry-run
+          
+          # Dry-run publish the data crate (no dependencies, safe to check)
+          # Note: We CANNOT dry-run swiss-eph yet because it depends on the new swiss-eph-data 
+          # which isn't on crates.io yet.
+          cd crates/swiss-eph-data && cargo publish --dry-run
       
       - name: Publish swiss-eph-data
         run: cargo publish --manifest-path crates/swiss-eph-data/Cargo.toml

@@ -68,6 +68,8 @@ async function main() {
     // Workspace members
     const members = await getWorkspaceMembers();
     for (const member of members) {
+      if (member.includes("swiss-eph-data")) continue;
+
       const memberPath = join(CWD, member, "Cargo.toml");
       const v = await getCargoVersion(memberPath);
       console.log(

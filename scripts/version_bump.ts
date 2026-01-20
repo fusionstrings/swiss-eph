@@ -118,7 +118,12 @@ async function main() {
     }
 
     // Workspace members
-    const members = await getWorkspaceMembers();
+    // We explicitly exclude swiss-eph-data from automatic bumping
+    // because it only needs to update when the ephemeris data changes.
+    const members = (await getWorkspaceMembers()).filter((m) =>
+      !m.includes("swiss-eph-data")
+    );
+
     for (const member of members) {
       const memberCargo = join(CWD, member, "Cargo.toml");
       await bumpCargoFile(memberCargo, newVersion);
