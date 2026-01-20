@@ -1,1 +1,0 @@
-// Example for worker | wasi | inline

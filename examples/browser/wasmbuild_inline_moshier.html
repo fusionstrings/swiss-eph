@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>wasmbuild | inline | moshier</title></head>
+<body>
+<pre id="log"></pre>
+<script type="module">
+  // Ephemeris Mode: MOSHIER (flag: 4)
+  const CALC_FLAG = 4;
+  const wasmPath = "../../lib/wasm/swiss_eph.wasm";
+  
+  const log = (msg) => document.getElementById('log').textContent += msg + '\n';
+  log("Browser | wasmbuild | inline | moshier: Loading WASM...");
+  
+  try {
+    const wasmModule = await WebAssembly.compileStreaming(fetch(wasmPath));
+    log("WASM loaded. Mode flag: " + CALC_FLAG);
+  } catch (e) {
+    log("Error: " + e.message);
+  }
+</script>
+</body>
+</html>

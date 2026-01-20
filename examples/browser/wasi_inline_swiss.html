@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>wasi | inline | swiss</title></head>
+<body>
+<pre id="log"></pre>
+<script type="module">
+  // Ephemeris Mode: SWISS (flag: 2)
+  const CALC_FLAG = 2;
+  const wasmPath = "../../lib/wasi/swiss_eph.wasm";
+  
+  const log = (msg) => document.getElementById('log').textContent += msg + '\n';
+  log("Browser | wasi | inline | swiss: Loading WASM...");
+  
+  try {
+    const wasmModule = await WebAssembly.compileStreaming(fetch(wasmPath));
+    log("WASM loaded. Mode flag: " + CALC_FLAG);
+  } catch (e) {
+    log("Error: " + e.message);
+  }
+</script>
+</body>
+</html>

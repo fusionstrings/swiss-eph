@@ -3,18 +3,28 @@ import { join } from "@std/path";
 const platforms = ["deno", "node", "browser", "worker"] as const;
 const styles = ["js_api", "direct_wasm", "inline"] as const;
 const builds = ["wasmbuild", "wasi"] as const;
+const modes = ["moshier", "swiss", "jpl"] as const;
 
 interface Context {
   platform: string;
   style: string;
   build: string;
+  mode: string;
 }
+
+const MODE_FLAGS: Record<string, string> = {
+  moshier: "4", // SEFLG_MOSEPH
+  swiss: "2", // SEFLG_SWIEPH
+  jpl: "1", // SEFLG_JPLEPH
+};
 
 const FULL_GEN = (ctx: Context) => {
   const isWasi = ctx.build === "wasi";
   const p = ctx.platform;
   const s = ctx.style;
   const b = ctx.build;
+  const m = ctx.mode;
+  const modeFlag = MODE_FLAGS[m];
   const isTS = p === "deno" || p === "worker";
 
   let code = "";
@@ -34,9 +44,9 @@ const FULL_GEN = (ctx: Context) => {
         code += `import { readFile } from "node:fs/promises";\n`;
       }
     }
-    code +=
-      `import { runVerification, printResults, runBenchmark } from "../shared/logic.ts";\n`;
     code += `\n`;
+    code += `// Ephemeris Mode: ${m.toUpperCase()} (flag: ${modeFlag})\n`;
+    code += `const CALC_FLAG = ${modeFlag};\n\n`;
 
     const wasmPath = isWasi
       ? "../../lib/wasi/swiss_eph.wasm"
@@ -54,9 +64,11 @@ const FULL_GEN = (ctx: Context) => {
         code += `const wasmModule = await WebAssembly.compile(wasmBuffer);\n`;
         code += `const eph = new SwissEphClass(wasmModule);\n`;
       }
-      code += `const results = runVerification(eph, {});\n`;
-      code += `const ops = runBenchmark(eph, {});\n`;
-      code += `printResults("${p}", "${b}", "${s}", results, ops);\n`;
+      code += `\n// Verification with ${m.toUpperCase()} mode\n`;
+      code += `const jd = eph.swe_julday(2024, 6, 15, 12, 1);\n`;
+      code += `const result = eph.swe_calc_ut(jd, 0, CALC_FLAG); // SE_SUN\n`;
+      code +=
+        `console.log(\`${p} | ${b} | ${s} | ${m}: Sun longitude = \${result.xx[0].toFixed(6)}°\`);\n`;
     } else if (s === "direct_wasm") {
       if (p === "deno") {
         code += `const wasmUrl = new URL("${wasmPath}", import.meta.url);\n`;
@@ -76,14 +88,6 @@ const FULL_GEN = (ctx: Context) => {
           `  swe_julday: (y: number, m: number, d: number, h: number, c: number) => number;\n`;
         code +=
           `  swe_calc_ut: (jd: number, body: number, flag: number, xx: number, err: number) => number;\n`;
-        code +=
-          `  wasm_swe_calc_ut: (jd: number, body: number, flag: number, xx: number, err: number) => number;\n`;
-        code +=
-          `  calc_ut: (jd: number, body: number, flag: number, xx: number, err: number) => number;\n`;
-        code +=
-          `  swe_houses: (jd: number, lat: number, lon: number, h: number, c: number, a: number) => void;\n`;
-        code +=
-          `  wasm_swe_houses: (jd: number, lat: number, lon: number, h: number, c: number, a: number) => void;\n`;
         code += `}\n\n`;
       }
       code +=
@@ -100,86 +104,87 @@ const FULL_GEN = (ctx: Context) => {
       } else {
         code += `const exports = (instance.instance || instance).exports;\n`;
       }
-      code += `\n// Minimal wrapper for direct WASM to handle memory\n`;
-      code += `const memory = exports.memory;\n`;
-      code += `const ephWrapper = {\n`;
-      if (isTS) {
-        code +=
-          `  swe_julday: (exports.swe_julday || (exports as unknown as Record<string, (a: unknown) => unknown>).wasm_swe_julday).bind(exports) as (y: number, m: number, d: number, h: number, c: number) => number,\n`;
-        code +=
-          `  swe_calc_ut: (jd: number, body: number, flag: number) => {\n`;
-        code +=
-          `    const fn = (exports.swe_calc_ut || exports.wasm_swe_calc_ut || exports.calc_ut) as (jd: number, body: number, flag: number, xx: number, err: number) => number;\n`;
-      } else {
-        code +=
-          `  swe_julday: (exports.swe_julday || exports.wasm_swe_julday).bind(exports),\n`;
-        code += `  swe_calc_ut: (jd, body, flag) => {\n`;
-        code +=
-          `    const fn = (exports.swe_calc_ut || exports.wasm_swe_calc_ut || exports.calc_ut);\n`;
-      }
-      code += `    const xxPtr = exports.malloc(6 * 8);\n`;
-      code += `    const errPtr = exports.malloc(256);\n`;
-      code += `    fn(jd, body, flag, xxPtr, errPtr);\n`;
+      code += `\n// Direct WASM call with ${m.toUpperCase()} mode\n`;
+      code += `const jd = exports.swe_julday(2024, 6, 15, 12, 1);\n`;
+      code += `const xxPtr = exports.malloc(6 * 8);\n`;
+      code += `const errPtr = exports.malloc(256);\n`;
+      code += `exports.swe_calc_ut(jd, 0, CALC_FLAG, xxPtr, errPtr);\n`;
+      code += `const xx = new Float64Array(exports.memory.buffer, xxPtr, 6);\n`;
       code +=
-        `    const xx = new Float64Array(memory.buffer, xxPtr, 6).slice();\n`;
-      code += `    exports.free(xxPtr); exports.free(errPtr);\n`;
-      code += `    return { xx, error: "" };\n`;
-      code += `  },\n`;
-      if (isTS) {
-        code +=
-          `  swe_houses: (jd: number, lat: number, lon: number, hsys: number) => {\n`;
-        code +=
-          `    const fn = (exports.swe_houses || exports.wasm_swe_houses) as (jd: number, lat: number, lon: number, h: number, c: number, a: number) => void;\n`;
-      } else {
-        code += `  swe_houses: (jd, lat, lon, hsys) => {\n`;
-        code +=
-          `    const fn = (exports.swe_houses || exports.wasm_swe_houses);\n`;
-      }
-      code += `    const cuspsPtr = exports.malloc(13 * 8);\n`;
-      code += `    const ascmcPtr = exports.malloc(10 * 8);\n`;
-      code += `    fn(jd, lat, lon, hsys, cuspsPtr, ascmcPtr);\n`;
-      code +=
-        `    const cusps = new Float64Array(memory.buffer, cuspsPtr, 13).slice();\n`;
-      code +=
-        `    const ascmc = new Float64Array(memory.buffer, ascmcPtr, 10).slice();\n`;
-      code += `    exports.free(cuspsPtr); exports.free(ascmcPtr);\n`;
-      code += `    return { cusps, ascmc };\n`;
-      code += `  }\n`;
-      code += `};\n`;
-      if (isTS) {
-        code +=
-          `const results = runVerification(ephWrapper as unknown as SwissEphClass, {});\n`;
-        code +=
-          `const ops = runBenchmark(ephWrapper as unknown as SwissEphClass, {});\n`;
-      } else {
-        code += `const results = runVerification(ephWrapper, {});\n`;
-        code += `const ops = runBenchmark(ephWrapper, {});\n`;
-      }
-      code += `printResults("${p}", "${b}", "${s}", results, ops);\n`;
+        `console.log(\`${p} | ${b} | ${s} | ${m}: Sun longitude = \${xx[0].toFixed(6)}°\`);\n`;
+      code += `exports.free(xxPtr); exports.free(errPtr);\n`;
     }
     return code;
   }
 
   if (p === "browser") {
-    return `<!DOCTYPE html>\n<html>\n<body>\n<pre id="log"></pre>\n<script type="module">\n  import { runVerification, printResults, runBenchmark } from "../shared/logic.ts";\n  const log = (msg) => document.getElementById('log').textContent += msg + '\\n';\n  console.log = log;\n  log("Browser benchmark for ${b} | ${s}");\n</script>\n</body>\n</html>`;
+    return `<!DOCTYPE html>
+<html>
+<head><title>${b} | ${s} | ${m}</title></head>
+<body>
+<pre id="log"></pre>
+<script type="module">
+  // Ephemeris Mode: ${m.toUpperCase()} (flag: ${modeFlag})
+  const CALC_FLAG = ${modeFlag};
+  const wasmPath = "${
+      isWasi ? "../../lib/wasi/swiss_eph.wasm" : "../../lib/wasm/swiss_eph.wasm"
+    }";
+  
+  const log = (msg) => document.getElementById('log').textContent += msg + '\\n';
+  log("Browser | ${b} | ${s} | ${m}: Loading WASM...");
+  
+  try {
+    const wasmModule = await WebAssembly.compileStreaming(fetch(wasmPath));
+    log("WASM loaded. Mode flag: " + CALC_FLAG);
+  } catch (e) {
+    log("Error: " + e.message);
+  }
+</script>
+</body>
+</html>`;
   }
 
-  return `// Example for ${p} | ${b} | ${s}\n`;
+  if (p === "worker") {
+    return `// Worker example for ${b} | ${s} | ${m}
+// Ephemeris Mode: ${m.toUpperCase()} (flag: ${modeFlag})
+const CALC_FLAG = ${modeFlag};
+
+export default {
+  fetch(_request: Request) {
+    return new Response("Worker ${b} | ${s} | ${m} - flag: " + CALC_FLAG);
+  }
+};
+`;
+  }
+
+  return `// Example for ${p} | ${b} | ${s} | ${m}\n`;
 };
 
 async function generate() {
+  let count = 0;
   for (const p of platforms) {
     for (const b of builds) {
       for (const s of styles) {
-        const dir = join("examples", p);
-        await Deno.mkdir(dir, { recursive: true });
-        const ext = p === "node" ? "mjs" : (p === "browser" ? "html" : "ts");
-        const filename = join(dir, b + "_" + s + "." + ext);
-        const content = FULL_GEN({ platform: p, build: b, style: s });
-        await Deno.writeTextFile(filename, content);
+        for (const m of modes) {
+          const dir = join("examples", p);
+          await Deno.mkdir(dir, { recursive: true });
+          const ext = p === "node" ? "mjs" : (p === "browser" ? "html" : "ts");
+          const filename = join(dir, `${b}_${s}_${m}.${ext}`);
+          const content = FULL_GEN({
+            platform: p,
+            build: b,
+            style: s,
+            mode: m,
+          });
+          await Deno.writeTextFile(filename, content);
+          count++;
+        }
       }
     }
   }
+  console.log(
+    `Generated ${count} example files (4 platforms × 2 builds × 3 styles × 3 modes = 72)`,
+  );
 }
 
 generate();
