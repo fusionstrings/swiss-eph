@@ -28,10 +28,10 @@ async function collect() {
         const ext = p === "node" ? "mjs" : "ts";
         const file = join("examples", p, `${b}_${s}.${ext}`);
 
-        let cmd = p === "deno"
+        const cmdParams = p === "deno"
           ? ["deno", "run", "-A", file]
           : ["node", "--no-warnings", file];
-        const result = await runBenchmark(cmd);
+        const result = await runBenchmark(cmdParams);
         console.log(`| ${p} | ${b} | ${s} | ${result} |`);
       }
     }

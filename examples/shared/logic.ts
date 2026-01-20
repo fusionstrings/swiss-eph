@@ -54,10 +54,23 @@ export interface SwissEphProvider {
   ) => void;
 }
 
+export interface VerificationResults {
+  jd: number;
+  sun: {
+    longitude: number;
+    latitude: number;
+    distance: number;
+    speed: number;
+  };
+  cusps: number[];
+  ascmc: number[];
+  error: string;
+}
+
 export function runVerification(
   eph: SwissEphProvider,
   Constants: Record<string, number | undefined>,
-) {
+): VerificationResults {
   const date = { year: 2024, month: 6, day: 15, hour: 12.0 };
   const SE_GREG_CAL = Constants?.SE_GREG_CAL ?? 1;
   const SE_SUN = Constants?.SE_SUN ?? 0;
@@ -72,9 +85,31 @@ export function runVerification(
     throw new Error(`Missing core functions (julday/calc) on eph instance.`);
   }
 
-  const julday = juldayRaw.bind(eph);
-  const calc = calcRaw.bind(eph);
-  const houses = housesRaw ? (housesRaw as Function).bind(eph) : null;
+  const julday = (juldayRaw as (
+    y: number,
+    m: number,
+    d: number,
+    h: number,
+    c: number,
+  ) => number).bind(eph);
+  const calc = (calcRaw as (
+    jd: number,
+    b: number,
+    f: number,
+  ) => { xx?: Float64Array | number[]; longitude?: number; error: string })
+    .bind(eph);
+  const houses = housesRaw
+    ? (housesRaw as (
+      jd: number,
+      lat: number,
+      lon: number,
+      h: number,
+    ) => {
+      cusps: Float64Array | number[];
+      ascmc: Float64Array | number[];
+      [key: number]: Float64Array | number[];
+    }).bind(eph)
+    : null;
 
   // 1. Julian Day
   const jd = julday(
@@ -101,8 +136,12 @@ export function runVerification(
   const lat = 51.5074;
   const lon = -0.1278;
   const hRes = houses ? houses(jd, lat, lon, "P".charCodeAt(0)) : null;
-  const cusps = hRes ? (hRes.cusps || hRes[0]) : new Float64Array(13);
-  const ascmc = hRes ? (hRes.ascmc || hRes[1]) : new Float64Array(10);
+  const cusps = hRes
+    ? (hRes.cusps || (hRes as unknown as Record<number, number[]>)[0])
+    : new Float64Array(13);
+  const ascmc = hRes
+    ? (hRes.ascmc || (hRes as unknown as Record<number, number[]>)[1])
+    : new Float64Array(10);
 
   return {
     jd,
@@ -147,7 +186,7 @@ export function printResults(
   platform: string,
   build: string,
   style: string,
-  results: Record<string, any>,
+  results: VerificationResults,
   benchOps?: number,
 ) {
   console.log(`--- PARITY REPORT: ${platform} | ${build} | ${style} ---`);

@@ -7,7 +7,8 @@
  * It can be run in Deno, Node.js, and Browsers.
  */
 
-import { Constants, SwissEph } from "../../src/main.ts";
+import { Constants } from "../../src/main.ts";
+import type { SwissEph } from "../../src/main.ts";
 import {
   AYANAMSA_VALUES,
   DELTA_T_VALUES,

@@ -7,14 +7,15 @@
 
 import { runComprehensiveSuite } from "./comprehensive_suite.ts";
 import { createReport, type TestReport } from "./test_utils.ts";
+import type { SwissEph } from "../../src/main.ts";
 
 /**
  * Run the unified E2E test suite
  * Works with any SwissEph instance
  */
 export function runE2ETests(
-  eph: any,
-  _Constants: any,
+  eph: SwissEph,
+  _Constants: Record<string, number>,
   platform: string,
 ): TestReport {
   console.log(`\nStarting Unified E2E Suite: ${platform}`);

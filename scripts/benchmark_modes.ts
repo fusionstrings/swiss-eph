@@ -27,9 +27,17 @@ async function benchmark() {
     for (let i = 0; i < 1000; i++) eph.swe_calc_ut(jd, body, mode.flag);
 
     const start = performance.now();
-    let lastResult: any;
+    let lastResult: {
+      returnCode: number;
+      serr?: string;
+      xx: number[] | Float64Array;
+    } = { returnCode: 0, xx: new Float64Array(6) };
     for (let i = 0; i < iterations; i++) {
-      lastResult = eph.swe_calc_ut(jd, body, mode.flag);
+      lastResult = eph.swe_calc_ut(jd, body, mode.flag) as {
+        returnCode: number;
+        serr?: string;
+        xx: number[] | Float64Array;
+      };
     }
     const end = performance.now();
     const ops = Math.floor((iterations / (end - start)) * 1000);

@@ -1,4 +1,4 @@
-import type { SwissEph } from "../../../src/main.ts";
+import type { SwissEph as _SwissEph } from "../../../src/main.ts";
 import { runE2ETests } from "../../fixtures/e2e_suite.ts";
 import { Constants } from "../../../src/generated/api.ts";
 
