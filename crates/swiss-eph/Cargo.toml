@@ -1,7 +1,7 @@
 [package]
 name = "swiss-eph"
 version = "0.2.0"
-edition = "2021"
+edition = "2024"
 authors = ["fusionstrings"]
 description = "Complete FFI bindings to the Swiss Ephemeris astronomical calculation library"
 license = "AGPL-3.0"

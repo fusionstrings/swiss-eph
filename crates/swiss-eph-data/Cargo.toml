@@ -1,7 +1,7 @@
 [package]
 name = "swiss-eph-data"
 version = "0.1.1"
-edition = "2021"
+edition = "2024"
 authors = ["fusionstrings"]
 description = "Embedded ephemeris data files for swiss-eph (Swiss Ephemeris)"
 license = "AGPL-3.0"

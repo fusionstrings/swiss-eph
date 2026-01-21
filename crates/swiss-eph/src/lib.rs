@@ -535,7 +535,7 @@ pub const SE_DELTAT_AUTOMATIC: c_double = -1E-10;
 // =============================================================================
 
 #[link(name = "swisseph")]
-extern "C" {
+unsafe extern "C" {
     // Version and path
     pub fn swe_version(s: *mut c_char) -> *mut c_char;
     pub fn swe_get_library_path(s: *mut c_char) -> *mut c_char;

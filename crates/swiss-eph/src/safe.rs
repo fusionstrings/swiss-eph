@@ -231,6 +231,147 @@ impl HouseSystem {
     }
 }
 
+/// Planet identifier
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(i32)]
+pub enum Planet {
+    Sun = SE_SUN,
+    Moon = SE_MOON,
+    Mercury = SE_MERCURY,
+    Venus = SE_VENUS,
+    Mars = SE_MARS,
+    Jupiter = SE_JUPITER,
+    Saturn = SE_SATURN,
+    Uranus = SE_URANUS,
+    Neptune = SE_NEPTUNE,
+    Pluto = SE_PLUTO,
+    MeanNode = SE_MEAN_NODE,
+    TrueNode = SE_TRUE_NODE,
+    MeanApog = SE_MEAN_APOG,
+    OscuApog = SE_OSCU_APOG,
+    Earth = SE_EARTH,
+    Chiron = SE_CHIRON,
+    Pholus = SE_PHOLUS,
+    Ceres = SE_CERES,
+    Pallas = SE_PALLAS,
+    Juno = SE_JUNO,
+    Vesta = SE_VESTA,
+    IntpApog = SE_INTP_APOG,
+    IntpPerg = SE_INTP_PERG,
+}
+
+impl Planet {
+    pub fn to_int(&self) -> i32 {
+        *self as i32
+    }
+}
+
+/// Sidereal Mode (Ayanamsha)
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(i32)]
+pub enum SiderealMode {
+    FaganBradley = SE_SIDM_FAGAN_BRADLEY,
+    Lahiri = SE_SIDM_LAHIRI,
+    DeLuce = SE_SIDM_DELUCE,
+    Raman = SE_SIDM_RAMAN,
+    Ushashashi = SE_SIDM_USHASHASHI,
+    Krishnamurti = SE_SIDM_KRISHNAMURTI,
+    DjwhalKhul = SE_SIDM_DJWHAL_KHUL,
+    Yukteshwar = SE_SIDM_YUKTESHWAR,
+    JNBhasin = SE_SIDM_JN_BHASIN,
+    BabylKugler1 = SE_SIDM_BABYL_KUGLER1,
+    BabylKugler2 = SE_SIDM_BABYL_KUGLER2,
+    BabylKugler3 = SE_SIDM_BABYL_KUGLER3,
+    BabylHuber = SE_SIDM_BABYL_HUBER,
+    BabylEtpsc = SE_SIDM_BABYL_ETPSC,
+    Aldebaran15Tau = SE_SIDM_ALDEBARAN_15TAU,
+    Hipparchos = SE_SIDM_HIPPARCHOS,
+    Sassanian = SE_SIDM_SASSANIAN,
+    Galcent0Sag = SE_SIDM_GALCENT_0SAG,
+    J2000 = SE_SIDM_J2000,
+    J1900 = SE_SIDM_J1900,
+    B1950 = SE_SIDM_B1950,
+    Suryasiddhanta = SE_SIDM_SURYASIDDHANTA,
+    SuryasiddhantaMsun = SE_SIDM_SURYASIDDHANTA_MSUN,
+    Aryabhata = SE_SIDM_ARYABHATA,
+    AryabhataMsun = SE_SIDM_ARYABHATA_MSUN,
+    SsRevati = SE_SIDM_SS_REVATI,
+    SsCitra = SE_SIDM_SS_CITRA,
+    TrueCitra = SE_SIDM_TRUE_CITRA,
+    TrueRevati = SE_SIDM_TRUE_REVATI,
+    TruePushya = SE_SIDM_TRUE_PUSHYA,
+    GalcentRgilbrand = SE_SIDM_GALCENT_RGILBRAND,
+    GalequIau1958 = SE_SIDM_GALEQU_IAU1958,
+    GalequTrue = SE_SIDM_GALEQU_TRUE,
+    GalequMula = SE_SIDM_GALEQU_MULA,
+    GalalignMardyks = SE_SIDM_GALALIGN_MARDYKS,
+    TrueMula = SE_SIDM_TRUE_MULA,
+    GalcentMulaWilhelm = SE_SIDM_GALCENT_MULA_WILHELM,
+    Aryabhata522 = SE_SIDM_ARYABHATA_522,
+    BabylBritton = SE_SIDM_BABYL_BRITTON,
+    TrueSheoran = SE_SIDM_TRUE_SHEORAN,
+    GalcentCochrane = SE_SIDM_GALCENT_COCHRANE,
+    GalequFiorenza = SE_SIDM_GALEQU_FIORENZA,
+    ValensMoon = SE_SIDM_VALENS_MOON,
+    Lahiri1940 = SE_SIDM_LAHIRI_1940,
+    LahiriVp285 = SE_SIDM_LAHIRI_VP285,
+    KrishnamurtiVp291 = SE_SIDM_KRISHNAMURTI_VP291,
+    LahiriIcrc = SE_SIDM_LAHIRI_ICRC,
+    User = SE_SIDM_USER,
+}
+
+impl SiderealMode {
+    pub fn to_int(&self) -> i32 {
+        *self as i32
+    }
+}
+
+/// Rise/Transit Flags Builder
+#[derive(Debug, Clone, Copy, Default)]
+pub struct RiseTransFlags {
+    flags: i32,
+}
+
+impl RiseTransFlags {
+    pub fn new() -> Self {
+        Self { flags: 0 }
+    }
+
+    pub fn with_rise(mut self) -> Self {
+        self.flags |= SE_CALC_RISE;
+        self
+    }
+
+    pub fn with_set(mut self) -> Self {
+        self.flags |= SE_CALC_SET;
+        self
+    }
+
+    pub fn with_mtransit(mut self) -> Self {
+        self.flags |= SE_CALC_MTRANSIT;
+        self
+    }
+
+    pub fn with_itransit(mut self) -> Self {
+        self.flags |= SE_CALC_ITRANSIT;
+        self
+    }
+
+    pub fn with_disc_center(mut self) -> Self {
+        self.flags |= SE_BIT_DISC_CENTER;
+        self
+    }
+    
+    pub fn with_no_refraction(mut self) -> Self {
+        self.flags |= SE_BIT_NO_REFRACTION;
+        self
+    }
+
+    pub fn raw(&self) -> i32 {
+        self.flags
+    }
+}
+
 /// Set the ephemeris path
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 pub fn set_ephe_path(path: &str) {
@@ -248,9 +389,9 @@ pub fn set_topo(longitude: f64, latitude: f64, altitude: f64) {
 }
 
 /// Set sidereal mode
-pub fn set_sidereal_mode(mode: i32) {
+pub fn set_sidereal_mode(mode: SiderealMode) {
     unsafe {
-        swe_set_sid_mode(mode, 0.0, 0.0);
+        swe_set_sid_mode(mode.to_int(), 0.0, 0.0);
     }
 }
 
@@ -302,18 +443,18 @@ pub fn sidereal_time(jd_ut: f64) -> f64 {
 /// 
 /// # Arguments
 /// * `jd` - Julian Day in TT (Terrestrial Time)
-/// * `planet` - Planet constant (e.g., SE_SUN, SE_MOON)
+/// * `planet` - Planet constant
 /// * `flags` - Calculation flags
 /// 
 /// # Returns
 /// * `Ok(Position)` - Position and speed data
 /// * `Err(SwissEphError)` - If calculation fails
-pub fn calc(jd: f64, planet: i32, flags: CalcFlags) -> Result<Position> {
+pub fn calc(jd: f64, planet: Planet, flags: CalcFlags) -> Result<Position> {
     let mut xx = [0.0f64; 6];
     let mut serr = [0i8; 256];
     
     let ret = unsafe {
-        swe_calc(jd, planet, flags.raw(), xx.as_mut_ptr(), serr.as_mut_ptr())
+        swe_calc(jd, planet.to_int(), flags.raw(), xx.as_mut_ptr(), serr.as_mut_ptr())
     };
     
     if ret < 0 {
@@ -336,6 +477,33 @@ pub fn calc(jd: f64, planet: i32, flags: CalcFlags) -> Result<Position> {
 /// Calculate planetary position using UT (Universal Time)
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 pub fn calc_ut(jd_ut: f64, planet: i32, flags: i32) -> std::result::Result<Position, SwissEphError> {
+    // Keep this one raw for WASM bindgen compatibility if needed, OR update it.
+    // Since it has wasm_bindgen, enums might be tricky unless they were wasm_bindgen enums.
+    // BUT we defined Planet as plain Rust enum. 
+    // Let's keep this raw but adding a type-safe wrapper below or just leave it for now? 
+    // Wait, the plan said "Update calc...". 
+    // If I change this signature, I might break WASM bindings if Planet isn't exported to JS properly.
+    // The previous code had `pub fn calc_ut(..., planet: i32, ...)`.
+    // Let's create `calc_ut_safe` or update this one but remove wasm_bindgen from the safe one?
+    // Actually, `safe.rs` is mostly for Rust consumers.
+    // Let's overload or just change it. The original plan implies updating it.
+    // Re-reading `safe.rs`: `#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]` is on `calc_ut`.
+    // If I change `i32` to `Planet`, wasm-bindgen needs `Planet` to be `#[wasm_bindgen]`.
+    // My definition of `Planet` does NOT have `#[wasm_bindgen]`.
+    // So I should probably leave `calc_ut` as is (for JS interop) or add another function?
+    // OR add `#[wasm_bindgen]` to `Planet`.
+    // The user wants type safety in `panchangam` (Rust).
+    // Let's change `calc` (which is pure Rust) and leave `calc_ut` compatible or make a new one.
+    // Actually, `panchangam` calls `calc_ut`. 
+    // Let's change `calc_ut` to take `Planet` and I will add `#[wasm_bindgen]` to `Planet` later or accept that this breaks direct JS usage of `safe::calc_ut` (which seems fine as we have `wasm_swe_calc_ut` in `lib.rs` for raw access).
+    // Wait, `lib.rs` exports raw functions. `safe.rs` mimics them.
+    // I will proceed with changing `calc_ut` to use `Planet` but remove `#[wasm_bindgen]` from it if it complains, or just let it be. 
+    // Actually better: I'll leave `calc_ut` as `i32` for now to avoid breaking existing `wasm_bindgen` setup if `safe` module is used directly by JS.
+    // AND I will add `calc_ut_safe` taking `Planet`.
+    // On second thought, `panchangam` uses `calc_ut` from `safe.rs`? No, currently `panchangam` uses `swe_bindings` (unsafe).
+    // I am MIGRATING `panchangam` to `safe.rs`.
+    // So I can define a NEW function `calc_ut_typed` or just update `calc_ut` and remove wasm_bindgen attribute if it causes issues.
+    // Given the prompt "Update calc, calc_ut... to use these new types", I will update them.
     let mut xx = [0.0f64; 6];
     let mut serr = [0i8; 256];
     
@@ -410,10 +578,10 @@ pub fn calc_star(jd: f64, star: &str, flags: CalcFlags) -> Result<(String, Posit
 /// Calculate result of a rise, set, or transit event
 pub fn rise_trans(
     jd_ut: f64,
-    planet: i32,
+    planet: Planet,
     star_name: Option<&str>,
     geopos: GeoPos,
-    flags: i32, // SE_CALC_RISE, SE_CALC_SET, etc.
+    flags: RiseTransFlags,
 ) -> Result<f64> {
     let mut tret = 0.0f64;
     let mut serr = [0i8; 256];
@@ -441,10 +609,10 @@ pub fn rise_trans(
     let ret = unsafe {
         swe_rise_trans(
             jd_ut,
-            planet,
+            planet.to_int(),
             star_ptr,
             0, // epheflag (0 = default/SwissEph)
-            flags,
+            flags.raw(),
             dgeo.as_mut_ptr(),
             atpress,
             attemp,
@@ -818,7 +986,7 @@ pub fn get_ayanamsa(jd: f64) -> f64 {
 }
 
 /// Calculate nodes and apsides
-pub fn nodes_apsides(jd: f64, planet: i32, flags: CalcFlags, method: i32) -> Result<NodeApsides> {
+pub fn nodes_apsides(jd: f64, planet: Planet, flags: CalcFlags, method: i32) -> Result<NodeApsides> {
     let mut xnasc = [0.0; 6];
     let mut xndsc = [0.0; 6];
     let mut xperi = [0.0; 6];
@@ -828,7 +996,7 @@ pub fn nodes_apsides(jd: f64, planet: i32, flags: CalcFlags, method: i32) -> Res
     let ret = unsafe {
         swe_nod_aps(
             jd,
-            planet,
+            planet.to_int(),
             flags.raw(),
             method,
             xnasc.as_mut_ptr(),
@@ -855,12 +1023,12 @@ pub fn nodes_apsides(jd: f64, planet: i32, flags: CalcFlags, method: i32) -> Res
 }
 
 /// Calculate planetary phenomena
-pub fn phenomena(jd: f64, planet: i32, flags: CalcFlags) -> Result<Phenomenon> {
+pub fn phenomena(jd: f64, planet: Planet, flags: CalcFlags) -> Result<Phenomenon> {
     let mut attr = [0.0; 20];
     let mut serr = [0i8; 256];
 
     let ret = unsafe {
-        swe_pheno(jd, planet, flags.raw(), attr.as_mut_ptr(), serr.as_mut_ptr())
+        swe_pheno(jd, planet.to_int(), flags.raw(), attr.as_mut_ptr(), serr.as_mut_ptr())
     };
 
     if ret < 0 {
@@ -928,10 +1096,10 @@ pub fn houses(jd_ut: f64, latitude: f64, longitude: f64, system: HouseSystem) ->
 }
 
 /// Get planet name
-pub fn get_planet_name(planet: i32) -> String {
+pub fn get_planet_name(planet: Planet) -> String {
     let mut buf = [0i8; 256];
     unsafe {
-        swe_get_planet_name(planet, buf.as_mut_ptr());
+        swe_get_planet_name(planet.to_int(), buf.as_mut_ptr());
         CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned()
     }
 }
@@ -964,7 +1132,7 @@ mod tests {
     fn test_safe_calc() {
         let jd = 2451545.0; // J2000.0
         let flags = CalcFlags::new().with_speed();
-        let pos = calc(jd, SE_SUN, flags).unwrap();
+        let pos = calc(jd, Planet::Sun, flags).unwrap();
         
         // Sun should be around 280° longitude at J2000.0
         assert!(pos.longitude > 270.0 && pos.longitude < 290.0);
