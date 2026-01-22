@@ -11,26 +11,46 @@ async function bumpDeno(version: string) {
   console.log(`Updated deno.json to ${version}`);
 }
 
-async function bumpCargoFile(path: string, version: string) {
+async function getDataVersion(): Promise<string> {
+  const path = join(CWD, "crates/swiss-eph-data/Cargo.toml");
+  const content = await Deno.readTextFile(path);
+  const match = content.match(/^version = "(.*?)"/m);
+  if (!match) {
+    throw new Error(`Could not find version in ${path}`);
+  }
+  return match[1];
+}
+
+async function bumpCargoFile(
+  path: string,
+  version: string,
+  dataVersion: string,
+) {
   let content = await Deno.readTextFile(path);
   // Match `version = "x.y.z"` in the [package] section
   const packageMatch = content.match(/\[package\]([\s\S]*?)^version = ".*?"/m);
   if (packageMatch) {
     content = content.replace(/^version = ".*?"/m, `version = "${version}"`);
   } else {
-    content = content.replace(/^version = ".*?"/m, `version = "${version}"`);
+    // If [package] section isn't matched nicely with regex (unlikely given specific structure), trying global replacement
+    // but protected by the regex above usually.
+    // For safety, let's trust the first match if it looks like a package version.
+    const match = content.match(/^version = ".*?"/m);
+    if (match) {
+      content = content.replace(match[0], `version = "${version}"`);
+    }
   }
 
-  // Update swiss-eph-data dependency to use current version AND include path for workspace
+  // Update swiss-eph-data dependency to use its ACTUAL version (minor compatible) AND include path for workspace
   // This ensures cargo can find it even if not published to crates.io yet
-  const shortVersion = version.split(".").slice(0, 2).join(".");
+  const shortDataVersion = dataVersion.split(".").slice(0, 2).join(".");
   if (content.includes("swiss-eph-data = {")) {
     content = content.replace(
       /swiss-eph-data = \{([\s\S]*?)\}/g,
       (_match, inner) => {
         // Preserve optional = true if it exists
         const isOptional = inner.includes("optional = true");
-        return `swiss-eph-data = { version = "${shortVersion}", path = "../swiss-eph-data"${
+        return `swiss-eph-data = { version = "${shortDataVersion}", path = "../swiss-eph-data"${
           isOptional ? ", optional = true" : ""
         } }`;
       },
@@ -108,13 +128,16 @@ async function main() {
   console.log(`Bumping version to: ${newVersion}`);
 
   try {
+    const dataVersion = await getDataVersion();
+    console.log(`Detected swiss-eph-data version: ${dataVersion}`);
+
     await bumpDeno(newVersion);
 
     // Root Cargo.toml
     const rootCargo = join(CWD, "Cargo.toml");
     const rootContent = await Deno.readTextFile(rootCargo);
     if (rootContent.includes("[package]")) {
-      await bumpCargoFile(rootCargo, newVersion);
+      await bumpCargoFile(rootCargo, newVersion, dataVersion);
     }
 
     // Workspace members
@@ -126,7 +149,7 @@ async function main() {
 
     for (const member of members) {
       const memberCargo = join(CWD, member, "Cargo.toml");
-      await bumpCargoFile(memberCargo, newVersion);
+      await bumpCargoFile(memberCargo, newVersion, dataVersion);
     }
 
     await updateChangelog(newVersion);
