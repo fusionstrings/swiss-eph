@@ -17,7 +17,7 @@
 #![allow(non_upper_case_globals)]
 
 use std::os::raw::{c_char, c_double, c_int};
-#[cfg(target_arch = "wasm32")]
+
 
 
 pub mod safe;
