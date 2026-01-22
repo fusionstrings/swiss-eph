@@ -1,6 +1,6 @@
 {
   "name": "@fusionstrings/swiss-eph",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Swiss Ephemeris WASM binding for Deno, Node.js and Browser",
   "license": "AGPL-3.0",
   "exports": {
