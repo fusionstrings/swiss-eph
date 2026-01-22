@@ -18,7 +18,7 @@
 
 use std::os::raw::{c_char, c_double, c_int};
 #[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
+
 
 pub mod safe;
 
@@ -35,33 +35,37 @@ mod wasm_exports {
 
 #[cfg(not(target_os = "wasi"))]
 mod alloc_exports {
-    use super::*;
 
-    #[export_name = "malloc"]
+
+    #[unsafe(export_name = "malloc")]
     pub unsafe extern "C" fn custom_malloc(size: usize) -> *mut u8 {
-        let actual_size = size + 8;
-        let layout = std::alloc::Layout::from_size_align_unchecked(actual_size, 8);
-        let ptr = std::alloc::alloc(layout);
-        if ptr.is_null() {
-            return ptr;
+        unsafe {
+            let actual_size = size + 8;
+            let layout = std::alloc::Layout::from_size_align_unchecked(actual_size, 8);
+            let ptr = std::alloc::alloc(layout);
+            if ptr.is_null() {
+                return ptr;
+            }
+            *(ptr as *mut usize) = size;
+            ptr.add(8)
         }
-        *(ptr as *mut usize) = size;
-        ptr.add(8)
     }
 
-    #[export_name = "free"]
+    #[unsafe(export_name = "free")]
     pub unsafe extern "C" fn custom_free(ptr: *mut u8) {
-        if ptr.is_null() {
-            return;
+        unsafe {
+            if ptr.is_null() {
+                return;
+            }
+            let actual_ptr = ptr.sub(8);
+            let size = *(actual_ptr as *const usize);
+            let layout = std::alloc::Layout::from_size_align_unchecked(size + 8, 8);
+            std::alloc::dealloc(actual_ptr, layout);
         }
-        let actual_ptr = ptr.sub(8);
-        let size = *(actual_ptr as *const usize);
-        let layout = std::alloc::Layout::from_size_align_unchecked(size + 8, 8);
-        std::alloc::dealloc(actual_ptr, layout);
     }
 }
 
-    #[export_name = "wasm_swe_calc_ut"]
+    #[unsafe(export_name = "wasm_swe_calc_ut")]
     pub unsafe extern "C" fn __swe_calc_ut(
         tjd_ut: c_double,
         ipl: int32,
@@ -69,10 +73,10 @@ mod alloc_exports {
         xx: *mut c_double,
         serr: *mut c_char,
     ) -> int32 {
-        swe_calc_ut(tjd_ut, ipl, iflag, xx, serr)
+        unsafe { swe_calc_ut(tjd_ut, ipl, iflag, xx, serr) }
     }
 
-    #[export_name = "wasm_swe_calc"]
+    #[unsafe(export_name = "wasm_swe_calc")]
     pub unsafe extern "C" fn __swe_calc(
         tjd: c_double,
         ipl: int32,
@@ -80,25 +84,25 @@ mod alloc_exports {
         xx: *mut c_double,
         serr: *mut c_char,
     ) -> int32 {
-        swe_calc(tjd, ipl, iflag, xx, serr)
+        unsafe { swe_calc(tjd, ipl, iflag, xx, serr) }
     }
 
-    #[export_name = "wasm_swe_set_ephe_path"]
+    #[unsafe(export_name = "wasm_swe_set_ephe_path")]
     pub unsafe extern "C" fn __swe_set_ephe_path(path: *mut c_char) {
-        swe_set_ephe_path(path)
+        unsafe { swe_set_ephe_path(path) }
     }
 
-    #[export_name = "wasm_swe_version"]
+    #[unsafe(export_name = "wasm_swe_version")]
     pub unsafe extern "C" fn __swe_version(s: *mut c_char) -> *mut c_char {
-        swe_version(s)
+        unsafe { swe_version(s) }
     }
 
-    #[export_name = "wasm_swe_close"]
+    #[unsafe(export_name = "wasm_swe_close")]
     pub unsafe extern "C" fn __swe_close() {
-        swe_close()
+        unsafe { swe_close() }
     }
 
-    #[export_name = "wasm_swe_julday"]
+    #[unsafe(export_name = "wasm_swe_julday")]
     pub unsafe extern "C" fn __swe_julday(
         year: c_int,
         month: c_int,
@@ -106,10 +110,10 @@ mod alloc_exports {
         hour: c_double,
         gregflag: c_int,
     ) -> c_double {
-        swe_julday(year, month, day, hour, gregflag)
+        unsafe { swe_julday(year, month, day, hour, gregflag) }
     }
 
-    #[export_name = "wasm_swe_revjul"]
+    #[unsafe(export_name = "wasm_swe_revjul")]
     pub unsafe extern "C" fn __swe_revjul(
         jd: c_double,
         gregflag: c_int,
@@ -118,10 +122,10 @@ mod alloc_exports {
         day: *mut c_int,
         hour: *mut c_double,
     ) {
-        swe_revjul(jd, gregflag, year, month, day, hour)
+        unsafe { swe_revjul(jd, gregflag, year, month, day, hour) }
     }
 
-    #[export_name = "wasm_swe_houses"]
+    #[unsafe(export_name = "wasm_swe_houses")]
     pub unsafe extern "C" fn __swe_houses(
         tjd_ut: c_double,
         geolat: c_double,
@@ -130,17 +134,17 @@ mod alloc_exports {
         cusps: *mut c_double,
         ascmc: *mut c_double,
     ) -> c_int {
-        swe_houses(tjd_ut, geolat, geolon, hsys, cusps, ascmc)
+        unsafe { swe_houses(tjd_ut, geolat, geolon, hsys, cusps, ascmc) }
     }
 
-    #[export_name = "wasm_swe_sidtime"]
+    #[unsafe(export_name = "wasm_swe_sidtime")]
     pub unsafe extern "C" fn __swe_sidtime(tjd_ut: c_double) -> c_double {
-        swe_sidtime(tjd_ut)
+        unsafe { swe_sidtime(tjd_ut) }
     }
 
-    #[export_name = "wasm_swe_set_topo"]
+    #[unsafe(export_name = "wasm_swe_set_topo")]
     pub unsafe extern "C" fn __swe_set_topo(geolon: c_double, geolat: c_double, geoalt: c_double) {
-        swe_set_topo(geolon, geolat, geoalt)
+        unsafe { swe_set_topo(geolon, geolat, geoalt) }
     }
 }
 
