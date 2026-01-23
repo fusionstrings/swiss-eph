@@ -66,9 +66,19 @@ const FULL_GEN = (ctx: Context) => {
       }
       code += `\n// Verification with ${m.toUpperCase()} mode\n`;
       code += `const jd = eph.swe_julday(2024, 6, 15, 12, 1);\n`;
+      code += `// Warmup\n`;
+      code += `for(let i=0; i<100; i++) eph.swe_calc_ut(jd, 0, CALC_FLAG);\n`;
+      code += `const start = performance.now();\n`;
+      code += `const iter = 10000;\n`;
+      code += `for(let i=0; i<iter; i++) eph.swe_calc_ut(jd, 0, CALC_FLAG);\n`;
+      code += `const end = performance.now();\n`;
+      // Avoid division by zero
+      code += `const duration = Math.max(end - start, 0.001);\n`;
+      code += `const ops = Math.floor(iter / (duration / 1000));\n`;
       code += `const result = eph.swe_calc_ut(jd, 0, CALC_FLAG); // SE_SUN\n`;
       code +=
         `console.log(\`${p} | ${b} | ${s} | ${m}: Sun longitude = \${result.xx[0].toFixed(6)}°\`);\n`;
+      code += `console.log(\`Perf: \${ops.toLocaleString()} ops/sec\`);\n`;
     } else if (s === "direct_wasm") {
       if (p === "deno") {
         code += `const wasmUrl = new URL("${wasmPath}", import.meta.url);\n`;
@@ -109,11 +119,26 @@ const FULL_GEN = (ctx: Context) => {
         `const jd = (exports.swe_julday || exports.wasm_swe_julday)(2024, 6, 15, 12, 1);\n`;
       code += `const xxPtr = exports.malloc(6 * 8);\n`;
       code += `const errPtr = exports.malloc(256);\n`;
+
+      code +=
+        `const calcFn = exports.swe_calc_ut || exports.wasm_swe_calc_ut;\n`;
+      code += `// Warmup\n`;
+      code +=
+        `for(let i=0; i<100; i++) calcFn(jd, 0, CALC_FLAG, xxPtr, errPtr);\n`;
+      code += `const start = performance.now();\n`;
+      code += `const iter = 10000;\n`;
+      code +=
+        `for(let i=0; i<iter; i++) calcFn(jd, 0, CALC_FLAG, xxPtr, errPtr);\n`;
+      code += `const end = performance.now();\n`;
+      code += `const duration = Math.max(end - start, 0.001);\n`;
+      code += `const ops = Math.floor(iter / (duration / 1000));\n`;
+
       code +=
         `(exports.swe_calc_ut || exports.wasm_swe_calc_ut)(jd, 0, CALC_FLAG, xxPtr, errPtr);\n`;
       code += `const xx = new Float64Array(exports.memory.buffer, xxPtr, 6);\n`;
       code +=
         `console.log(\`${p} | ${b} | ${s} | ${m}: Sun longitude = \${xx[0].toFixed(6)}°\`);\n`;
+      code += `console.log(\`Perf: \${ops.toLocaleString()} ops/sec\`);\n`;
       code += `exports.free(xxPtr); exports.free(errPtr);\n`;
     }
     return code;

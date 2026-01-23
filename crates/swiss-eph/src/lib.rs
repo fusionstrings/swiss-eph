@@ -20,6 +20,9 @@ use std::os::raw::{c_char, c_double, c_int};
 
 
 
+#[cfg(feature = "embedded-ephe")]
+pub use swiss_eph_data as data;
+
 pub mod safe;
 
 // =============================================================================

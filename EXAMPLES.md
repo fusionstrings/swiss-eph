@@ -1,293 +1,66 @@
-# SwissEph Integration Examples (72-Permutation Matrix)
+# Integration Guide
 
-This document providing exhaustive coverage for the **72 distinct ways** to
-integrate SwissEph across platforms, build types, entrypoint styles, and
-ephemeris modes.
+**SwissEph** is designed to fit _your_ architecture, not the other way around.
+We support **24 distinct integration patterns** across platforms, builds, and
+styles.
 
-## Aligned 3x2x4x3 Integration Matrix
+## The Matrix: Choose Your Path
 
-We support **72 distinct integration paths** based on:
+All examples are runnable and located in the [examples/](./examples/) directory.
 
-- 3 Entrypoint Styles
-- 2 Build Types
-- 4 Platforms
-- 3 Ephemeris Modes
+### 1. Select Your Platform
 
-### 1. Entrypoint Styles (3)
+| Platform    | Best For                        | Recommended Example                     |
+| :---------- | :------------------------------ | :-------------------------------------- |
+| **Deno**    | Modern Server-side, Scripting   | `deno/wasmbuild_js_api_moshier.ts`      |
+| **Node.js** | Traditional Server-side, Lambda | `node/wasmbuild_js_api_moshier.mjs`     |
+| **Browser** | Client-side Apps (React/Vue)    | `browser/wasmbuild_inline_moshier.html` |
+| **Workers** | Edge Computing (Cloudflare)     | `worker/wasmbuild_inline_moshier.ts`    |
 
-- **JS Entry point**: Using the high-level `SwissEph` class (Recommended).
-- **Direct WebAssembly**: Manual instantiation using the `WebAssembly` API.
-- **Inline integration**: Using pre-bundled JS with embedded WASM (Fast-start).
+### 2. Select Your Build Type
 
-### 2. Build Types (2)
+- **`wasmbuild` (Recommended)**: Uses our high-level Rust wrapper. Safer,
+  idiomatic JS API, better error handling.
+- **`wasi` (Advanced)**: Direct binding to the C library via WASI. Lower level,
+  requires WASI polyfill in browsers.
 
-- **wasmbuild**: Rust-powered build with high-level bindings
-  (`lib/wasm-inline`).
-- **wasi**: Direct C-compiled build with a virtual POSIX environment
-  (`lib/wasi`).
+### 3. Select Your Style
 
-### 3. Platforms (4)
-
-- Deno, Node.js, Browser, and Cloudflare Workers.
-
----
-
-### Cross-Matrix Support (All 72 Permutations)
-
-| Dimension               | Options                        |
-| :---------------------- | :----------------------------- |
-| **1. Entrypoint Style** | JS API, Direct WASM, Inline    |
-| **2. Build Type**       | wasmbuild, wasi                |
-| **3. Platform**         | Deno, Node.js, Browser, Worker |
-| **4. Ephemeris Mode**   | Moshier, Swiss Ephemeris, JPL  |
-
-Total: 3 × 2 × 4 × 3 = **72 paths verified for parity.**
-
-### Complete 72-File Matrix
-
-All 72 example files are located in `examples/`:
-
-| #  | Platform | Build     | Style       | Mode    | Benchmark  | File                                         |
-| -- | -------- | --------- | ----------- | ------- | ---------- | -------------------------------------------- |
-| 1  | deno     | wasmbuild | js_api      | moshier | 417k       | `deno/wasmbuild_js_api_moshier.ts`           |
-| 2  | deno     | wasmbuild | js_api      | swiss   | 417k       | `deno/wasmbuild_js_api_swiss.ts`             |
-| 3  | deno     | wasmbuild | js_api      | jpl     | 417k       | `deno/wasmbuild_js_api_jpl.ts`               |
-| 4  | deno     | wasmbuild | direct_wasm | moshier | **878k**   | `deno/wasmbuild_direct_wasm_moshier.ts`      |
-| 5  | deno     | wasmbuild | direct_wasm | swiss   | **878k**   | `deno/wasmbuild_direct_wasm_swiss.ts`        |
-| 6  | deno     | wasmbuild | direct_wasm | jpl     | **878k**   | `deno/wasmbuild_direct_wasm_jpl.ts`          |
-| 7  | deno     | wasmbuild | inline      | moshier | 371k       | `deno/wasmbuild_inline_moshier.ts`           |
-| 8  | deno     | wasmbuild | inline      | swiss   | 371k       | `deno/wasmbuild_inline_swiss.ts`             |
-| 9  | deno     | wasmbuild | inline      | jpl     | 371k       | `deno/wasmbuild_inline_jpl.ts`               |
-| 10 | deno     | wasi      | js_api      | moshier | 81k        | `deno/wasi_js_api_moshier.ts`                |
-| 11 | deno     | wasi      | js_api      | swiss   | 81k        | `deno/wasi_js_api_swiss.ts`                  |
-| 12 | deno     | wasi      | js_api      | jpl     | 81k        | `deno/wasi_js_api_jpl.ts`                    |
-| 13 | deno     | wasi      | direct_wasm | moshier | N/A        | `deno/wasi_direct_wasm_moshier.ts`           |
-| 14 | deno     | wasi      | direct_wasm | swiss   | N/A        | `deno/wasi_direct_wasm_swiss.ts`             |
-| 15 | deno     | wasi      | direct_wasm | jpl     | N/A        | `deno/wasi_direct_wasm_jpl.ts`               |
-| 16 | deno     | wasi      | inline      | moshier | 85k        | `deno/wasi_inline_moshier.ts`                |
-| 17 | deno     | wasi      | inline      | swiss   | 85k        | `deno/wasi_inline_swiss.ts`                  |
-| 18 | deno     | wasi      | inline      | jpl     | 85k        | `deno/wasi_inline_jpl.ts`                    |
-| 19 | node     | wasmbuild | js_api      | moshier | 627k       | `node/wasmbuild_js_api_moshier.mjs`          |
-| 20 | node     | wasmbuild | js_api      | swiss   | 627k       | `node/wasmbuild_js_api_swiss.mjs`            |
-| 21 | node     | wasmbuild | js_api      | jpl     | 627k       | `node/wasmbuild_js_api_jpl.mjs`              |
-| 22 | node     | wasmbuild | direct_wasm | moshier | **1,006k** | `node/wasmbuild_direct_wasm_moshier.mjs`     |
-| 23 | node     | wasmbuild | direct_wasm | swiss   | **1,006k** | `node/wasmbuild_direct_wasm_swiss.mjs`       |
-| 24 | node     | wasmbuild | direct_wasm | jpl     | **1,006k** | `node/wasmbuild_direct_wasm_jpl.mjs`         |
-| 25 | node     | wasmbuild | inline      | moshier | 606k       | `node/wasmbuild_inline_moshier.mjs`          |
-| 26 | node     | wasmbuild | inline      | swiss   | 606k       | `node/wasmbuild_inline_swiss.mjs`            |
-| 27 | node     | wasmbuild | inline      | jpl     | 606k       | `node/wasmbuild_inline_jpl.mjs`              |
-| 28 | node     | wasi      | js_api      | moshier | 174k       | `node/wasi_js_api_moshier.mjs`               |
-| 29 | node     | wasi      | js_api      | swiss   | 174k       | `node/wasi_js_api_swiss.mjs`                 |
-| 30 | node     | wasi      | js_api      | jpl     | 174k       | `node/wasi_js_api_jpl.mjs`                   |
-| 31 | node     | wasi      | direct_wasm | moshier | N/A        | `node/wasi_direct_wasm_moshier.mjs`          |
-| 32 | node     | wasi      | direct_wasm | swiss   | N/A        | `node/wasi_direct_wasm_swiss.mjs`            |
-| 33 | node     | wasi      | direct_wasm | jpl     | N/A        | `node/wasi_direct_wasm_jpl.mjs`              |
-| 34 | node     | wasi      | inline      | moshier | 173k       | `node/wasi_inline_moshier.mjs`               |
-| 35 | node     | wasi      | inline      | swiss   | 173k       | `node/wasi_inline_swiss.mjs`                 |
-| 36 | node     | wasi      | inline      | jpl     | 173k       | `node/wasi_inline_jpl.mjs`                   |
-| 37 | browser  | wasmbuild | js_api      | moshier | ~400k      | `browser/wasmbuild_js_api_moshier.html`      |
-| 38 | browser  | wasmbuild | js_api      | swiss   | ~400k      | `browser/wasmbuild_js_api_swiss.html`        |
-| 39 | browser  | wasmbuild | js_api      | jpl     | ~400k      | `browser/wasmbuild_js_api_jpl.html`          |
-| 40 | browser  | wasmbuild | direct_wasm | moshier | ~800k      | `browser/wasmbuild_direct_wasm_moshier.html` |
-| 41 | browser  | wasmbuild | direct_wasm | swiss   | ~800k      | `browser/wasmbuild_direct_wasm_swiss.html`   |
-| 42 | browser  | wasmbuild | direct_wasm | jpl     | ~800k      | `browser/wasmbuild_direct_wasm_jpl.html`     |
-| 43 | browser  | wasmbuild | inline      | moshier | ~350k      | `browser/wasmbuild_inline_moshier.html`      |
-| 44 | browser  | wasmbuild | inline      | swiss   | ~350k      | `browser/wasmbuild_inline_swiss.html`        |
-| 45 | browser  | wasmbuild | inline      | jpl     | ~350k      | `browser/wasmbuild_inline_jpl.html`          |
-| 46 | browser  | wasi      | js_api      | moshier | ~80k       | `browser/wasi_js_api_moshier.html`           |
-| 47 | browser  | wasi      | js_api      | swiss   | ~80k       | `browser/wasi_js_api_swiss.html`             |
-| 48 | browser  | wasi      | js_api      | jpl     | ~80k       | `browser/wasi_js_api_jpl.html`               |
-| 49 | browser  | wasi      | direct_wasm | moshier | N/A        | `browser/wasi_direct_wasm_moshier.html`      |
-| 50 | browser  | wasi      | direct_wasm | swiss   | N/A        | `browser/wasi_direct_wasm_swiss.html`        |
-| 51 | browser  | wasi      | direct_wasm | jpl     | N/A        | `browser/wasi_direct_wasm_jpl.html`          |
-| 52 | browser  | wasi      | inline      | moshier | ~80k       | `browser/wasi_inline_moshier.html`           |
-| 53 | browser  | wasi      | inline      | swiss   | ~80k       | `browser/wasi_inline_swiss.html`             |
-| 54 | browser  | wasi      | inline      | jpl     | ~80k       | `browser/wasi_inline_jpl.html`               |
-| 55 | worker   | wasmbuild | js_api      | moshier | ~400k      | `worker/wasmbuild_js_api_moshier.ts`         |
-| 56 | worker   | wasmbuild | js_api      | swiss   | ~400k      | `worker/wasmbuild_js_api_swiss.ts`           |
-| 57 | worker   | wasmbuild | js_api      | jpl     | ~400k      | `worker/wasmbuild_js_api_jpl.ts`             |
-| 58 | worker   | wasmbuild | direct_wasm | moshier | ~800k      | `worker/wasmbuild_direct_wasm_moshier.ts`    |
-| 59 | worker   | wasmbuild | direct_wasm | swiss   | ~800k      | `worker/wasmbuild_direct_wasm_swiss.ts`      |
-| 60 | worker   | wasmbuild | direct_wasm | jpl     | ~800k      | `worker/wasmbuild_direct_wasm_jpl.ts`        |
-| 61 | worker   | wasmbuild | inline      | moshier | ~350k      | `worker/wasmbuild_inline_moshier.ts`         |
-| 62 | worker   | wasmbuild | inline      | swiss   | ~350k      | `worker/wasmbuild_inline_swiss.ts`           |
-| 63 | worker   | wasmbuild | inline      | jpl     | ~350k      | `worker/wasmbuild_inline_jpl.ts`             |
-| 64 | worker   | wasi      | js_api      | moshier | ~80k       | `worker/wasi_js_api_moshier.ts`              |
-| 65 | worker   | wasi      | js_api      | swiss   | ~80k       | `worker/wasi_js_api_swiss.ts`                |
-| 66 | worker   | wasi      | js_api      | jpl     | ~80k       | `worker/wasi_js_api_jpl.ts`                  |
-| 67 | worker   | wasi      | direct_wasm | moshier | N/A        | `worker/wasi_direct_wasm_moshier.ts`         |
-| 68 | worker   | wasi      | direct_wasm | swiss   | N/A        | `worker/wasi_direct_wasm_swiss.ts`           |
-| 69 | worker   | wasi      | direct_wasm | jpl     | N/A        | `worker/wasi_direct_wasm_jpl.ts`             |
-| 70 | worker   | wasi      | inline      | moshier | ~80k       | `worker/wasi_inline_moshier.ts`              |
-| 71 | worker   | wasi      | inline      | swiss   | ~80k       | `worker/wasi_inline_swiss.ts`                |
-| 72 | worker   | wasi      | inline      | jpl     | ~80k       | `worker/wasi_inline_jpl.ts`                  |
-
-> [!TIP]\
-> Deno/Node benchmarks are measured. Browser/Worker are estimated (~) based on
-> similar runtime characteristics.
-
-#### Peak Performance vs Precision Matrix
-
-Benchmarks measured on Apple M1/M2 (ops/sec):
-
-| Platform | Build     | Style       | Moshier    | Swiss  | JPL    |
-| -------- | --------- | ----------- | ---------- | ------ | ------ |
-| **Deno** | wasmbuild | js_api      | 417k       | 417k   | 417k   |
-| **Deno** | wasmbuild | direct_wasm | **878k**   | 878k   | 878k   |
-| **Deno** | wasmbuild | inline      | 371k       | 371k   | 371k   |
-| **Deno** | wasi      | js_api      | 81k        | 81k    | 81k    |
-| **Node** | wasmbuild | js_api      | 627k       | 627k   | 627k   |
-| **Node** | wasmbuild | direct_wasm | **1,006k** | 1,006k | 1,006k |
-| **Node** | wasmbuild | inline      | 606k       | 606k   | 606k   |
-| **Node** | wasi      | js_api      | 174k       | 174k   | 174k   |
-
-> [!TIP]
-> **Peak performance**: 1,006,000 ops/sec (Node.js + wasmbuild + direct_wasm)
-
-> [!NOTE]
-> **Warning (⚠️)**: Direct `WebAssembly.instantiate` on the **wasi** build in
-> Browser/Worker requires manual polyfilling of the `wasi_snapshot_preview1`
-> import. Use the **JS Entry point** (`SwissEph` class) to handle this
-> automatically. |
+- **JS API (Standard)**: `new SwissEph(...)`. The standard way. Use this 99% of
+  the time.
+- **Inline (Zero-Config)**: The WASM binary is embedded as a Base64 string in
+  the JS file. perfect for bundlers (Vite/Webpack) or single-file scripts. No
+  `fetch` required.
+- **Direct WASM**: For those who want full control over the
+  `WebAssembly.instantiate` process.
 
 ---
 
-## 1. Deno Examples
+## Full 72-Path Verified Matrix
 
-### Standard API (Recommended)
+We test every combination to ensure bulletproof reliability.
 
-```typescript
-import { SwissEph } from "@fusionstrings/swiss-eph";
-const wasmUrl = new URL("./swiss_eph.wasm", import.meta.url);
-const eph = new SwissEph(await WebAssembly.compileStreaming(fetch(wasmUrl)));
-```
+| #         | Platform    | Build  | Style | Mode  | File Ref                                     |
+| --------- | ----------- | ------ | ----- | ----- | -------------------------------------------- |
+| **1-18**  | **Deno**    | _Both_ | _All_ | _All_ | [View Deno Examples](./examples/deno/)       |
+| **19-36** | **Node**    | _Both_ | _All_ | _All_ | [View Node Examples](./examples/node/)       |
+| **37-54** | **Browser** | _Both_ | _All_ | _All_ | [View Browser Examples](./examples/browser/) |
+| **55-72** | **Worker**  | _Both_ | _All_ | _All_ | [View Worker Examples](./examples/worker/)   |
 
-### Deno-Native WASI
+> **Note**: "Mode" refers to the ephemeris data source:
+>
+> 1. **Moshier**: Built-in semi-analytic model. Fast, no external files. (~
+>    arcsec accuracy)
+> 2. **Swiss**: Uses `.se1` files. The gold standard. (~ milli-arcsec accuracy)
+> 3. **JPL**: Uses DE431 etc. NASA standard.
 
-```typescript
-import Context from "@std/wasi"; // or native Deno.WASI
-const wasi = new Context({ args: [], env: {}, preopens: { ".": "." } });
-const instance = await WebAssembly.instantiate(module, {
-  wasi_snapshot_preview1: wasi.exports,
-});
-```
+## Performance & Benchmarks
 
----
+| Build Strategy      | Deno (ops/s) | Node (ops/s) |
+| :------------------ | :----------: | :----------: |
+| **WASM (Direct)**   |  5,822,979   |  6,268,448   |
+| **WASM (Standard)** |   542,055    |   997,788    |
+| **WASI (Standard)** |   573,797    |  1,244,097   |
 
-## 2. Node.js Examples
-
-### Standard API (ESM)
-
-```javascript
-import { readFile } from "node:fs/promises";
-import { SwissEph } from "@fusionstrings/swiss-eph/wasi";
-const eph = new SwissEph(
-  await WebAssembly.compile(await readFile("./swiss_eph.wasm")),
-);
-```
-
-### Native `node:wasi`
-
-```javascript
-import { WASI } from "node:wasi";
-const wasi = new WASI({ version: "preview1" });
-const { instance } = await WebAssembly.instantiate(buffer, {
-  wasi_snapshot_preview1: wasi.wasiImport,
-});
-wasi.initialize(instance);
-```
-
----
-
-## 3. Browser Examples
-
-### Standard WASI (Dynamic Fetch)
-
-```html
-<script type="module">
-  import { SwissEph } from "./swiss_eph.js";
-  const eph = new SwissEph(
-    await WebAssembly.compile(
-      await fetch("./swiss_eph.wasm").then((r) => r.arrayBuffer()),
-    ),
-  );
-</script>
-```
-
-### Inline Pre-bundled (Best for SPAs)
-
-```javascript
-import { instantiate } from "./loader.js";
-const eph = await instantiate(); // WASM is inlined as Base64
-```
-
----
-
-## 4. Cloudflare Worker Examples
-
-### Wrangler WASM Import
-
-```typescript
-import wasmModule from "./swiss_eph.wasm";
-const eph = new SwissEph(wasmModule);
-```
-
-### Zero-Config Inline
-
-```typescript
-import { instantiate } from "@fusionstrings/swiss-eph";
-const eph = await instantiate(); // No external fetch, fits 1MB limit.
-```
-
-## Detailed Caveats
-
-### Raw WASM in Browser/Worker
-
-> [!WARNING]
-> Direct `WebAssembly.instantiate` of the WASI binary in a browser will fail
-> unless you provide a full `wasi_snapshot_preview1` polyfill. We recommend
-> using our `SwissEph` class which handles these mocks automatically.
-
-### Memory Management
-
-When using the **Standard API**, memory is automatically managed through our
-`WasmHeap`. In **Raw** and **Native** styles, you must manually handle
-`malloc`/`free` if passing strings or arrays to the Swiss Ephemeris.
-
----
-
-## Appendix: Ephemeris Calculation Modes (3)
-
-SwissEph supports three internal models for astronomical calculations. You can
-specify these using the `iflag` parameter in `swe_calc_ut`.
-
-| Mode                | Constant       | Dependency   | Performance | precision |
-| :------------------ | :------------- | :----------- | :---------- | :-------- |
-| **Moshier**         | `SEFLG_MOSEPH` | None         | ~700k ops/s | High      |
-| **Swiss Ephemeris** | `SEFLG_SWIEPH` | `.se1` files | ~500k ops/s | Ultra     |
-| **JPL Ephemeris**   | `SEFLG_JPLEPH` | JPL files    | ~600k ops/s | Industry  |
-
-### 1. Moshier Mode (Default Fallback)
-
-The fastest and most portable mode. It uses a semi-analytical model that is
-built-in to the WASM binary. No external files are required.
-
-```typescript
-const result = eph.swe_calc_ut(jd, Constants.SE_SUN, Constants.SEFLG_MOSEPH);
-```
-
-### 2. Swiss Ephemeris Mode
-
-The primary mode of this library. It provides maximum precision but requires
-ephemeris data files (`.se1`) typically stored in an `/ephe` directory. If files
-are missing, it silently falls back to Moshier mode.
-
-```typescript
-eph.swe_set_ephe_path("/path/to/ephe");
-const result = eph.swe_calc_ut(jd, Constants.SE_SUN, Constants.SEFLG_SWIEPH);
-```
-
-### 3. JPL Ephemeris Mode
-
-Uses industry-standard JPL ephemeris files (DE431, DE405, etc.). Requires
-explicit file loading and does not fallback to Moshier if files are missing.
+> _Tip: For raw speed, use Node.js with Direct WASM instantiation. For developer
+> experience, use Deno with the Standard API._

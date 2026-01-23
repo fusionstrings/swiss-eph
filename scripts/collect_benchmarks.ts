@@ -26,7 +26,7 @@ async function collect() {
     for (const b of builds) {
       for (const s of styles) {
         const ext = p === "node" ? "mjs" : "ts";
-        const file = join("examples", p, `${b}_${s}.${ext}`);
+        const file = join("examples", p, `${b}_${s}_moshier.${ext}`);
 
         const cmdParams = p === "deno"
           ? ["deno", "run", "-A", file]
