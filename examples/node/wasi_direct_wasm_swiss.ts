@@ -46,10 +46,49 @@ const imports = {
   },
 };
 
+// Define exports interface to avoid 'any'
+interface WasmExports extends WebAssembly.Exports {
+  memory: WebAssembly.Memory;
+  malloc: (size: number) => number;
+  free: (ptr: number) => void;
+  custom_malloc?: (size: number) => number;
+  custom_free?: (ptr: number) => void;
+  swe_set_ephe_path?: (ptr: number) => void;
+  wasm_swe_set_ephe_path?: (ptr: number) => void;
+  swe_julday?: (
+    y: number,
+    m: number,
+    d: number,
+    h: number,
+    c: number,
+  ) => number;
+  wasm_swe_julday?: (
+    y: number,
+    m: number,
+    d: number,
+    h: number,
+    c: number,
+  ) => number;
+  swe_calc_ut?: (
+    jd: number,
+    body: number,
+    flag: number,
+    xx: number,
+    err: number,
+  ) => number;
+  wasm_swe_calc_ut?: (
+    jd: number,
+    body: number,
+    flag: number,
+    xx: number,
+    err: number,
+  ) => number;
+}
+
 const instance = await WebAssembly.instantiate(wasmModule, imports);
 wasi.setMemory(instance.exports.memory as WebAssembly.Memory);
 
-const exports = instance.exports as any;
+const exports = instance.exports as WasmExports;
 
 // Helper: set ephe path via C string
 function set_ephe_path(path: string) {

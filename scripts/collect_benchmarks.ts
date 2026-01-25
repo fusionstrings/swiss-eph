@@ -49,8 +49,9 @@ async function runBrowserBenchmark(
         document.body.innerText.includes("Error:"),
       { timeout: 30000 },
     );
-  } catch (e: any) {
-    console.error(`Timeout/Error for ${url}: ${e.message}`);
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`Timeout/Error for ${url}: ${msg}`);
   } finally {
     await page.close();
   }
@@ -103,7 +104,7 @@ async function collect() {
                 const text = await response.text();
                 const match = text.match(/Perf:\s+([\d,]+)\s+ops\/sec/);
                 result = match ? match[1] : "N/A";
-              } catch (e: any) {
+              } catch (_e: unknown) {
                 // Ignore errors for now or log debug
                 // console.error(`Worker failed ${file}:`, e.message);
               }

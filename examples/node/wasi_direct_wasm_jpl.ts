@@ -46,26 +46,67 @@ const imports = {
   },
 };
 
+// Define exports interface to avoid 'any'
+interface WasmExports {
+  memory: WebAssembly.Memory;
+  malloc: (size: number) => number;
+  free: (ptr: number) => void;
+  custom_malloc?: (size: number) => number;
+  custom_free?: (ptr: number) => void;
+  swe_set_ephe_path?: (ptr: number) => void;
+  wasm_swe_set_ephe_path?: (ptr: number) => void;
+  swe_julday?: (
+    y: number,
+    m: number,
+    d: number,
+    h: number,
+    c: number,
+  ) => number;
+  wasm_swe_julday?: (
+    y: number,
+    m: number,
+    d: number,
+    h: number,
+    c: number,
+  ) => number;
+  swe_calc_ut?: (
+    jd: number,
+    body: number,
+    flag: number,
+    xx: number,
+    err: number,
+  ) => number;
+  wasm_swe_calc_ut?: (
+    jd: number,
+    body: number,
+    flag: number,
+    xx: number,
+    err: number,
+  ) => number;
+}
+
 const instance = await WebAssembly.instantiate(wasmModule, imports);
 wasi.setMemory(instance.exports.memory as WebAssembly.Memory);
 
-const exports = instance.exports as any;
+const exports = instance.exports as unknown as WasmExports;
 
 // Helper: set ephe path via C string
 function set_ephe_path(path: string) {
   const bytes = new TextEncoder().encode(path + "\0");
-  const ptr = exports.custom_malloc
-    ? exports.custom_malloc(bytes.length)
-    : exports.malloc(bytes.length);
+  const mallocFn = exports.custom_malloc || exports.malloc;
+  const ptr = mallocFn(bytes.length);
+
   const mem = new Uint8Array(exports.memory.buffer);
   mem.set(bytes, ptr);
+
   if (exports.swe_set_ephe_path) {
     exports.swe_set_ephe_path(ptr);
   } else if (exports.wasm_swe_set_ephe_path) {
     exports.wasm_swe_set_ephe_path(ptr);
   }
-  if (exports.custom_free) exports.custom_free(ptr);
-  else exports.free(ptr);
+
+  const freeFn = exports.custom_free || exports.free;
+  freeFn(ptr);
 }
 
 if (wasi.virtualFiles.size > 0) {
