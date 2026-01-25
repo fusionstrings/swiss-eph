@@ -20,6 +20,9 @@ use std::os::raw::{c_char, c_double, c_int};
 
 
 
+#[cfg(feature = "embedded-ephe")]
+pub use swiss_eph_data as data;
+
 pub mod safe;
 
 // =============================================================================
@@ -36,18 +39,24 @@ mod wasm_exports {
 #[cfg(not(target_os = "wasi"))]
 mod alloc_exports {
 
+/*
+    const USIZE_SIZE: usize = std::mem::size_of::<usize>();
+    const ALIGNMENT: usize = 8;
 
     #[unsafe(export_name = "malloc")]
     pub unsafe extern "C" fn custom_malloc(size: usize) -> *mut u8 {
         unsafe {
-            let actual_size = size + 8;
-            let layout = std::alloc::Layout::from_size_align_unchecked(actual_size, 8);
+            // Reserve space for the size marker at the beginning
+            // and ensure 8-byte alignment for the returned pointer.
+            let actual_size = size + ALIGNMENT;
+            let layout = std::alloc::Layout::from_size_align_unchecked(actual_size, ALIGNMENT);
             let ptr = std::alloc::alloc(layout);
             if ptr.is_null() {
                 return ptr;
             }
+            // Store original size for free
             *(ptr as *mut usize) = size;
-            ptr.add(8)
+            ptr.add(ALIGNMENT)
         }
     }
 
@@ -57,12 +66,13 @@ mod alloc_exports {
             if ptr.is_null() {
                 return;
             }
-            let actual_ptr = ptr.sub(8);
+            let actual_ptr = ptr.sub(ALIGNMENT);
             let size = *(actual_ptr as *const usize);
-            let layout = std::alloc::Layout::from_size_align_unchecked(size + 8, 8);
+            let layout = std::alloc::Layout::from_size_align_unchecked(size + ALIGNMENT, ALIGNMENT);
             std::alloc::dealloc(actual_ptr, layout);
         }
     }
+*/
 }
 
     #[unsafe(export_name = "wasm_swe_calc_ut")]

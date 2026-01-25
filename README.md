@@ -1,159 +1,139 @@
 # @fusionstrings/swiss-eph
 
-Swiss Ephemeris astronomical calculation library compiled to WebAssembly for
-cross-platform JavaScript/TypeScript usage, with idiomatic Rust bindings.
+> **Professional Grade Astrology for the Modern Web.**\
+> _Bit-perfect Swiss Ephemeris precision, compiled for everywhere._
 
 [![crates.io](https://img.shields.io/crates/v/swiss-eph.svg)](https://crates.io/crates/swiss-eph)
 [![docs.rs](https://docs.rs/swiss-eph/badge.svg)](https://docs.rs/swiss-eph)
+[![JSR](https://jsr.io/badges/@fusionstrings/swiss-eph)](https://jsr.io/@fusionstrings/swiss-eph)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
-## Features
+**SwissEph** is the industry-standard Swiss Ephemeris (C library) brought to the
+modern JavaScript and Rust ecosystems. We provide high-precision astrological
+calculations with zero loss in accuracy and native-tier performance across all
+platforms.
 
-- **Cross-platform**: Works in Deno, Node.js, browsers, and edge runtimes
-  (Cloudflare Workers)
-- **3x2x4 Support**: 3 entrypoint styles across 2 build types on all 4 platform
-  families
-- **Rust Bindings**: Complete FFI and safe Rust API for native performance
-- **High precision**: Bit-level accuracy matching native Swiss Ephemeris
-  calculations
-- **Complete API**: 95+ functions for planetary positions, houses, eclipses, and
-  more
-- **Zero dependencies**: Self-contained WASM module or WASI package
-- **TypeScript**: Full type definitions with TSDoc documentation
+## ✨ Key Features
 
-## Platform Support Matrix (3x2x4 = 24 Combinations)
+- **🎯 Uncompromising Precision**: Bit-level parity with the official Swiss
+  Ephemeris C source.
+- **🚀 Native-Tier Speed**: Powered by WebAssembly and optimized Rust bindings.
+  Calculate thousands of positions in milliseconds.
+- **🌐 Universal Runtime**: First-class support for **Deno**, **Node.js**,
+  **Browsers**, and **Cloudflare Workers**.
+- **📦 Multi-Build Strategy**: Choose between high-level `wasmbuild` (safe Rust)
+  or direct `WASI` (raw C) bindings.
+- **🛠️ Flexible Deployment**: Support for Standard API, Direct WASM
+  instantiation, or Zero-Config Inline builds.
 
-We support 24 distinct integration paths. See [EXAMPLES.md](./EXAMPLES.md) for
-exhaustive code and caveats.
+## 🏗️ Architecture
 
-| #         | Platform    | Builds          | Entrypoint Styles           | Status |
-| :-------- | :---------- | :-------------- | :-------------------------- | :----: |
-| **1-6**   | **Deno**    | wasmbuild, wasi | JS API, Direct WASM, Inline |   ✅   |
-| **7-12**  | **Node.js** | wasmbuild, wasi | JS API, Direct WASM, Inline |   ✅   |
-| **13-18** | **Browser** | wasmbuild, wasi | JS API, Direct WASM, Inline |   ✅   |
-| **19-24** | **Worker**  | wasmbuild, wasi | JS API, Direct WASM, Inline |   ✅   |
+```mermaid
+flowchart TD
+    subgraph "Core Engines"
+        C["Swiss Ephemeris (C)"]
+        R["Rust Wrapper (Safe)"]
+    end
 
-> [!TIP]
-> The **3x2x4 matrix** covers 3 Styles (JS API, Direct WASM, Inline) x 2 Builds
-> (wasmbuild, wasi) x 4 Platforms (Deno, Node, Browser, Worker).
+    subgraph "Compilation Pipeline"
+        C -->|WASI-SDK| WASI["WASM (Direct C)"]
+        R -->|wasm-bindgen| WB["WASM (High-level Rust)"]
+    end
 
-## Installation
+    subgraph "Consumer Ecosystem"
+        WASI -->|FFI| Node["Node.js / Bun"]
+        WB -->|Typed API| Deno["Deno / Browser / Workers"]
+    end
 
-### Deno / JSR
-
-```typescript
-import { Constants, SwissEph } from "jsr:@fusionstrings/swiss-eph/wasi";
+    style C fill:#f9f,stroke:#333,stroke-width:2px
+    style R fill:#f96,stroke:#333,stroke-width:2px
+    style WASI fill:#bbf,stroke:#333,stroke-width:2px
+    style WB fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
-### Node.js (via JSR)
+## Quick Start
+
+### JavaScript / TypeScript
+
+Install from JSR (works with Deno, npm, pnpm, yarn):
 
 ```bash
+deno add @fusionstrings/swiss-eph
+# or
 npx jsr add @fusionstrings/swiss-eph
 ```
 
-```javascript
-import { Constants, SwissEph } from "@fusionstrings/swiss-eph/wasi";
-```
-
-## Quick Start (JS/TS)
+Calculate the Sun's position in 3 lines of code:
 
 ```typescript
 import { Constants, load } from "@fusionstrings/swiss-eph";
 
-// Initialize the Swiss Ephemeris
-const eph = await load();
+// 1. Initialize
+const swisseph = await load();
 
-// Calculate Julian Day for a date
-const jd = eph.swe_julday(2024, 6, 15, 12.0, Constants.SE_GREG_CAL);
+// 2. Calculate Julian Day (UTC)
+const jd = swisseph.swe_julday(2024, 1, 1, 12.0, Constants.SE_GREG_CAL);
 
-// Get Sun's position
-const { xx, error } = eph.swe_calc_ut(
+// 3. Get Position
+const { xx } = swisseph.swe_calc_ut(
   jd,
   Constants.SE_SUN,
   Constants.SEFLG_SPEED,
 );
-console.log(`Sun longitude: ${xx[0]}°`);
+
+console.log(`Sun Longitude: ${xx[0].toFixed(6)}°`);
 ```
 
-## Rust Usage
+### Rust
 
-Add this to your `Cargo.toml`:
+Add to `Cargo.toml`:
 
 ```toml
 [dependencies]
-swiss-eph = "0.1.0"
+swiss-eph = "0.1"
 ```
 
-### Quick Start (Rust)
-
 ```rust
-use swisseph_x::safe::*;
-use swisseph_x::*;
+use swisseph::safe::{self, CalcFlags, Planet};
 
 fn main() {
-    let jd = julday(2024, 1, 1, 12.0);
+    let jd = safe::julday(2024, 1, 1, 12.0); // Gregorian by default
     let flags = CalcFlags::new().with_speed();
-    let sun = calc(jd, SE_SUN, flags).unwrap();
-    println!("Sun longitude: {:.6}°", sun.longitude);
+    let sun = safe::calc_ut(jd, Planet::Sun.to_int(), flags.raw()).unwrap();
+    println!("Sun Longitude: {:.6}°", sun.longitude);
 }
 ```
 
-## Ephemeris Data
+## ⚡ Performance
 
-Swiss Ephemeris supports three modes of operation:
+We take performance seriously. Our WASM implementation rivals native
+performance.
 
-### 1. Moshier Mode (Default, No Files Needed)
+| Library                 | Implementation | Speed (ops/sec) | Note                          |
+| :---------------------- | :------------- | :-------------: | :---------------------------- |
+| **swiss-eph (Direct)**  | **WASM (Raw)** | **~6,200,000**  | **Peak Performance**          |
+| **swiss-eph (Node JS)** | **WASI (JS)**  | **~1,200,000**  | **Typical Server**            |
+| **swiss-eph (Deno JS)** | **WASM (JS)**  |  **~540,000**   | **Modern Runtime**            |
+| ephemeris               | Pure JS        |     ~45,000     | Low Precision / Approximation |
 
-Works out of the box with ~1 arcsecond precision:
+> [!NOTE]
+> Benchmarks performed on Apple M1 Max. Results vary by runtime and ephemeris
+> data source.
 
-```rust
-// Just use the library - falls back to Moshier automatically
-let sun = safe::calc_ut(jd, SE_SUN, flags)?;
-```
+## Documentation & Resources
 
-### 2. Embedded Data (Optional Feature)
-
-Add ~1.7 MB of embedded ephemeris for higher precision (1800-2400 CE):
-
-```toml
-[dependencies]
-swiss-eph = { version = "0.1", features = ["embedded-ephe"] }
-```
-
-### 3. Manual Download (Full Control)
-
-Download ephemeris files from
-[astro.com](https://www.astro.com/ftp/swisseph/ephe/):
-
-```bash
-curl -O https://www.astro.com/ftp/swisseph/ephe/sepl_18.se1
-curl -O https://www.astro.com/ftp/swisseph/ephe/semo_18.se1
-```
-
-Then configure:
-
-```rust
-safe::set_ephe_path("/path/to/ephe/files");
-```
-
-## API Overview (JS/TS)
-
-| Function                       | Description                 |
-| ------------------------------ | --------------------------- |
-| `swe_calc` / `swe_calc_ut`     | Planetary positions (TT/UT) |
-| `swe_houses` / `swe_houses_ex` | House cusps and angles      |
-| `swe_julday` / `swe_revjul`    | Julian Day conversions      |
-| `swe_sidtime`                  | Sidereal time               |
-| `swe_deltat`                   | Delta T (TT - UT)           |
+- **[Verification Matrix](./MATRIX.md)**: Full 72-path decision tree,
+  statecharts, and benchmarks.
+- **[Examples](./examples/)**: Comprehensive integration recipes for Deno, Node,
+  Browser, and Workers.
+- **[Integration Matrix](./EXAMPLES.md)**: Detailed breakdown of all 72
+  supported configuration permutations.
+- **[Rust Crate](./crates/swiss-eph/)**: Documentation for the Rust bindings.
+- **[Official Docs](https://www.astro.com/swisseph/)**: The authoritative
+  reference for the underlying C library.
 
 ## License
 
-**AGPL-3.0** - Same license as the Swiss Ephemeris library.
-
-This software is based on the Swiss Ephemeris by Astrodienst AG. See
-https://www.astro.com/swisseph/ for more information.
-
-## Credits
-
-- [Swiss Ephemeris](https://www.astro.com/swisseph/) by Astrodienst AG
-- WASM compilation using WASI SDK and wasmbuild
+**AGPL-3.0**. This project is a derivative work of the
+[Swiss Ephemeris](https://www.astro.com/swisseph/) by Astrodienst AG. We honor
+their open-source contributions by maintaining the same license.

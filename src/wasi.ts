@@ -57,8 +57,11 @@ export class WASI {
                 else Deno.stderr.writeSync(buf);
               } else {
                 const text = new TextDecoder().decode(buf);
-                if (fd === 1) console.log(text);
-                else console.error(text);
+                if (fd === 1) {
+                  // console.log(text);
+                } else {
+                  console.error(text);
+                }
               }
             }
             total += buf_len;
@@ -86,13 +89,26 @@ export class WASI {
           );
           let path = new TextDecoder().decode(pathBuf);
 
-          path = path.replace(/^\.\//, "");
+          // Normalize path: handle ./, multiple slashes, and leading slash
+          path = path.replace(/\/+/g, "/").replace(/^\.\//, "").replace(
+            /^\//,
+            "",
+          );
 
           let content = this.virtualFiles.get(path);
           if (!content) {
+            // Fallback to filename search if absolute path not found
             const parts = path.split("/");
             const filename = parts[parts.length - 1];
             content = this.virtualFiles.get(filename);
+
+            // DEBUG: Trace why loading fails
+            // console.log(`[WASI] path_open: '${originalPath}' -> '${path}'`);
+            if (!content) {
+              // console.log(`[WASI] Failed to find file. Keys:`, [
+              //  ...this.virtualFiles.keys(),
+              // ]);
+            }
           }
 
           if (content) {
@@ -126,6 +142,16 @@ export class WASI {
             const parts = path.split("/");
             const filename = parts[parts.length - 1];
             content = this.virtualFiles.get(filename);
+
+            // DEBUG: Trace stat calls
+            // console.log(
+            //  `[WASI] path_filestat_get: '${path}' (fallback: '${filename}')`,
+            // );
+            if (!content) {
+              // console.log(`[WASI] Stat failed. Keys:`, [
+              //  ...this.virtualFiles.keys(),
+              // ]);
+            }
           }
 
           if (content) {
@@ -230,10 +256,38 @@ export class WASI {
           return EBADF;
         },
 
-        clock_time_get: () => ES_SUCCESS,
-        clock_res_get: () => ES_SUCCESS,
+        clock_time_get: (
+          _id: number,
+          _precision: bigint,
+          time_out_ptr: number,
+        ) => {
+          if (!this.memory) return ENOSYS;
+          const view = new DataView(this.memory.buffer);
+          // Convert JS ms to WASI nanoseconds
+          const now = BigInt(Date.now()) * 1_000_000n;
+          view.setBigUint64(time_out_ptr, now, true);
+          return ES_SUCCESS;
+        },
+        clock_res_get: (_id: number, res_out_ptr: number) => {
+          if (!this.memory) return ENOSYS;
+          const view = new DataView(this.memory.buffer);
+          view.setBigUint64(res_out_ptr, 1_000_000n, true); // 1ms precision
+          return ES_SUCCESS;
+        },
         sched_yield: () => ES_SUCCESS,
-        random_get: () => ES_SUCCESS,
+        random_get: (buf_ptr: number, buf_len: number) => {
+          if (!this.memory) return ENOSYS;
+          const buf = new Uint8Array(this.memory.buffer, buf_ptr, buf_len);
+          if (typeof crypto !== "undefined") {
+            crypto.getRandomValues(buf);
+          } else {
+            // Fallback for environment without crypto
+            for (let i = 0; i < buf_len; i++) {
+              buf[i] = (Math.random() * 256) | 0;
+            }
+          }
+          return ES_SUCCESS;
+        },
         args_sizes_get: (argc_ptr: number, argv_len_ptr: number) => {
           if (!this.memory) return ENOSYS;
           const view = new DataView(this.memory.buffer);

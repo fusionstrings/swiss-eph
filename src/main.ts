@@ -435,10 +435,11 @@ export class SwissEph {
     jd: number,
     gregflag: number,
   ): { year: number; month: number; day: number; hour: number } {
-    const year_ptr = this.heap.alloc(4);
-    const month_ptr = this.heap.alloc(4);
-    const day_ptr = this.heap.alloc(4);
-    const hour_ptr = this.heap.alloc(8);
+    const combined_ptr = this.heap.alloc(24); // 3*4 (ints) + 4 (padding) + 8 (double)
+    const year_ptr = combined_ptr;
+    const month_ptr = combined_ptr + 4;
+    const day_ptr = combined_ptr + 8;
+    const hour_ptr = combined_ptr + 16; // 8-byte aligned
 
     this.exports.swe_revjul(
       jd,
@@ -449,16 +450,13 @@ export class SwissEph {
       hour_ptr,
     );
 
-    // Read directly from WASM memory using helper method
+    // Read using heap helpers which handle alignment checks if needed (getF64)
     const year = this.heap.getI32(year_ptr);
     const month = this.heap.getI32(month_ptr);
     const day = this.heap.getI32(day_ptr);
     const hour = this.heap.getF64(hour_ptr, 1)[0];
 
-    this.heap.free(year_ptr);
-    this.heap.free(month_ptr);
-    this.heap.free(day_ptr);
-    this.heap.free(hour_ptr);
+    this.heap.free(combined_ptr);
 
     return { year, month, day, hour };
   }
@@ -526,12 +524,13 @@ export class SwissEph {
     min: number;
     sec: number;
   } {
-    const year_ptr = this.heap.alloc(4);
-    const month_ptr = this.heap.alloc(4);
-    const day_ptr = this.heap.alloc(4);
-    const hour_ptr = this.heap.alloc(4);
-    const min_ptr = this.heap.alloc(4);
-    const sec_ptr = this.heap.alloc(8);
+    const combined_ptr = this.heap.alloc(32); // 5*4 (ints) + 4 (padding) + 8 (double)
+    const year_ptr = combined_ptr;
+    const month_ptr = combined_ptr + 4;
+    const day_ptr = combined_ptr + 8;
+    const hour_ptr = combined_ptr + 12;
+    const min_ptr = combined_ptr + 16;
+    const sec_ptr = combined_ptr + 24; // 8-byte aligned
 
     this.exports.swe_jdet_to_utc(
       tjd_et,
@@ -544,20 +543,14 @@ export class SwissEph {
       sec_ptr,
     );
 
-    const view = new DataView(this.heap.getU8(year_ptr, 20).buffer);
-    const year = view.getInt32(0, true);
-    const month = view.getInt32(4, true);
-    const day = view.getInt32(8, true);
-    const hour = view.getInt32(12, true);
-    const min = view.getInt32(16, true);
-    const sec = new Float64Array(this.heap.getU8(sec_ptr, 8).buffer)[0];
+    const year = this.heap.getI32(year_ptr);
+    const month = this.heap.getI32(month_ptr);
+    const day = this.heap.getI32(day_ptr);
+    const hour = this.heap.getI32(hour_ptr);
+    const min = this.heap.getI32(min_ptr);
+    const sec = this.heap.getF64(sec_ptr, 1)[0];
 
-    this.heap.free(year_ptr);
-    this.heap.free(month_ptr);
-    this.heap.free(day_ptr);
-    this.heap.free(hour_ptr);
-    this.heap.free(min_ptr);
-    this.heap.free(sec_ptr);
+    this.heap.free(combined_ptr);
 
     return { year, month, day, hour, min, sec };
   }
@@ -580,12 +573,13 @@ export class SwissEph {
     min: number;
     sec: number;
   } {
-    const year_ptr = this.heap.alloc(4);
-    const month_ptr = this.heap.alloc(4);
-    const day_ptr = this.heap.alloc(4);
-    const hour_ptr = this.heap.alloc(4);
-    const min_ptr = this.heap.alloc(4);
-    const sec_ptr = this.heap.alloc(8);
+    const combined_ptr = this.heap.alloc(32); // 5*4 + 4 (pad) + 8
+    const year_ptr = combined_ptr;
+    const month_ptr = combined_ptr + 4;
+    const day_ptr = combined_ptr + 8;
+    const hour_ptr = combined_ptr + 12;
+    const min_ptr = combined_ptr + 16;
+    const sec_ptr = combined_ptr + 24;
 
     this.exports.swe_jdut1_to_utc(
       tjd_ut,
@@ -598,20 +592,14 @@ export class SwissEph {
       sec_ptr,
     );
 
-    const view = new DataView(this.heap.getU8(year_ptr, 20).buffer);
-    const year = view.getInt32(0, true);
-    const month = view.getInt32(4, true);
-    const day = view.getInt32(8, true);
-    const hour = view.getInt32(12, true);
-    const min = view.getInt32(16, true);
-    const sec = new Float64Array(this.heap.getU8(sec_ptr, 8).buffer)[0];
+    const year = this.heap.getI32(year_ptr);
+    const month = this.heap.getI32(month_ptr);
+    const day = this.heap.getI32(day_ptr);
+    const hour = this.heap.getI32(hour_ptr);
+    const min = this.heap.getI32(min_ptr);
+    const sec = this.heap.getF64(sec_ptr, 1)[0];
 
-    this.heap.free(year_ptr);
-    this.heap.free(month_ptr);
-    this.heap.free(day_ptr);
-    this.heap.free(hour_ptr);
-    this.heap.free(min_ptr);
-    this.heap.free(sec_ptr);
+    this.heap.free(combined_ptr);
 
     return { year, month, day, hour, min, sec };
   }

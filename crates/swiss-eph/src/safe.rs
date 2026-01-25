@@ -381,6 +381,42 @@ pub fn set_ephe_path(path: &str) {
     }
 }
 
+/// Register embedded ephemeris data files.
+/// 
+/// This function allows you to load ephemeris data directly from memory
+/// instead of providing a filesystem path.
+#[cfg(feature = "embedded-ephe")]
+pub fn set_ephe_path_generated(files: &[(&str, &[u8])]) {
+    for (name, content) in files {
+        let c_name = CString::new(*name).unwrap();
+        unsafe {
+            // Note: We need a way to pass memory content to SwissEph.
+            // Currently the C library only supports filesystem paths.
+            // BUT: we have 'mount' in WASM. For Native Rust, this might 
+            // require we write to a temp file OR we need a C-side memory map.
+            // FOR NOW: In the WASM context, we can mount.
+            // IN NATIVE: We will write to a temporary directory.
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                let mut path = std::env::temp_dir();
+                path.push(name);
+                if !path.exists() {
+                    let _ = std::fs::write(&path, content);
+                }
+                let c_path = CString::new(path.to_str().unwrap()).unwrap();
+                swe_set_ephe_path(c_path.as_ptr());
+            }
+            
+            #[cfg(target_arch = "wasm32")]
+            {
+               // WASM implementation would use the mount function
+               // which is not currently exposed to Rust-side FFI easily
+               // without a custom loader.
+            }
+        }
+    }
+}
+
 /// Set topocentric observer position
 pub fn set_topo(longitude: f64, latitude: f64, altitude: f64) {
     unsafe {

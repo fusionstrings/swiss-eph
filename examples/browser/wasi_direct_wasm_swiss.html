@@ -8,14 +8,56 @@
   const CALC_FLAG = 2;
   const wasmPath = "../../lib/wasi/swiss_eph.wasm";
   
-  const log = (msg) => document.getElementById('log').textContent += msg + '\n';
+  const log = (msg) => {
+    console.log(msg); // For Puppeteer
+    document.getElementById('log').textContent += msg + '\n';
+  };
   log("Browser | wasi | direct_wasm | swiss: Loading WASM...");
   
   try {
     const wasmModule = await WebAssembly.compileStreaming(fetch(wasmPath));
     log("WASM loaded. Mode flag: " + CALC_FLAG);
+    
+    // Instantiate based on style
+    let eph, calcFn, xxPtr, errPtr, exports;
+    
+    
+      // Direct WASM
+      const dummyFn = () => 0;
+      const mock = new Proxy({}, { get: (_, prop) => prop === "proc_exit" ? (_c) => {} : dummyFn });
+      const instance = await WebAssembly.instantiate(wasmModule, {
+        wasi_snapshot_preview1: mock,
+        env: mock,
+        wbg: mock,
+        "./swiss_eph.internal.js": mock
+      });
+      exports = instance.exports;
+      
+      const jd = (exports.swe_julday || exports.wasm_swe_julday)(2024, 6, 15, 12, 1);
+      xxPtr = exports.malloc(6 * 8);
+      errPtr = exports.malloc(256);
+      calcFn = exports.swe_calc_ut || exports.wasm_swe_calc_ut;
+      
+      // Warmup
+      for(let i=0; i<100; i++) calcFn(jd, 0, CALC_FLAG, xxPtr, errPtr);
+      const start = performance.now();
+      const iter = 10000;
+      for(let i=0; i<iter; i++) calcFn(jd, 0, CALC_FLAG, xxPtr, errPtr);
+      const end = performance.now();
+      const duration = Math.max(end - start, 0.001);
+      const ops = Math.floor(iter / (duration / 1000));
+      
+      calcFn(jd, 0, CALC_FLAG, xxPtr, errPtr);
+      const xx = new Float64Array(exports.memory.buffer, xxPtr, 6);
+      
+      log(`browser | wasi | direct_wasm | swiss: Sun longitude = ${xx[0].toFixed(6)}°`);
+      log(`Perf: ${ops.toLocaleString()} ops/sec`);
+      exports.free(xxPtr); exports.free(errPtr);
+    
+    
   } catch (e) {
     log("Error: " + e.message);
+    console.error(e);
   }
 </script>
 </body>

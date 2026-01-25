@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 
-// Ephemeris Mode: SWISS (flag: 2)
-const CALC_FLAG = 2;
+// Ephemeris Mode: MOSHIER (flag: 4)
+const CALC_FLAG = 4;
 
 const wasmBuffer = await readFile(new URL("../../lib/wasi/swiss_eph.wasm", import.meta.url));
 const wasmModule = await WebAssembly.compile(wasmBuffer);
@@ -15,11 +15,21 @@ const instance = await WebAssembly.instantiate(wasmModule, {
 });
 const exports = (instance.instance || instance).exports;
 
-// Direct WASM call with SWISS mode
+// Direct WASM call with MOSHIER mode
 const jd = (exports.swe_julday || exports.wasm_swe_julday)(2024, 6, 15, 12, 1);
 const xxPtr = exports.malloc(6 * 8);
 const errPtr = exports.malloc(256);
+const calcFn = exports.swe_calc_ut || exports.wasm_swe_calc_ut;
+// Warmup
+for(let i=0; i<100; i++) calcFn(jd, 0, CALC_FLAG, xxPtr, errPtr);
+const start = performance.now();
+const iter = 10000;
+for(let i=0; i<iter; i++) calcFn(jd, 0, CALC_FLAG, xxPtr, errPtr);
+const end = performance.now();
+const duration = Math.max(end - start, 0.001);
+const ops = Math.floor(iter / (duration / 1000));
 (exports.swe_calc_ut || exports.wasm_swe_calc_ut)(jd, 0, CALC_FLAG, xxPtr, errPtr);
 const xx = new Float64Array(exports.memory.buffer, xxPtr, 6);
-console.log(`node | wasi | direct_wasm | swiss: Sun longitude = ${xx[0].toFixed(6)}°`);
+console.log(`node | wasi | direct_wasm | moshier: Sun longitude = ${xx[0].toFixed(6)}°`);
+console.log(`Perf: ${ops.toLocaleString()} ops/sec`);
 exports.free(xxPtr); exports.free(errPtr);

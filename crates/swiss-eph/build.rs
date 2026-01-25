@@ -76,10 +76,34 @@ fn main() {
     // If targeting wasm32-unknown-unknown (browser/standalone), we need to stub libc symbols
     // that the C code expects but aren't provided by the browser environment.
     if target.contains("wasm32-unknown-unknown") {
-         println!("cargo:warning=Targeting wasm32-unknown-unknown: Including stubs.c");
-         build.file("src/stubs.c");
-         // We might need to ensure -fno-builtin to avoid compiler optimizing calls to intrinsics
-         build.flag("-fno-builtin"); 
+         // We link to wasi-libc to provide standard C functions (malloc, memset, strings, etc.)
+         // instead of using a custom stubs.c file. 
+         
+         // Linking wasi-libc to provide fopen and friends (which map to WASI syscalls handled by our JS shim)
+         // We need to find the library path from the sysroot.
+         // WASI SDK defines SDK path above.
+         let sdk_path = std::env::var("WASI_SDK_PATH").ok()
+             .or_else(|| {
+                 let candidates = [
+                     "/opt/wasi-sdk",
+                     "/usr/local/opt/wasi-sdk",
+                     "/opt/homebrew/opt/wasi-sdk",
+                 ];
+                 candidates.iter()
+                     .find(|p| std::path::Path::new(*p).join("bin/clang").exists())
+                     .map(|s| s.to_string())
+             })
+             .unwrap_or_else(|| {
+                 format!("{}/../../toolchain/wasi-sdk-24.0", std::env::var("CARGO_MANIFEST_DIR").unwrap())
+             });
+        
+         println!("cargo:rustc-link-search={}/share/wasi-sysroot/lib/wasm32-wasi", sdk_path);
+         // Link 'c' (libc)
+         println!("cargo:rustc-link-lib=static=c");
+         
+         // Export malloc/free so JS can call them (required by src/heap.ts)
+         println!("cargo:rustc-link-arg=--export=malloc");
+         println!("cargo:rustc-link-arg=--export=free");
     }
 
     build.compile("swisseph");

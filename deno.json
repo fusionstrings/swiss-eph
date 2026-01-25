@@ -4,7 +4,7 @@
   "description": "Swiss Ephemeris WASM binding for Deno, Node.js and Browser",
   "license": "AGPL-3.0",
   "exports": {
-    ".": "./src/wasm_loader.ts",
+    ".": "./src/main.ts",
     "./wasi": "./src/main.ts",
     "./wasi-loader": "./src/loader.ts",
     "./wasm": "./lib/wasm/swiss_eph.wasm",
@@ -44,7 +44,7 @@
     "build:swetest": "make -C vendor/swisseph swetest",
     "check:header": "deno run -A scripts/codegen.ts",
     "test": "deno test -A tests/test_suite.ts tests/swetest_comparison.test.ts",
-    "test:rust": "cargo test",
+    "test:rust": "cargo test -- --test-threads=1",
     "test:deno": "deno test -A tests/test_suite.ts tests/swetest_comparison.test.ts",
     "test:swetest": "deno test -A tests/swetest_comparison.test.ts",
     "test:deno:e2e": "deno run -A tests/e2e/deno/test.ts",
@@ -74,7 +74,7 @@
     "wasmbuild": "jsr:@deno/wasmbuild@^0.21.0",
     "wasi_snapshot_preview1": "./src/wasi_snapshot_preview1.ts",
     "env": "./src/env_mock.ts",
-    "@fusionstrings/swiss-eph": "./src/wasm_loader.ts",
+    "@fusionstrings/swiss-eph": "./src/main.ts",
     "@fusionstrings/swiss-eph/wasi": "./src/main.ts",
     "@fusionstrings/swiss-eph/inline": "./src/inline_loader.ts",
     "@fusionstrings/swiss-eph/wasm": "./lib/wasm/swiss_eph.wasm"
