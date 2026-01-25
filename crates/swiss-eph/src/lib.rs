@@ -39,7 +39,7 @@ mod wasm_exports {
 #[cfg(not(target_os = "wasi"))]
 mod alloc_exports {
 
-
+/*
     const USIZE_SIZE: usize = std::mem::size_of::<usize>();
     const ALIGNMENT: usize = 8;
 
@@ -72,6 +72,7 @@ mod alloc_exports {
             std::alloc::dealloc(actual_ptr, layout);
         }
     }
+*/
 }
 
     #[unsafe(export_name = "wasm_swe_calc_ut")]

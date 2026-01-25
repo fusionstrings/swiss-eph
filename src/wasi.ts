@@ -57,8 +57,11 @@ export class WASI {
                 else Deno.stderr.writeSync(buf);
               } else {
                 const text = new TextDecoder().decode(buf);
-                if (fd === 1) console.log(text);
-                else console.error(text);
+                if (fd === 1) {
+                  // console.log(text);
+                } else {
+                  console.error(text);
+                }
               }
             }
             total += buf_len;
@@ -98,6 +101,14 @@ export class WASI {
             const parts = path.split("/");
             const filename = parts[parts.length - 1];
             content = this.virtualFiles.get(filename);
+
+            // DEBUG: Trace why loading fails
+            // console.log(`[WASI] path_open: '${originalPath}' -> '${path}'`);
+            if (!content) {
+              // console.log(`[WASI] Failed to find file. Keys:`, [
+              //  ...this.virtualFiles.keys(),
+              // ]);
+            }
           }
 
           if (content) {
@@ -131,6 +142,16 @@ export class WASI {
             const parts = path.split("/");
             const filename = parts[parts.length - 1];
             content = this.virtualFiles.get(filename);
+
+            // DEBUG: Trace stat calls
+            // console.log(
+            //  `[WASI] path_filestat_get: '${path}' (fallback: '${filename}')`,
+            // );
+            if (!content) {
+              // console.log(`[WASI] Stat failed. Keys:`, [
+              //  ...this.virtualFiles.keys(),
+              // ]);
+            }
           }
 
           if (content) {

@@ -32,6 +32,7 @@
     "jsr:@std/jsonc@0.213": "0.213.1",
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.6": "1.0.6",
+    "jsr:@std/path@*": "1.1.4",
     "jsr:@std/path@0.213": "0.213.1",
     "jsr:@std/path@1": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",

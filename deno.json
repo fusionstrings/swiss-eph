@@ -44,7 +44,7 @@
     "build:swetest": "make -C vendor/swisseph swetest",
     "check:header": "deno run -A scripts/codegen.ts",
     "test": "deno test -A tests/test_suite.ts tests/swetest_comparison.test.ts",
-    "test:rust": "cargo test",
+    "test:rust": "cargo test -- --test-threads=1",
     "test:deno": "deno test -A tests/test_suite.ts tests/swetest_comparison.test.ts",
     "test:swetest": "deno test -A tests/swetest_comparison.test.ts",
     "test:deno:e2e": "deno run -A tests/e2e/deno/test.ts",
