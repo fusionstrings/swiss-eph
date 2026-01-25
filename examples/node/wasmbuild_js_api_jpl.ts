@@ -50,15 +50,19 @@ const moshierRes = eph.swe_calc_ut(jd, 0, MOSHIER_FLAG);
 const jplRes = eph.swe_calc_ut(jd, 0, CALC_FLAG);
 
 if (jplRes.returnCode < 0 || jplRes.error) {
-  // Expected if true DE files missing
-} else if (moshierRes.xx[0] === jplRes.xx[0]) {
   console.warn(
-    "WARN: JPL mode produced identical results to Moshier mode (Fallback occurred).",
+    "WARN: JPL mode failed or returned error (expected since distinct JPL files might be missing).",
   );
+  console.warn(`      Error: ${jplRes.error}`);
+} else if (moshierRes.xx[0] === jplRes.xx[0]) {
+  console.error(
+    "CRITICAL: JPL mode produced identical results to Moshier mode (Fallback occurred).",
+  );
+  console.error("This means ephemeris files were NOT loaded or used.");
   process.exit(1);
 } else {
   console.log(
-    "PASS: JPL mode produced distinct results (JPL != Moshier). Results likely valid.",
+    "PASS: JPL mode produced distinct results (JPL != Moshier). Results valid.",
   );
   console.log(`      Moshier: ${moshierRes.xx[0].toFixed(8)}`);
   console.log(`      JPL:     ${jplRes.xx[0].toFixed(8)}`);

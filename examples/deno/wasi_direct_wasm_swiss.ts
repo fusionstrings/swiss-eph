@@ -1,8 +1,13 @@
+import { dirname, fromFileUrl, join } from "@std/path";
+import { WASI } from "../../src/wasi.ts";
+
 // Ephemeris Mode: SWISS (flag: 2)
 const CALC_FLAG = 2;
+const MOSHIER_FLAG = 4;
 
 const wasmUrl = new URL("../../lib/wasi/swiss_eph.wasm", import.meta.url);
 const wasmModule = await WebAssembly.compileStreaming(fetch(wasmUrl));
+
 interface WasmExports extends WebAssembly.Exports {
   memory: WebAssembly.Memory;
   malloc: (size: number) => number;
@@ -15,56 +20,113 @@ interface WasmExports extends WebAssembly.Exports {
     xx: number,
     err: number,
   ) => number;
+  swe_set_ephe_path: (path: number) => void;
 }
 
-const dummyFn = (name: string) => (..._args: unknown[]) => {
-  // For prestat iteration (wasi-libc startup), we MUST return 8 (EBADF)
-  // to tell libc there are no more preopened files.
-  if (name === "fd_prestat_get" || name === "fd_prestat_dir_name") {
-    return 8; // EBADF
-  }
-  return 0;
-};
+const wasi = new WASI();
 
-const mock = new Proxy({}, {
-  get: (_, prop) => {
-    const name = String(prop);
-    if (name === "proc_exit") return (_c: number) => {};
-    return dummyFn(name);
-  },
-});
+// --- Soundness: Mount Ephemeris Files ---
+const __dirname = dirname(fromFileUrl(import.meta.url));
+const epheDir = join(__dirname, "../../crates/swiss-eph/vendor/swisseph/ephe");
+const requiredFiles = ["sepl_18.se1", "seas_18.se1", "semo_18.se1"];
+
+try {
+  let filesLoaded = 0;
+  for (const file of requiredFiles) {
+    try {
+      const data = await Deno.readFile(join(epheDir, file));
+      wasi.mount(`ephe/${file}`, data);
+      filesLoaded++;
+    } catch {
+      // ignore missing files inCI/lite environments
+    }
+  }
+  if (filesLoaded > 0) {
+    console.log(`deno | wasi | direct | ${filesLoaded} files loaded.`);
+  }
+} catch (e) {
+  console.warn("WARN: Ephemeris setup failed.", e);
+}
+
 const instance = await WebAssembly.instantiate(wasmModule, {
-  wasi_snapshot_preview1: mock,
-  env: mock,
-  wbg: mock,
-  "./swiss_eph.internal.js": mock,
+  ...wasi.imports,
 });
+wasi.setMemory(instance.exports.memory as WebAssembly.Memory);
 const exports = instance.exports as WasmExports;
 
-// Direct WASM call with SWISS mode
-const jd = (exports.swe_julday || exports.wasm_swe_julday)(2024, 6, 15, 12, 1);
+// Helper: set ephe path via C string
+function set_ephe_path(path: string) {
+  const bytes = new TextEncoder().encode(path + "\0");
+  const ptr = exports.malloc(bytes.length);
+  const mem = new Uint8Array(exports.memory.buffer);
+  mem.set(bytes, ptr);
+  exports.swe_set_ephe_path(ptr);
+  exports.free(ptr);
+}
+
+if (wasi.virtualFiles.size > 0) {
+  set_ephe_path("ephe");
+}
+
+// ---------------------------------------------------------
+// Differential Verification
+// ---------------------------------------------------------
+
+// Helper to calc for a specific flag
+function calc(jd: number, flag: number): number {
+  const xxPtr = exports.malloc(6 * 8);
+  const errPtr = exports.malloc(256);
+
+  exports.swe_calc_ut(jd, 0, flag, xxPtr, errPtr);
+
+  const xx = new Float64Array(exports.memory.buffer, xxPtr, 6);
+  const val = xx[0];
+
+  exports.free(xxPtr);
+  exports.free(errPtr);
+  return val;
+}
+
+const jd = exports.swe_julday(2024, 6, 15, 12, 1);
+
+const moshierVal = calc(jd, MOSHIER_FLAG);
+const swissVal = calc(jd, CALC_FLAG);
+
+if (moshierVal === swissVal) {
+  console.error(
+    "CRITICAL: Swiss mode produced identical results to Moshier mode.",
+  );
+  console.error("This means ephemeris files were NOT loaded or used.");
+  Deno.exit(1);
+} else {
+  console.log(
+    "PASS: Direct WASI Swiss mode verification (Swiss != Moshier).",
+  );
+  console.log(`      Moshier: ${moshierVal.toFixed(8)}`);
+  console.log(`      Swiss:   ${swissVal.toFixed(8)}`);
+}
+
+// Warmup and Benchmark
 const xxPtr = exports.malloc(6 * 8);
 const errPtr = exports.malloc(256);
-const calcFn = exports.swe_calc_ut || exports.wasm_swe_calc_ut;
-// Warmup
-for (let i = 0; i < 100; i++) calcFn(jd, 0, CALC_FLAG, xxPtr, errPtr);
+
+for (let i = 0; i < 100; i++) {
+  exports.swe_calc_ut(jd, 0, CALC_FLAG, xxPtr, errPtr);
+}
 const start = performance.now();
 const iter = 10000;
-for (let i = 0; i < iter; i++) calcFn(jd, 0, CALC_FLAG, xxPtr, errPtr);
+for (let i = 0; i < iter; i++) {
+  exports.swe_calc_ut(jd, 0, CALC_FLAG, xxPtr, errPtr);
+}
 const end = performance.now();
 const duration = Math.max(end - start, 0.001);
 const ops = Math.floor(iter / (duration / 1000));
-(exports.swe_calc_ut || exports.wasm_swe_calc_ut)(
-  jd,
-  0,
-  CALC_FLAG,
-  xxPtr,
-  errPtr,
-);
-const xx = new Float64Array(exports.memory.buffer, xxPtr, 6);
+
+const finalVal = new Float64Array(exports.memory.buffer, xxPtr, 1)[0];
 console.log(
-  `deno | wasi | direct_wasm | swiss: Sun longitude = ${xx[0].toFixed(6)}°`,
+  `deno | wasi | direct_wasm | swiss: Sun longitude = ${finalVal.toFixed(6)}°`,
 );
 console.log(`Perf: ${ops.toLocaleString()} ops/sec`);
+
 exports.free(xxPtr);
 exports.free(errPtr);

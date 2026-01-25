@@ -56,21 +56,20 @@ const moshierRes = eph.swe_calc_ut(jd, 0, MOSHIER_FLAG);
 const jplRes = eph.swe_calc_ut(jd, 0, CALC_FLAG);
 
 // Note: If JPL files are missing, SEFLG_JPLEPH might fail or fall back.
-// We check error string.
 if (jplRes.returnCode < 0 || jplRes.error) {
   console.warn(
     "WARN: JPL mode failed or returned error (expected since distinct JPL files might be missing).",
   );
   console.warn(`      Error: ${jplRes.error}`);
-  // We do NOT exit 1 here because lacking DE406 files is common in this checked-out repo.
-  // But we mark it clearly.
 } else if (moshierRes.xx[0] === jplRes.xx[0]) {
-  console.warn(
-    "WARN: JPL mode produced identical results to Moshier mode (Fallback occurred).",
+  console.error(
+    "CRITICAL: JPL mode produced identical results to Moshier mode (Fallback occurred).",
   );
+  console.error("This means ephemeris files were NOT loaded or used.");
+  Deno.exit(1);
 } else {
   console.log(
-    "PASS: JPL mode produced distinct results (JPL != Moshier). Results likely valid.",
+    "PASS: JPL mode produced distinct results (JPL != Moshier). Results valid.",
   );
   console.log(`      Moshier: ${moshierRes.xx[0].toFixed(8)}`);
   console.log(`      JPL:     ${jplRes.xx[0].toFixed(8)}`);
