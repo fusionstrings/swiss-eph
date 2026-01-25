@@ -41,6 +41,7 @@
     "jsr:@ts-morph/bootstrap@0.27": "0.27.0",
     "jsr:@ts-morph/common@0.27": "0.27.0",
     "npm:esbuild@~0.27.2": "0.27.2",
+    "npm:puppeteer@*": "24.35.0_devtools-protocol@0.0.1534754",
     "npm:puppeteer@^24.35.0": "24.35.0_devtools-protocol@0.0.1534754"
   },
   "jsr": {

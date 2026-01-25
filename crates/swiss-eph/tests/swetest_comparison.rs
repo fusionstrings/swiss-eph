@@ -74,6 +74,11 @@ fn setup_ephemeris() {
     if !std::path::Path::new(&ephe_path).exists() {
         // 2. Try repository root vendor path (compatibility)
         ephe_path = format!("{}/../../vendor/swisseph/ephe", manifest_dir);
+        
+        if !std::path::Path::new(&ephe_path).exists() {
+            // 3. Try sibling crate path (workspace structure)
+            ephe_path = format!("{}/../swiss-eph-data/ephe", manifest_dir);
+        }
     }
     
     let path = CString::new(ephe_path).unwrap();

@@ -1,66 +1,74 @@
 # Integration Guide
 
 **SwissEph** is designed to fit _your_ architecture, not the other way around.
-We support **24 distinct integration patterns** across platforms, builds, and
+We support a wide range of integration patterns across platforms, builds, and
 styles.
 
-## The Matrix: Choose Your Path
+## 🚀 Quick Selection Guide
 
-All examples are runnable and located in the [examples/](./examples/) directory.
-
-### 1. Select Your Platform
-
-| Platform    | Best For                        | Recommended Example                     |
-| :---------- | :------------------------------ | :-------------------------------------- |
-| **Deno**    | Modern Server-side, Scripting   | `deno/wasmbuild_js_api_moshier.ts`      |
-| **Node.js** | Traditional Server-side, Lambda | `node/wasmbuild_js_api_moshier.mjs`     |
-| **Browser** | Client-side Apps (React/Vue)    | `browser/wasmbuild_inline_moshier.html` |
-| **Workers** | Edge Computing (Cloudflare)     | `worker/wasmbuild_inline_moshier.ts`    |
-
-### 2. Select Your Build Type
-
-- **`wasmbuild` (Recommended)**: Uses our high-level Rust wrapper. Safer,
-  idiomatic JS API, better error handling.
-- **`wasi` (Advanced)**: Direct binding to the C library via WASI. Lower level,
-  requires WASI polyfill in browsers.
-
-### 3. Select Your Style
-
-- **JS API (Standard)**: `new SwissEph(...)`. The standard way. Use this 99% of
-  the time.
-- **Inline (Zero-Config)**: The WASM binary is embedded as a Base64 string in
-  the JS file. perfect for bundlers (Vite/Webpack) or single-file scripts. No
-  `fetch` required.
-- **Direct WASM**: For those who want full control over the
-  `WebAssembly.instantiate` process.
+| If you are using...       | Recommendation             | Example                                                                                   |
+| :------------------------ | :------------------------- | :---------------------------------------------------------------------------------------- |
+| **Deno / Fresh**          | `wasmbuild` + Standard API | [deno/wasmbuild_js_api_moshier.ts](./examples/deno/wasmbuild_js_api_moshier.ts)           |
+| **Node.js / Bun**         | `wasi` + Standard API      | [node/wasi_js_api_moshier.mjs](./examples/node/wasi_js_api_moshier.mjs)                   |
+| **Frontend (React/Vite)** | `wasmbuild` + **Inline**   | [browser/wasmbuild_inline_moshier.html](./examples/browser/wasmbuild_inline_moshier.html) |
+| **Edge (Cloudflare)**     | `wasmbuild` + **Inline**   | [worker/wasmbuild_inline_moshier.ts](./examples/worker/wasmbuild_inline_moshier.ts)       |
+| **High Performance**      | Direct WASM / WASI         | [node/wasi_direct_moshier.mjs](./examples/node/wasi_direct_moshier.mjs)                   |
 
 ---
 
-## Full 72-Path Verified Matrix
+## 🛠️ The Three Dimensions
 
-We test every combination to ensure bulletproof reliability.
+### 1. Platform (Where it runs)
 
-| #         | Platform    | Build  | Style | Mode  | File Ref                                     |
-| --------- | ----------- | ------ | ----- | ----- | -------------------------------------------- |
-| **1-18**  | **Deno**    | _Both_ | _All_ | _All_ | [View Deno Examples](./examples/deno/)       |
-| **19-36** | **Node**    | _Both_ | _All_ | _All_ | [View Node Examples](./examples/node/)       |
-| **37-54** | **Browser** | _Both_ | _All_ | _All_ | [View Browser Examples](./examples/browser/) |
-| **55-72** | **Worker**  | _Both_ | _All_ | _All_ | [View Worker Examples](./examples/worker/)   |
+- **Deno**: First-class support with native TS.
+- **Node.js**: Full support via ESM.
+- **Browser**: Works in all modern browsers (Chrome, Firefox, Safari).
+- **Workers**: Optimized for Cloudflare Workers / V8 Edge runtimes.
 
-> **Note**: "Mode" refers to the ephemeris data source:
+### 2. Build Type (How it's compiled)
+
+- **`wasmbuild` (Recommended)**: Uses a high-level Rust wrapper. Provides the
+  safest, most idiomatic JavaScript API.
+- **`wasi` (Direct)**: Direct binding to the C library via the WebAssembly
+  System Interface. Best for maximum control and raw C-tier performance.
+
+### 3. Style (How it's loaded)
+
+- **Standard API**: Loads the WASM binary from an external file (default).
+- **Inline (Zero-Config)**: The WASM binary is embedded in the JS source.
+  **Ideal for bundlers** and environments where file requests are restricted.
+- **Direct**: Manual instantiation for advanced users.
+
+---
+
+## 🗺️ Integration Matrix
+
+We verify every permutation to ensure reliability. For a detailed breakdown
+including all entrypoints and benchmarks, see the
+**[Full Verification Matrix](./MATRIX.md)**.
+
+| Category               |           Deno           |           Node           |           Browser           |           Worker           |
+| :--------------------- | :----------------------: | :----------------------: | :-------------------------: | :------------------------: |
+| **wasmbuild (JS API)** | [Link](./examples/deno/) | [Link](./examples/node/) | [Link](./examples/browser/) | [Link](./examples/worker/) |
+| **wasmbuild (Inline)** | [Link](./examples/deno/) | [Link](./examples/node/) | [Link](./examples/browser/) | [Link](./examples/worker/) |
+| **wasi (JS API)**      | [Link](./examples/deno/) | [Link](./examples/node/) | [Link](./examples/browser/) | [Link](./examples/worker/) |
+| **wasi (Direct)**      | [Link](./examples/deno/) | [Link](./examples/node/) | [Link](./examples/browser/) | [Link](./examples/worker/) |
+
+> [!TIP]
+> **Which Ephemeris Mode should I use?**
 >
-> 1. **Moshier**: Built-in semi-analytic model. Fast, no external files. (~
->    arcsec accuracy)
-> 2. **Swiss**: Uses `.se1` files. The gold standard. (~ milli-arcsec accuracy)
-> 3. **JPL**: Uses DE431 etc. NASA standard.
+> - **Moshier**: Built-in (no extra files). Accuracy ~1 arcsec. Use for general
+>   purpose.
+> - **Swiss**: External `.se1` files. Accuracy ~0.001 arcsec. Use for
+>   professional work.
+> - **JPL**: External NASA files. Highest precision.
 
-## Performance & Benchmarks
+---
 
-| Build Strategy      | Deno (ops/s) | Node (ops/s) |
-| :------------------ | :----------: | :----------: |
-| **WASM (Direct)**   |  5,822,979   |  6,268,448   |
-| **WASM (Standard)** |   542,055    |   997,788    |
-| **WASI (Standard)** |   573,797    |  1,244,097   |
+## ⚡ Performance Breakdown
 
-> _Tip: For raw speed, use Node.js with Direct WASM instantiation. For developer
-> experience, use Deno with the Standard API._
+| Strategy         | Deno (ops/s) | Node (ops/s) | Note                    |
+| :--------------- | :----------: | :----------: | :---------------------- |
+| **Direct WASM**  |    ~5.8M     |  **~6.2M**   | Theoretical Maximum     |
+| **Standard API** |    ~540k     |     ~1M      | Idiomatic / Recommended |
+| **Inline Build** |    ~500k     |    ~950k     | Best for Bundlers       |

@@ -1,36 +1,56 @@
 # Examples
 
-This directory contains executable examples for every supported configuration.
+This directory contains verified, executable examples for every supported
+platform and configuration.
 
-👉 **Please see [EXAMPLES.md](../EXAMPLES.md) in the root directory for the full
-integration matrix and guide.**
+> [!IMPORTANT]
+> These examples assume you have the `@fusionstrings/swiss-eph` package
+> installed. If running locally from the repository, ensure you have built the
+> project: `deno task build`.
 
-## Directory Structure
+## 📂 Directory Structure
 
-- **[deno/](./deno/)**: Deno examples (TS)
+- **[deno/](./deno/)**: Deno examples (TypeScript)
 - **[node/](./node/)**: Node.js examples (ESM)
 - **[browser/](./browser/)**: Browser examples (HTML/ESM)
-- **[worker/](./worker/)**: Cloudflare Worker examples (TS)
+- **[worker/](./worker/)**: Cloudflare Worker examples (TypeScript)
 
-## Running the Examples
+## 🚀 Running the Examples
 
 ### Deno
 
+Run any Deno example directly from the root:
+
 ```bash
-deno run -A deno/wasmbuild_js_api_moshier.ts
+deno run -A examples/deno/wasmbuild_js_api_moshier.ts
 ```
 
-### Node
+### Node.js
+
+Run any Node example (ensure `node_modules` are installed):
 
 ```bash
-node node/wasmbuild_js_api_moshier.mjs
+node examples/node/wasmbuild_js_api_moshier.mjs
 ```
 
 ### Browser
 
-Open any `.html` file in your browser (may require a local server for Wasm
-fetch).
+To test browser examples, start a local development server and navigate to the
+`.html` file:
 
 ```bash
-npx serve browser/
+npx serve examples/browser/
 ```
+
+### Cloudflare Workers
+
+For worker examples, we recommend using `wrangler`:
+
+```bash
+npx wrangler dev examples/worker/wasmbuild_inline_moshier.ts
+```
+
+---
+
+👉 **For a full integration matrix and choosing the right build for your
+project, see [EXAMPLES.md](../EXAMPLES.md).**

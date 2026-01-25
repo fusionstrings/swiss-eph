@@ -8,14 +8,43 @@
   const CALC_FLAG = 2;
   const wasmPath = "../../lib/wasm/swiss_eph.wasm";
   
-  const log = (msg) => document.getElementById('log').textContent += msg + '\n';
+  const log = (msg) => {
+    console.log(msg); // For Puppeteer
+    document.getElementById('log').textContent += msg + '\n';
+  };
   log("Browser | wasmbuild | inline | swiss: Loading WASM...");
   
   try {
     const wasmModule = await WebAssembly.compileStreaming(fetch(wasmPath));
     log("WASM loaded. Mode flag: " + CALC_FLAG);
+    
+    // Instantiate based on style
+    let eph, calcFn, xxPtr, errPtr, exports;
+    
+    
+      // Mock imports for JS Class if needed (though we load raw wasm here for simplicity in this bench runner, 
+      // ideally we'd import the class but that requires module resolution. 
+      // Use bundled JS for browser tests
+      const { SwissEph } = await import("../../tests/e2e/browser/dist/main.js");
+      eph = new SwissEph(wasmModule);
+      
+      const jd = eph.swe_julday(2024, 6, 15, 12, 1);
+      // Warmup
+      for(let i=0; i<100; i++) eph.swe_calc_ut(jd, 0, CALC_FLAG);
+      const start = performance.now();
+      const iter = 10000;
+      for(let i=0; i<iter; i++) eph.swe_calc_ut(jd, 0, CALC_FLAG);
+      const end = performance.now();
+      const duration = Math.max(end - start, 0.001);
+      const ops = Math.floor(iter / (duration / 1000));
+      const result = eph.swe_calc_ut(jd, 0, CALC_FLAG);
+      log(`browser | wasmbuild | inline | swiss: Sun longitude = ${result.xx[0].toFixed(6)}°`);
+      log(`Perf: ${ops.toLocaleString()} ops/sec`);
+    
+    
   } catch (e) {
     log("Error: " + e.message);
+    console.error(e);
   }
 </script>
 </body>

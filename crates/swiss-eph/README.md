@@ -1,23 +1,22 @@
-# swiss-eph (Rust Crate)
+# swiss-eph (Rust)
 
-> **Idiomatic Rust bindings for the Swiss Ephemeris.**
+> **Idiomatic, high-performance Rust bindings for the Swiss Ephemeris.**
 
 [![Crates.io](https://img.shields.io/crates/v/swiss-eph.svg)](https://crates.io/crates/swiss-eph)
 [![Documentation](https://docs.rs/swiss-eph/badge.svg)](https://docs.rs/swiss-eph)
 
-A high-performance, type-safe wrapper around the legendary
-[Swiss Ephemeris](https://www.astro.com/swisseph/) C library. Designed for
-precision astronomy and astrology applications.
+A type-safe, performance-first wrapper around the legendary
+[Swiss Ephemeris](https://www.astro.com/swisseph/) C library.
 
-## Features
+## ✨ Features
 
-- 🛡️ **Safe Rust**: High-level, idiomatic wrapper (`swisseph::safe`) around
-  unsafe FFI.
-- 🚀 **Zero Cost**: Most abstractions compile away to direct C calls.
-- 🧪 **Verified**: Tested against the official C test suite for bit-perfect
+- **🛡️ Safe & Idiomatic**: High-level wrapper (`swisseph::safe`) that handles
+  FFI complexity.
+- **🚀 Zero-Cost Abstractions**: Direct C performance with Rust's safety.
+- **🧪 Bit-Perfect**: Verified against the official C test suite for total
   accuracy.
-- 📦 **Self-Contained**: The C library is bundled and compiled statically. No
-  external libs required.
+- **📦 Self-Contained**: The C library is bundled and compiled statically—no
+  external dependencies.
 
 ## Installation
 

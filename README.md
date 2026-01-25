@@ -8,49 +8,47 @@
 [![JSR](https://jsr.io/badges/@fusionstrings/swiss-eph)](https://jsr.io/@fusionstrings/swiss-eph)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
-**SwissEph** empowers developers to build high-precision astrological
-applications without compromise. We bring the industry-standard Swiss Ephemeris
-(C library) to the JavaScript ecosystem with zero loss in accuracy and
-native-tier performance.
+**SwissEph** is the industry-standard Swiss Ephemeris (C library) brought to the
+modern JavaScript and Rust ecosystems. We provide high-precision astrological
+calculations with zero loss in accuracy and native-tier performance across all
+platforms.
 
-## Why SwissEph?
+## ✨ Key Features
 
-### 🎯 Uncompromising Precision
+- **🎯 Uncompromising Precision**: Bit-level parity with the official Swiss
+  Ephemeris C source.
+- **🚀 Native-Tier Speed**: Powered by WebAssembly and optimized Rust bindings.
+  Calculate thousands of positions in milliseconds.
+- **🌐 Universal Runtime**: First-class support for **Deno**, **Node.js**,
+  **Browsers**, and **Cloudflare Workers**.
+- **📦 Multi-Build Strategy**: Choose between high-level `wasmbuild` (safe Rust)
+  or direct `WASI` (raw C) bindings.
+- **🛠️ Flexible Deployment**: Support for Standard API, Direct WASM
+  instantiation, or Zero-Config Inline builds.
 
-Don't settle for approximations. We allow you to run the **exact same code**
-used by professional astrological software. Our WASM build is compiled directly
-from the official C source, ensuring bit-level parity with the reference
-implementation.
-
-### 🚀 Native Performance
-
-Powered by **WebAssembly** and optimized Rust bindings, SwissEph runs at
-near-native speeds. Calculate planetary positions for thousands of dates in
-milliseconds.
-
-### 🌐 Universal Compatibility
-
-Write once, run everywhere. We support a complete **3x2x4 Integration Matrix**:
-
-- **Platforms**: Deno, Node.js, Browsers, Cloudflare Workers
-- **Builds**: `wasmbuild` (High-level Rust) & `wasi` (Direct C)
-- **Styles**: Standard API, Direct WASM, or Inline (Zero-request)
-
-## Architecture
+## 🏗️ Architecture
 
 ```mermaid
-graph TD
-    C[Swiss Ephemeris C Source] -->|Clang/LLVM| WASM[WebAssembly Binary]
-    WASM -->|wasm-bindgen| Rust[Rust Bindings]
-    Rust -->|Deno/Node| JS[JavaScript API]
-    
-    subgraph "Your Application"
-        JS -->|Import| App[Web/Server App]
+flowchart TD
+    subgraph "Core Engines"
+        C["Swiss Ephemeris (C)"]
+        R["Rust Wrapper (Safe)"]
     end
-    
+
+    subgraph "Compilation Pipeline"
+        C -->|WASI-SDK| WASI["WASM (Direct C)"]
+        R -->|wasm-bindgen| WB["WASM (High-level Rust)"]
+    end
+
+    subgraph "Consumer Ecosystem"
+        WASI -->|FFI| Node["Node.js / Bun"]
+        WB -->|Typed API| Deno["Deno / Browser / Workers"]
+    end
+
     style C fill:#f9f,stroke:#333,stroke-width:2px
-    style WASM fill:#bbf,stroke:#333,stroke-width:2px
-    style JS fill:#bfb,stroke:#333,stroke-width:2px
+    style R fill:#f96,stroke:#333,stroke-width:2px
+    style WASI fill:#bbf,stroke:#333,stroke-width:2px
+    style WB fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
 ## Quick Start
@@ -106,21 +104,26 @@ fn main() {
 }
 ```
 
-## Comparisons & Benchmarks
+## ⚡ Performance
 
-We take performance seriously.
+We take performance seriously. Our WASM implementation rivals native
+performance.
 
-| library                 | implementation | speed (ops/sec) |         note         |
-| :---------------------- | :------------- | :-------------: | :------------------: |
-| **swiss-eph (Direct)**  | **WASM (Raw)** | **~6,200,000**  | **Peak Performance** |
-| **swiss-eph (Node JS)** | **WASI (JS)**  | **~1,200,000**  |  **Typical Server**  |
-| **swiss-eph (Deno JS)** | **WASM (JS)**  |  **~540,000**   |  **Modern Runtime**  |
-| ephemeris               | Pure JS        |     ~45,000     |    Low Precision     |
+| Library                 | Implementation | Speed (ops/sec) | Note                          |
+| :---------------------- | :------------- | :-------------: | :---------------------------- |
+| **swiss-eph (Direct)**  | **WASM (Raw)** | **~6,200,000**  | **Peak Performance**          |
+| **swiss-eph (Node JS)** | **WASI (JS)**  | **~1,200,000**  | **Typical Server**            |
+| **swiss-eph (Deno JS)** | **WASM (JS)**  |  **~540,000**   | **Modern Runtime**            |
+| ephemeris               | Pure JS        |     ~45,000     | Low Precision / Approximation |
 
-> _Benchmarks run on Apple M1 Max._
+> [!NOTE]
+> Benchmarks performed on Apple M1 Max. Results vary by runtime and ephemeris
+> data source.
 
 ## Documentation & Resources
 
+- **[Verification Matrix](./MATRIX.md)**: Full 72-path decision tree,
+  statecharts, and benchmarks.
 - **[Examples](./examples/)**: Comprehensive integration recipes for Deno, Node,
   Browser, and Workers.
 - **[Integration Matrix](./EXAMPLES.md)**: Detailed breakdown of all 72

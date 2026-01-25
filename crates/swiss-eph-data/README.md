@@ -1,27 +1,28 @@
 # swiss-eph-data
 
-> **Embedded High-Precision Ephemeris Data.**
+> **Embedded High-Precision Ephemeris Data for Rust.**
 
-This crate provides the core Swiss Ephemeris data files (`sepl_18.se1` and
-`semo_18.se1`) embedded directly into your Rust binary.
+This crate provides core Swiss Ephemeris data files (`sepl_18.se1` and
+`semo_18.se1`) as static bytes, allowing for high-precision calculations without
+external file dependencies.
 
-## Why use this?
+## 🌟 Why Use This?
 
-- **Zero Configuration**: No need to manage external files or paths.
-- **Portability**: Your binary works anywhere, even in environments without a
-  filesystem (like WASM or simple scratch containers).
-- **Precision**: Enables the full precision of the Swiss Ephemeris (vs. the
-  Moshier fallback).
+- **Zero Configuration**: No external files to manage or paths to set.
+- **Pure Portability**: Works in environments without a filesystem (WASM,
+  Lambda, Containers).
+- **Maximum Precision**: Enables the full Swiss Ephemeris model (vs. Moshier
+  fallback).
 
-## Trade-off
+## ⚠️ Trade-off
 
-⚠️ **Binary Size**: This crate adds approximately **1.7 MB** to your compiled
-binary.
+**Binary Size**: Including this crate adds approximately **1.7 MB** to your
+compiled binary.
 
-## Content
+## 📊 Data Content
 
 | File          | Type                | Range             |
-| ------------- | ------------------- | ----------------- |
+| :------------ | :------------------ | :---------------- |
 | `sepl_18.se1` | Planetary Positions | 1800 CE - 2399 CE |
 | `semo_18.se1` | Moon Positions      | 1800 CE - 2399 CE |
 
