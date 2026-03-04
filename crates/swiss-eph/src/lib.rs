@@ -707,10 +707,10 @@ mod tests {
     #[test]
     fn test_version() {
         unsafe {
-            let mut buf = [0i8; 256];
+            let mut buf = [0 as c_char; 256];
             swe_version(buf.as_mut_ptr());
             // Version should start with a digit
-            assert!(buf[0] >= b'0' as i8 && buf[0] <= b'9' as i8);
+            assert!(buf[0] >= b'0' as c_char && buf[0] <= b'9' as c_char);
         }
     }
 }

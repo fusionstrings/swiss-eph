@@ -4,7 +4,7 @@
 
 use crate::*;
 use std::ffi::{CStr, CString};
-use std::os::raw::c_int;
+use std::os::raw::{c_char, c_int};
 
 /// Error returned by Swiss Ephemeris calculations
 #[derive(Debug, Clone)]
@@ -223,6 +223,8 @@ pub enum HouseSystem {
     Morinus = b'M',
     Topocentric = b'T',
     Vehlow = b'V',
+    Meridian = b'X',
+    Horizontal = b'H',
 }
 
 impl HouseSystem {
@@ -405,7 +407,7 @@ pub fn close() {
 /// Get Swiss Ephemeris version
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 pub fn version() -> String {
-    let mut buf = [0i8; 256];
+    let mut buf = [0 as c_char; 256];
     unsafe {
         swe_version(buf.as_mut_ptr());
         CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned()
@@ -451,7 +453,7 @@ pub fn sidereal_time(jd_ut: f64) -> f64 {
 /// * `Err(SwissEphError)` - If calculation fails
 pub fn calc(jd: f64, planet: Planet, flags: CalcFlags) -> Result<Position> {
     let mut xx = [0.0f64; 6];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
     
     let ret = unsafe {
         swe_calc(jd, planet.to_int(), flags.raw(), xx.as_mut_ptr(), serr.as_mut_ptr())
@@ -505,7 +507,7 @@ pub fn calc_ut(jd_ut: f64, planet: i32, flags: i32) -> std::result::Result<Posit
     // So I can define a NEW function `calc_ut_typed` or just update `calc_ut` and remove wasm_bindgen attribute if it causes issues.
     // Given the prompt "Update calc, calc_ut... to use these new types", I will update them.
     let mut xx = [0.0f64; 6];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
     
     let ret = unsafe {
         swe_calc_ut(jd_ut, planet, flags, xx.as_mut_ptr(), serr.as_mut_ptr())
@@ -531,8 +533,8 @@ pub fn calc_ut(jd_ut: f64, planet: i32, flags: i32) -> std::result::Result<Posit
 /// Calculate fixed star position
 pub fn calc_star(jd: f64, star: &str, flags: CalcFlags) -> Result<(String, Position)> {
     let mut xx = [0.0f64; 6];
-    let mut serr = [0i8; 256];
-    let mut star_buf = [0i8; 512];
+    let mut serr = [0 as c_char; 256];
+    let mut star_buf = [0 as c_char; 512];
     
     let c_star = CString::new(star).map_err(|e| SwissEphError {
         message: format!("Invalid star name: {}", e),
@@ -584,10 +586,10 @@ pub fn rise_trans(
     flags: RiseTransFlags,
 ) -> Result<f64> {
     let mut tret = 0.0f64;
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
     let mut dgeo = [geopos.longitude, geopos.latitude, geopos.altitude];
     
-    let mut star_buf = [0i8; 512];
+    let mut star_buf = [0 as c_char; 512];
     if let Some(name) = star_name {
         let c_star = CString::new(name).map_err(|e| SwissEphError {
             message: format!("Invalid star name: {}", e),
@@ -638,7 +640,7 @@ pub fn rise_trans(
 pub fn solar_eclipse_where(jd: f64, flags: i32) -> Result<(f64, f64, f64, f64)> {
     let mut geopos = [0.0; 10];
     let mut attr = [0.0; 20];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
 
     let ret = unsafe {
         swe_sol_eclipse_where(jd, flags, geopos.as_mut_ptr(), attr.as_mut_ptr(), serr.as_mut_ptr())
@@ -663,7 +665,7 @@ pub fn solar_eclipse_when_loc(
 ) -> Result<(f64, EclipseAttributes)> {
     let mut tret = [0.0; 10];
     let mut attr = [0.0; 20];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
     let mut dgeo = [geopos.longitude, geopos.latitude, geopos.altitude];
     
     let ret = unsafe {
@@ -711,14 +713,14 @@ pub fn heliacal_event(
     flags: i32
 ) -> Result<f64> {
     let mut dret = [0.0; 50];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
     let mut dgeo = [geopos.longitude, geopos.latitude, geopos.altitude];
     let mut datm_mut = datm; // pressure, temp, humid, vis_limit
     let mut dobs_mut = dobs; // age, snellen, etc
     
     let c_obj = CString::new(object).unwrap();
     // Copy into mutable buffer as C API expects char* (though acts as const for name)
-    let mut obj_buf = [0i8; 256];
+    let mut obj_buf = [0 as c_char; 256];
     let bytes = c_obj.as_bytes_with_nul();
     unsafe {
         std::ptr::copy_nonoverlapping(bytes.as_ptr(), obj_buf.as_mut_ptr() as *mut u8, bytes.len());
@@ -784,7 +786,7 @@ pub fn lunar_eclipse_when_loc(
 ) -> Result<(f64, EclipseAttributes)> {
     let mut tret = [0.0; 10];
     let mut attr = [0.0; 20];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
     let mut dgeo = [geopos.longitude, geopos.latitude, geopos.altitude];
     
     let ret = unsafe {
@@ -825,7 +827,7 @@ pub fn lunar_eclipse_when_loc(
 /// Returns (jd_et, jd_ut)
 pub fn utc_to_jd(year: i32, month: i32, day: i32, hour: i32, min: i32, sec: f64, gregflag: i32) -> Result<(f64, f64)> {
     let mut dret = [0.0; 2];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
 
     let ret = unsafe {
         swe_utc_to_jd(year, month, day, hour, min, sec, gregflag, dret.as_mut_ptr(), serr.as_mut_ptr())
@@ -892,7 +894,7 @@ pub fn coordinate_transform(position: Position, obliquity: f64) -> Position {
 /// `hsys`: House system char (e.g. 'P' for Placidus)
 /// `xpin`: Body position [longitude, latitude]
 pub fn house_pos(armc: f64, geolat: f64, eps: f64, hsys: char, xpin: [f64; 2]) -> Result<f64> {
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
     let mut xpin_mut = xpin; // copy array
     
     let ret = unsafe {
@@ -930,10 +932,10 @@ pub fn gauquelin_sector(
     attemp: f64
 ) -> Result<f64> {
     let mut dgsect = [0.0; 5];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
     let mut geopos_arr = [geopos.longitude, geopos.latitude, geopos.altitude];
     
-    let mut star_buf = [0i8; 256];
+    let mut star_buf = [0 as c_char; 256];
     if let Some(name) = star_name {
         let c_star = CString::new(name).map_err(|e| SwissEphError {
             message: format!("Invalid star name: {}", e),
@@ -991,7 +993,7 @@ pub fn nodes_apsides(jd: f64, planet: Planet, flags: CalcFlags, method: i32) -> 
     let mut xndsc = [0.0; 6];
     let mut xperi = [0.0; 6];
     let mut xaphe = [0.0; 6];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
 
     let ret = unsafe {
         swe_nod_aps(
@@ -1025,7 +1027,7 @@ pub fn nodes_apsides(jd: f64, planet: Planet, flags: CalcFlags, method: i32) -> 
 /// Calculate planetary phenomena
 pub fn phenomena(jd: f64, planet: Planet, flags: CalcFlags) -> Result<Phenomenon> {
     let mut attr = [0.0; 20];
-    let mut serr = [0i8; 256];
+    let mut serr = [0 as c_char; 256];
 
     let ret = unsafe {
         swe_pheno(jd, planet.to_int(), flags.raw(), attr.as_mut_ptr(), serr.as_mut_ptr())
@@ -1097,7 +1099,7 @@ pub fn houses(jd_ut: f64, latitude: f64, longitude: f64, system: HouseSystem) ->
 
 /// Get planet name
 pub fn get_planet_name(planet: Planet) -> String {
-    let mut buf = [0i8; 256];
+    let mut buf = [0 as c_char; 256];
     unsafe {
         swe_get_planet_name(planet.to_int(), buf.as_mut_ptr());
         CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned()

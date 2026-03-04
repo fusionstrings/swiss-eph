@@ -37,8 +37,19 @@ fn main() {
         .opt_level(3)
         .warnings(false);
 
-    // If targeting WASM, we need the WASI SDK (compiler + sysroot) for C compilation
     let target = std::env::var("TARGET").unwrap_or_default();
+
+    // musl libc doesn't provide glibc-specific fortified functions (__strcpy_chk,
+    // __sprintf_chk, __memcpy_chk) or the fseeko64/ftello64 aliases.
+    // Disable _FORTIFY_SOURCE and map 64-bit file ops to their standard equivalents
+    // (musl uses 64-bit off_t by default).
+    if target.contains("musl") {
+        build.define("_FORTIFY_SOURCE", "0");
+        build.define("fseeko64", "fseeko");
+        build.define("ftello64", "ftello");
+    }
+
+    // If targeting WASM, we need the WASI SDK (compiler + sysroot) for C compilation
     if target.contains("wasm32") {
         let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
         
